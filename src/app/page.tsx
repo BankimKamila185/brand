@@ -136,10 +136,11 @@ function SkProductRow({ count = 5 }: { count?: number }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [trending, setTrending] = useState<Product[]>([]);
-  const [recommends, setRecommends] = useState<Product[]>([]);
-  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const staticProducts = (productsData.products as unknown as Product[]) || [];
+  const [trending, setTrending] = useState<Product[]>(staticProducts.slice(0, 8));
+  const [recommends, setRecommends] = useState<Product[]>(staticProducts.slice(8, 13));
+  const [newArrivals, setNewArrivals] = useState<Product[]>(staticProducts.slice(13, 18));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -150,30 +151,23 @@ export default function Home() {
           productsApi.list({ collection: 'whats-new', limit: '5' })
         ]);
 
-        let trend = trendRes.success && trendRes.data ? (trendRes.data as unknown as Product[]) : [];
-        let rec = recRes.success && recRes.data ? (recRes.data as unknown as Product[]) : [];
-        let newVal = newRes.success && newRes.data ? (newRes.data as unknown as Product[]) : [];
+        const trend = trendRes.success && trendRes.data && trendRes.data.length > 0
+          ? (trendRes.data as unknown as Product[])
+          : staticProducts.slice(0, 8);
 
-        // Fallback to static JSON if database is empty/not seeded yet
-        if (trend.length === 0 || rec.length === 0 || newVal.length === 0) {
-          const staticProducts = (productsData.products as unknown as Product[]) || [];
-          if (trend.length === 0) trend = staticProducts.slice(0, 8);
-          if (rec.length === 0) rec = staticProducts.slice(8, 13);
-          if (newVal.length === 0) newVal = staticProducts.slice(13, 18);
-        }
+        const rec = recRes.success && recRes.data && recRes.data.length > 0
+          ? (recRes.data as unknown as Product[])
+          : staticProducts.slice(8, 13);
+
+        const newVal = newRes.success && newRes.data && newRes.data.length > 0
+          ? (newRes.data as unknown as Product[])
+          : staticProducts.slice(13, 18);
 
         setTrending(trend);
         setRecommends(rec);
         setNewArrivals(newVal);
       } catch (e) {
         console.error('Error fetching backend products:', e);
-        // Fallback to static
-        const staticProducts = (productsData.products as unknown as Product[]) || [];
-        setTrending(staticProducts.slice(0, 8));
-        setRecommends(staticProducts.slice(8, 13));
-        setNewArrivals(staticProducts.slice(13, 18));
-      } finally {
-        setLoading(false);
       }
     };
     fetchAll();
