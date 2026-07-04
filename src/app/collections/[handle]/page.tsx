@@ -21,6 +21,8 @@ const COLLECTION_LABELS: Record<string, string> = {
   'cargo-trousers-for-men': 'Cargo Trousers',
   'korean-pants': 'Korean Pants',
   'parachute-cargos': 'Parachute Cargos',
+  'gurkhatrousers': 'Gurkha Trousers',
+  'denim': 'Denim Parachutes',
   shirts: 'Casual Shirts',
   'crochet-shirts': 'Crochet Shirts',
   'cuban-shirts': 'Cuban Shirts',
@@ -125,10 +127,10 @@ export default function CollectionPage({ params }: PageProps) {
 
         <div className="container-fluid py-10">
           {/* Breadcrumb */}
-          <nav className="text-sm text-gray-500 flex gap-2 mb-6">
-            <Link href="/" className="hover:text-black">Home</Link>
-            <span>/</span>
-            <span className="text-black font-semibold">{label}</span>
+          <nav className="text-sm text-gray-500 flex flex-wrap items-center gap-y-1 gap-x-2 mb-6">
+            <Link href="/" className="hover:text-black whitespace-nowrap">Home</Link>
+            <span className="text-neutral-300">/</span>
+            <span className="text-black font-semibold whitespace-nowrap">{label}</span>
           </nav>
 
           {/* Filters bar */}

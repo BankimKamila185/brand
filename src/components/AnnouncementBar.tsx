@@ -4,11 +4,11 @@
 import React, { useState, useEffect } from 'react';
 
 const ANNOUNCEMENTS = [
-  "END OF SEASON SALE IS LIVE NOW!",
-  "USE OUTLIER21 to get additional 21% discount on orders above 5999**",
-  "Use OUTLIER10 to get 10% off on orders above 2499/-",
-  "Extra 5% off on Prepaid Orders",
-  "Cash on Delivery(COD) available"
+  "★ Sale: Co-Ords Starting At 699/-",
+  "✦ Free Shipping Across India",
+  "★ Korean Baggy Trousers Restocked",
+  "✦ Use Code KOALA20 For 20% Off",
+  "★ Comfy-Cool Streetwear Movement"
 ];
 
 const AnnouncementBar: React.FC = () => {

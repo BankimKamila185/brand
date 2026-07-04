@@ -55,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails }) => 
   );
 
   return (
-    <div className="product-card cursor-pointer" onClick={handleCardClick}>
+    <Link href={`/products/${product.handle}`} className="product-card cursor-pointer block text-current no-underline">
       <div className="product-card-media">
         {discountPercent > 0 && (
           <span className="product-badge">-{discountPercent}% OFF</span>
@@ -109,7 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails }) => 
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -96,7 +96,7 @@ const HeroSlider: React.FC = () => {
                 <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
                 <img 
                   src={slide.desktopImg} 
-                  alt="Tevar Outliers Studio Banner" 
+                  alt="House of Koala Brand Banner" 
                   className="hero-slide-img" 
                 />
               </picture>

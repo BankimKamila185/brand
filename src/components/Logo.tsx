@@ -10,8 +10,8 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className = '', height = 42 }) => {
   return (
     <img
-      src="/logo.png"
-      alt="The Outliers Studio Logo"
+      src="https://houseofkoala.com/cdn/shop/files/Logo-_HOK.png?v=1732368245"
+      alt="House of Koala Logo"
       className={className}
       style={{
         height: `${height}px`,

@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           </nav>
 
           {/* Centered Logo */}
-          <div className="logo-container">
+          <div className={`logo-container flex items-center justify-center ${searchOpen ? 'hidden sm:flex' : ''}`}>
             <Link href="/" className="inline-block">
               <Logo height={54} />
             </Link>
@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                 />
               )}
               <button 
-                className="action-btn text-black hover:opacity-70"
+                className="action-btn text-black hover:opacity-70 flex items-center justify-center"
                 onClick={() => setSearchOpen(!searchOpen)}
                 aria-label="Search"
               >
@@ -147,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
             {/* Profile / Account (Mock) */}
             <button
-              className="action-btn text-black hover:opacity-70 hidden sm:block"
+              className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center"
               onClick={() => alert("Profile / Account option coming soon!")}
               aria-label="Account"
             >
@@ -159,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             </button>
 
             {/* Wishlist */}
-            <Link href="/pages/wishlist" className="action-btn text-black hover:opacity-70" aria-label="Wishlist">
+            <Link href="/pages/wishlist" className="action-btn text-black hover:opacity-70 flex items-center justify-center" aria-label="Wishlist">
               {/* Heart SVG */}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -171,7 +171,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
             {/* Cart Drawer Trigger */}
             <button 
-              className="action-btn text-black hover:opacity-70" 
+              className="action-btn text-black hover:opacity-70 flex items-center justify-center" 
               onClick={() => setCartOpen(true)}
               aria-label="Cart"
             >
