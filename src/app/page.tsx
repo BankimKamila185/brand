@@ -183,20 +183,40 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* ③ Full-width hero banner */}
-        <SkHeroSlider />
+        <HeroSlider />
 
         {/* ④ Shop by Category — 4-col grid */}
-        <SkCategoryGrid />
+        <CategoryGrid />
 
-        {/* ⑤ Trending Now — tabs + 4×2 grid */}
-        <SkTrendingSection />
+        {/* ⑤ Trending Now */}
+        <section className="container-fluid my-16">
+          <h2 className="section-title">Trending Now</h2>
+          <div className="product-grid">
+            {trending.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
 
-        {/* ⑥ Koala Recommends — 5-col row */}
-        <SkProductRow count={5} />
+        {/* ⑥ Koala Recommends */}
+        <section className="container-fluid my-16">
+          <h2 className="section-title">Koala Recommends</h2>
+          <div className="sk-5col-grid">
+            {recommends.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
 
-        {/* ⑦ New Arrivals — 5-col row */}
-        <SkProductRow count={5} />
-
+        {/* ⑦ New Arrivals */}
+        <section className="container-fluid my-16">
+          <h2 className="section-title">New Arrivals</h2>
+          <div className="sk-5col-grid">
+            {newArrivals.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
       </main>
 
       {/* ⑨ Footer */}
