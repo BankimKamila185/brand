@@ -4,8 +4,9 @@
  * and error normalization are handled in one place.
  */
 
-const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:4000';
+const API_BASE_URL = typeof window === 'undefined'
+  ? (process.env['BACKEND_URL'] || 'http://localhost:4000')
+  : '';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -48,18 +49,40 @@ async function request<T>(
     ...options,
   };
 
-  const res = await fetch(url, config);
-  const data = (await res.json()) as ApiResponse<T>;
+  try {
+    const res = await fetch(url, config);
 
-  if (!res.ok) {
+    let data: ApiResponse<T>;
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = (await res.json()) as ApiResponse<T>;
+    } else {
+      const text = await res.text();
+      data = {
+        success: false,
+        message: res.statusText || 'Server error',
+        errors: { server: [text.slice(0, 100)] }
+      };
+    }
+
+    if (!res.ok) {
+      throw new ApiError(
+        data.message || 'Request failed',
+        res.status,
+        data.errors,
+      );
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
     throw new ApiError(
-      data.message || 'Request failed',
-      res.status,
-      data.errors,
+      error instanceof Error ? error.message : 'Network error',
+      503
     );
   }
-
-  return data;
 }
 
 export const api = {
