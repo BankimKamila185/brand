@@ -1,5 +1,5 @@
 export interface ProductVariant {
-  id: number;
+  id: number | string;
   title: string;
   option1: string | null;
   option2: string | null;
@@ -13,18 +13,18 @@ export interface ProductVariant {
   grams: number;
   compare_at_price: string | null;
   position: number;
-  product_id: number;
+  product_id: number | string;
   created_at: string;
   updated_at: string;
 }
 
 export interface ProductImage {
-  id: number;
+  id: number | string;
   created_at: string;
   position: number;
   updated_at: string;
-  product_id: number;
-  variant_ids: number[];
+  product_id: number | string;
+  variant_ids: (number | string)[];
   src: string;
   width: number;
   height: number;
@@ -37,7 +37,7 @@ export interface ProductOption {
 }
 
 export interface Product {
-  id: number;
+  id: number | string;
   title: string;
   handle: string;
   body_html: string;
@@ -54,7 +54,7 @@ export interface Product {
 
 export interface CartItem {
   product: Product;
-  variantId: number;
+  variantId: number | string;
   quantity: number;
   selectedSize: string;
 }
