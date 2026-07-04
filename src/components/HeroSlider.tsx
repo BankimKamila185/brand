@@ -72,7 +72,7 @@ const HeroSlider: React.FC = () => {
           {slide.title ? (
             <>
               {/* Responsive Banners */}
-              <picture>
+              <picture className="block w-full h-full">
                 <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
                 <img 
                   src={slide.desktopImg} 
@@ -92,7 +92,7 @@ const HeroSlider: React.FC = () => {
             </>
           ) : (
             <Link href={slide.link} className="block w-full h-full relative">
-              <picture>
+              <picture className="block w-full h-full">
                 <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
                 <img 
                   src={slide.desktopImg} 
