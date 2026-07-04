@@ -21,7 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails }) => 
   // Calculate discount percentage
   const variant = product.variants[0];
   const priceNum = parseFloat(variant.price);
-  const comparePriceNum = variant.compare_at_price ? parseFloat(variant.compare_at_price) : 0;
+  const comparePriceRaw = variant.compare_at_price || (variant as any).comparePrice;
+  const comparePriceNum = comparePriceRaw ? parseFloat(comparePriceRaw) : 0;
   
   const discountPercent = (comparePriceNum > priceNum) 
     ? Math.round(((comparePriceNum - priceNum) / comparePriceNum) * 100) 
@@ -48,6 +49,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails }) => 
     }
   };
 
+  // Derive sizes from options array or variants list safely
+  const sizes = product.options?.[0]?.values || Array.from(
+    new Set(product.variants.map(v => v.option1 || v.title).filter((x): x is string => !!x))
+  );
+
   return (
     <div className="product-card cursor-pointer" onClick={handleCardClick}>
       <div className="product-card-media">
@@ -73,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetails }) => 
         {/* Hover size and action panel */}
         <div className="product-card-actions">
           <div className="quick-sizes">
-            {product.options[0]?.values.map((size) => (
+            {sizes.map((size) => (
               <button
                 key={size}
                 className={`quick-size-btn ${selectedSize === size ? 'bg-black text-white border-black' : ''}`}
