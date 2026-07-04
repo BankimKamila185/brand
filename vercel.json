@@ -1,0 +1,27 @@
+{
+  "services": {
+    "frontend": {
+      "root": ".",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "root": "backend"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "backend",
+        "path": "/api/$1"
+      }
+    },
+    {
+      "source": "/health",
+      "destination": {
+        "service": "backend",
+        "path": "/health"
+      }
+    }
+  ]
+}
