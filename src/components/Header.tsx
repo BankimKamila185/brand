@@ -1,5 +1,5 @@
-'use strict';
 'use client';
+
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -35,9 +35,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
     <header className="main-header">
       <div className="container-fluid">
         <div className="header-inner">
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle - shown on mobile, hidden on desktop via CSS */}
           <button 
-            className="md:hidden text-2xl text-black hover:opacity-75 focus:outline-none" 
+            className="mobile-menu-btn md:hidden text-2xl text-black hover:opacity-75 focus:outline-none" 
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
             style={{ padding: '8px 0' }}
@@ -50,8 +50,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             </svg>
           </button>
 
-          {/* Left Navigation (Desktop) */}
-          <nav className="hidden md:block">
+          {/* Left Navigation (Desktop) - hidden on mobile, shown on desktop via CSS */}
+          <nav className="desktop-nav hidden md:block">
             <ul className="nav-menu">
               <li className="nav-item">
                 <Link href="/collections/all" className="nav-link flex flex-row items-center gap-1.5" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px' }}>

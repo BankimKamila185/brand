@@ -2,6 +2,9 @@
 
 @import "tailwindcss";
 
+/* Tell Tailwind v4 to scan the entire project for utility classes */
+@source "../../";
+
 :root {
   --font-stack: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --color-bg: #ffffff;
@@ -278,13 +281,19 @@
   padding: 0;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-stack);
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
+  /* clip → hidden: better cross-browser containment (clip doesn't always
+     prevent touch-panning on Android/iOS when a descendant overflows) */
+  overflow-x: hidden;
 }
 
 a {
@@ -442,6 +451,35 @@ button {
 @media (max-width: 768px) {
   .logo-container img {
     height: 38px;
+  }
+}
+
+/* ─── Header: Mobile / Desktop nav visibility ──────────────────────────── */
+/* CSS-native fallback so responsiveness works even without Tailwind utilities */
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-nav {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex; /* visible on mobile */
+  }
+  .desktop-nav {
+    display: none; /* hidden on mobile */
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none; /* hidden on desktop */
+  }
+  .desktop-nav {
+    display: block; /* visible on desktop */
   }
 }
 
@@ -1605,6 +1643,15 @@ button {
   grid-template-columns: 1.1fr 1fr;
   gap: 60px;
   align-items: start;
+  /* Prevent grid children from overflowing their cells */
+  min-width: 0;
+}
+
+/* Both direct children need min-width: 0 so their grid tracks stay bounded.
+   We do NOT apply overflow:hidden here globally — that would clip box-shadows
+   and focus rings on the info panel. The gallery col gets its own overflow rule. */
+.product-detail-layout > * {
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -1619,6 +1666,10 @@ button {
   gap: 14px;
   position: sticky;
   top: 100px;
+  /* Prevent the gallery column from blowing past its grid track */
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .pdp-thumbs {
@@ -1885,6 +1936,11 @@ button {
     position: static;
     flex-direction: column;
     gap: 12px;
+    /* On mobile the col is a single-column grid child — must not exceed viewport */
+    width: 100%;
+    min-width: 0;
+    /* Allow the internal thumbnail strip to scroll without blowing out the parent */
+    overflow: hidden;
   }
 
   .pdp-thumbs {
@@ -1893,21 +1949,37 @@ button {
 
   .pdp-main-img-wrap {
     width: 100%;
+    max-width: 100%;
     aspect-ratio: 4 / 5;
   }
 
   .pdp-mobile-thumbs {
     display: flex;
     gap: 8px;
+    /* overflow-x: auto creates the scrollable strip */
     overflow-x: auto;
+    /* overflow-y must be visible or hidden — never auto/scroll — to avoid
+       the double-scroll-bar issue, but mainly we need the width clamped */
+    overflow-y: hidden;
     padding-bottom: 4px;
+    /* width + max-width together clamp the row to the column width */
     width: 100%;
+    max-width: 100%;
+    /* box-sizing already border-box from the * rule, but be explicit */
+    box-sizing: border-box;
     margin-top: 16px;
     scrollbar-width: none;
+    /* Prevent the flex row's content from pushing the parent wider */
+    flex-shrink: 0;
   }
 
   .pdp-mobile-thumbs::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Each thumb must not flex-shrink away but also not expand parent */
+  .pdp-mobile-thumbs > * {
+    flex-shrink: 0;
   }
 }
 
