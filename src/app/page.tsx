@@ -1,10 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AnnouncementBar from '../components/AnnouncementBar';
 import Header from '../components/Header';
 import CartDrawer from '../components/CartDrawer';
 import Footer from '../components/Footer';
+import HeroSlider from '../components/HeroSlider';
+import CategoryGrid from '../components/CategoryGrid';
+import ProductCard from '../components/ProductCard';
+import { productsApi } from '../lib/api';
+import productsData from '../data/products.json';
+import { Product } from '../types';
 
 // ─── Skeleton primitives ──────────────────────────────────────────────────
 const SkBox = ({ className = '', style = {} }: { className?: string; style?: React.CSSProperties }) => (
@@ -15,7 +21,7 @@ const SkLine = ({ w = '100%', h = 14 }: { w?: string | number; h?: number }) => 
   <div className="sk-box sk-line" style={{ width: w, height: h }} />
 );
 
-// ─── Hero Slider ──────────────────────────────────────────────────────────
+// ─── Hero Slider Skeleton ──────────────────────────────────────────────────
 function SkHeroSlider() {
   return (
     <div className="sk-hero">
@@ -56,7 +62,7 @@ function SkProductCard() {
   );
 }
 
-// ─── Category Grid ────────────────────────────────────────────────────────
+// ─── Category Grid Skeleton ────────────────────────────────────────────────
 function SkCategoryGrid() {
   return (
     <section className="container-fluid sk-section" style={{ marginTop: 60, marginBottom: 60 }}>
@@ -81,7 +87,7 @@ function SkCategoryGrid() {
   );
 }
 
-// ─── Trending Now — tabbed 4×2 product grid ──────────────────────────────
+// ─── Trending Now Skeleton ────────────────────────────────────────────────
 function SkTrendingSection() {
   return (
     <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
@@ -105,7 +111,7 @@ function SkTrendingSection() {
   );
 }
 
-// ─── Koala Recommends — 5-col row + CTA ──────────────────────────────────
+// ─── Koala Recommends Skeleton ──────────────────────────────────────────────
 function SkProductRow({ count = 5 }: { count?: number }) {
   return (
     <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
@@ -128,40 +134,51 @@ function SkProductRow({ count = 5 }: { count?: number }) {
   );
 }
 
-// ─── Dark "Our Story" Band ────────────────────────────────────────────────
-function SkStoryBand() {
-  const darkBox = { background: 'rgba(255,255,255,0.12)', animation: 'none' } as React.CSSProperties;
-  const dimBox  = { background: 'rgba(255,255,255,0.07)', animation: 'none' } as React.CSSProperties;
-
-  return (
-    <section className="sk-story-band">
-      <div className="sk-story-inner">
-        {/* Left — heading + paragraph lines + CTA */}
-        <div className="sk-story-text">
-          <SkBox style={{ ...darkBox, width: 180, height: 24, borderRadius: 5 }} />
-          {[100, 92, 96, 72, 83].map((w, i) => (
-            <SkBox key={i} style={{ ...dimBox, width: `${w}%`, height: 12, borderRadius: 4 }} />
-          ))}
-          <SkBox style={{ ...darkBox, width: 140, height: 44, borderRadius: 4, marginTop: 8 }} />
-        </div>
-
-        {/* Right — 2 card boxes (testimonials / trust cards) */}
-        <div className="sk-story-cards">
-          {[0, 1].map((i) => (
-            <div key={i} className="sk-story-card">
-              {[100, 80, 90, 60].map((w, j) => (
-                <SkBox key={j} style={{ ...dimBox, width: `${w}%`, height: 12, borderRadius: 4 }} />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────
 export default function Home() {
+  const [trending, setTrending] = useState<Product[]>([]);
+  const [recommends, setRecommends] = useState<Product[]>([]);
+  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [trendRes, recRes, newRes] = await Promise.all([
+          productsApi.list({ collection: 'bestsellers', limit: '8' }),
+          productsApi.list({ collection: 'koala-recommends', limit: '5' }),
+          productsApi.list({ collection: 'whats-new', limit: '5' })
+        ]);
+
+        let trend = trendRes.success && trendRes.data ? (trendRes.data as unknown as Product[]) : [];
+        let rec = recRes.success && recRes.data ? (recRes.data as unknown as Product[]) : [];
+        let newVal = newRes.success && newRes.data ? (newRes.data as unknown as Product[]) : [];
+
+        // Fallback to static JSON if database is empty/not seeded yet
+        if (trend.length === 0 || rec.length === 0 || newVal.length === 0) {
+          const staticProducts = (productsData.products as unknown as Product[]) || [];
+          if (trend.length === 0) trend = staticProducts.slice(0, 8);
+          if (rec.length === 0) rec = staticProducts.slice(8, 13);
+          if (newVal.length === 0) newVal = staticProducts.slice(13, 18);
+        }
+
+        setTrending(trend);
+        setRecommends(rec);
+        setNewArrivals(newVal);
+      } catch (e) {
+        console.error('Error fetching backend products:', e);
+        // Fallback to static
+        const staticProducts = (productsData.products as unknown as Product[]) || [];
+        setTrending(staticProducts.slice(0, 8));
+        setRecommends(staticProducts.slice(8, 13));
+        setNewArrivals(staticProducts.slice(13, 18));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* ① Scrolling promo bar */}
