@@ -14,32 +14,32 @@ interface SlideData {
 
 const HERO_SLIDES: SlideData[] = [
   {
+    title: "",
+    subtitle: "",
+    link: "/collections/all",
+    desktopImg: "/hero-light.jpg",
+    mobileImg: "/hero-light.jpg"
+  },
+  {
+    title: "",
+    subtitle: "",
+    link: "/collections/all",
+    desktopImg: "/hero-dark.png",
+    mobileImg: "/hero-dark.png"
+  },
+  {
     title: "GURKHA TROUSERS",
     subtitle: "Premium double pleated gurkha trousers in relaxed fits",
-    link: "/collections/gurkhatrousers",
+    link: "/collections/all",
     desktopImg: "https://houseofkoala.com/cdn/shop/files/Gurkha_new_banner_Desktop.png?v=1775648537&width=2048",
     mobileImg: "https://houseofkoala.com/cdn/shop/files/Gurkha_new_banner_600_x_480_px.png?v=1775648537&width=750"
   },
   {
     title: "LINEN COTTON WEAVES",
     subtitle: "Stay airy with our premium linen coordinate sets and shirts",
-    link: "/collections/linen",
+    link: "/collections/all",
     desktopImg: "https://houseofkoala.com/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=2048",
-    mobileImg: "https://houseofkoala.com/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750" // Fallback to resized desktop
-  },
-  {
-    title: "UP TO 80% OFF",
-    subtitle: "Season clearance sale is live. Get premium streetwear for less",
-    link: "/collections/saletee",
-    desktopImg: "https://houseofkoala.com/cdn/shop/files/Upto_80_off_-_June_-_Desktop_1.png?v=1781530633&width=2048",
-    mobileImg: "https://houseofkoala.com/cdn/shop/files/Upto_80_off_-_June_-_Mobile_3.png?v=1781530633&width=750"
-  },
-  {
-    title: "STREETWEAR UNDER 599",
-    subtitle: "Top-selling graphic tees and coordinates at budget pricing",
-    link: "/collections/under599",
-    desktopImg: "https://houseofkoala.com/cdn/shop/files/under_599_Desktop.png?v=1779902849&width=2048",
-    mobileImg: "https://houseofkoala.com/cdn/shop/files/ALL_UNDER_599_Mobile.png?v=1779902849&width=750"
+    mobileImg: "https://houseofkoala.com/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750"
   }
 ];
 
@@ -69,24 +69,39 @@ const HeroSlider: React.FC = () => {
           key={idx} 
           className={`hero-slide ${idx === currentSlide ? 'active' : ''}`}
         >
-          {/* Responsive Banners */}
-          <picture>
-            <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
-            <img 
-              src={slide.desktopImg} 
-              alt={slide.title} 
-              className="hero-slide-img" 
-            />
-          </picture>
-          <div className="hero-slide-overlay">
-            <div className="hero-slide-content">
-              <h2 className="hero-title">{slide.title}</h2>
-              <p className="hero-subtitle">{slide.subtitle}</p>
-              <Link href={slide.link} className="hero-btn">
-                Shop Collection
-              </Link>
-            </div>
-          </div>
+          {slide.title ? (
+            <>
+              {/* Responsive Banners */}
+              <picture>
+                <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
+                <img 
+                  src={slide.desktopImg} 
+                  alt={slide.title} 
+                  className="hero-slide-img" 
+                />
+              </picture>
+              <div className="hero-slide-overlay">
+                <div className="hero-slide-content">
+                  <h2 className="hero-title">{slide.title}</h2>
+                  <p className="hero-subtitle">{slide.subtitle}</p>
+                  <Link href={slide.link} className="hero-btn">
+                    Shop Collection
+                  </Link>
+                </div>
+              </div>
+            </>
+          ) : (
+            <Link href={slide.link} className="block w-full h-full relative">
+              <picture>
+                <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
+                <img 
+                  src={slide.desktopImg} 
+                  alt="Tevar Outliers Studio Banner" 
+                  className="hero-slide-img" 
+                />
+              </picture>
+            </Link>
+          )}
         </div>
       ))}
 
