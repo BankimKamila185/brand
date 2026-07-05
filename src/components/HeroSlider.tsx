@@ -69,42 +69,24 @@ const HeroSlider: React.FC = () => {
           key={idx} 
           className={`hero-slide ${idx === currentSlide ? 'active' : ''}`}
         >
-          {slide.title ? (
-            <>
-              {/* Responsive Banners */}
-              <picture className="block w-full h-full">
-                <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
-                <img 
-                  src={slide.desktopImg} 
-                  alt={slide.title} 
-                  className="hero-slide-img" 
-                />
-              </picture>
+          <Link href={slide.link} className="block w-full h-full relative">
+            <picture className="block w-full h-full">
+              <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
+              <img 
+                src={slide.desktopImg} 
+                alt={slide.title || "House of Koala Brand Banner"} 
+                className="hero-slide-img" 
+              />
+            </picture>
+            {slide.title && (
               <div className="hero-slide-overlay">
                 <div className="hero-slide-content">
                   <h2 className="hero-title">{slide.title}</h2>
                   <p className="hero-subtitle">{slide.subtitle}</p>
-                  <Link href={slide.link} className="hero-link-arrow">
-                    <span>Shop Collection</span>
-                    <svg className="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  </Link>
                 </div>
               </div>
-            </>
-          ) : (
-            <Link href={slide.link} className="block w-full h-full relative">
-              <picture className="block w-full h-full">
-                <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
-                <img 
-                  src={slide.desktopImg} 
-                  alt="House of Koala Brand Banner" 
-                  className="hero-slide-img" 
-                />
-              </picture>
-            </Link>
-          )}
+            )}
+          </Link>
         </div>
       ))}
 
