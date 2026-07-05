@@ -46,21 +46,13 @@ const HERO_SLIDES: SlideData[] = [
 const HeroSlider: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Auto transition every 6 seconds
+  // Auto transition every 6 seconds (resets when currentSlide changes)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % HERO_SLIDES.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
-
-  const handlePrev = () => {
-    setCurrentSlide(prev => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-  };
-
-  const handleNext = () => {
-    setCurrentSlide(prev => (prev + 1) % HERO_SLIDES.length);
-  };
+  }, [currentSlide]);
 
   return (
     <div className="hero-slider">
@@ -90,14 +82,20 @@ const HeroSlider: React.FC = () => {
         </div>
       ))}
 
-      {/* Controls */}
-      <div className="slider-controls">
-        <button className="slider-arrow" onClick={handlePrev} aria-label="Previous slide">
-          ‹
-        </button>
-        <button className="slider-arrow" onClick={handleNext} aria-label="Next slide">
-          ›
-        </button>
+      {/* Pagination Dots with Progress Bar Animation */}
+      <div className="slider-dots">
+        {HERO_SLIDES.map((_, idx) => (
+          <button
+            key={idx}
+            className={`slider-dot-btn ${idx === currentSlide ? 'active' : ''}`}
+            onClick={() => setCurrentSlide(idx)}
+            aria-label={`Go to slide ${idx + 1}`}
+          >
+            <span className="dot-progress-track">
+              <span className="dot-progress-bar" />
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

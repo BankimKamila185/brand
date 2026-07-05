@@ -808,48 +808,70 @@ button {
   }
 }
 
-.slider-controls {
+/* Slider Dots Pagination with Progress Bar Animation */
+.slider-dots {
   position: absolute;
   bottom: 40px;
-  right: 80px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 12px;
-  z-index: 10;
-  transition: bottom var(--transition-fast), right var(--transition-fast);
+  z-index: 20;
 }
 
 @media (max-width: 768px) {
-  .slider-controls {
+  .slider-dots {
     bottom: 20px;
-    right: 20px;
+    gap: 8px;
   }
 }
 
-.slider-arrow {
-  background-color: rgba(255,255,255,0.25);
-  color: #ffffff;
-  border-radius: 50%;
+.slider-dot-btn {
+  background: none;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.dot-progress-track {
+  display: block;
   width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
   backdrop-filter: blur(5px);
-  transition: width var(--transition-fast), height var(--transition-fast);
+}
+
+.dot-progress-bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Active Dot triggers the 6-second scaleX animation */
+.slider-dot-btn.active .dot-progress-bar {
+  animation: slideProgress 6s linear forwards;
+}
+
+@keyframes slideProgress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
 }
 
 @media (max-width: 768px) {
-  .slider-arrow {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
+  .dot-progress-track {
+    width: 32px;
+    height: 2px;
   }
-}
-
-.slider-arrow:hover {
-  background-color: #ffffff;
-  color: #000000;
 }
 
 /* Category grid section */
