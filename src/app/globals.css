@@ -443,14 +443,14 @@ button {
 }
 
 .logo-container img {
-  height: 54px;
+  height: 72px;
   object-fit: contain;
   transition: height var(--transition-fast);
 }
 
 @media (max-width: 768px) {
   .logo-container img {
-    height: 38px;
+    height: 48px;
   }
 }
 

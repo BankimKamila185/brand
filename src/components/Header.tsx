@@ -114,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           {/* Centered Logo */}
           <div className={`logo-container flex items-center justify-center ${searchOpen ? 'hidden sm:flex' : ''}`}>
             <Link href="/" className="inline-block">
-              <Logo height={54} />
+              <Logo />
             </Link>
           </div>
 
