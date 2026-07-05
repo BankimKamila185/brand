@@ -110,7 +110,7 @@ function SkTrendingSection() {
   );
 }
 
-// ─── Koala Recommends Skeleton ──────────────────────────────────────────────
+// ─── Outliers Recommends Skeleton ──────────────────────────────────────────────
 function SkProductRow({ count = 5 }: { count?: number }) {
   return (
     <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
@@ -146,7 +146,7 @@ export default function Home() {
       try {
         const [trendRes, recRes, newRes] = await Promise.all([
           productsApi.list({ collection: 'bestsellers', limit: '8' }),
-          productsApi.list({ collection: 'koala-recommends', limit: '5' }),
+          productsApi.list({ collection: 'outliers-recommends', limit: '5' }),
           productsApi.list({ collection: 'whats-new', limit: '5' })
         ]);
 
@@ -194,9 +194,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ⑥ Koala Recommends */}
+        {/* ⑥ Outliers Recommends */}
         <section className="container-fluid my-16">
-          <h2 className="section-title">Koala Recommends</h2>
+          <h2 className="section-title">Outliers Recommends</h2>
           <div className="sk-5col-grid">
             {recommends.map((product) => (
               <ProductCard key={product.id} product={product} />

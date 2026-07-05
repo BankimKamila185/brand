@@ -103,8 +103,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                 <div className="dropdown-pane">
                   <ul className="dropdown-list">
                     <li><Link href="/collections/retro-clothing" className="dropdown-link">Retro Clothing</Link></li>
-                    <li><Link href="/collections/koala-k-aracter" className="dropdown-link">Koala K-aracter</Link></li>
-                    <li><Link href="/collections/koala-recommends" className="dropdown-link">Koala Recommends</Link></li>
+                    <li><Link href="/collections/outliers-k-aracter" className="dropdown-link">Outliers K-aracter</Link></li>
+                    <li><Link href="/collections/outliers-recommends" className="dropdown-link">Outliers Recommends</Link></li>
                   </ul>
                 </div>
               </li>

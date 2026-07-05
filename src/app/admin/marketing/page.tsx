@@ -14,7 +14,7 @@ interface Voucher {
 
 export default function MarketingPage() {
   const [vouchers, setVouchers] = useState<Voucher[]>([
-    { id: 'v-1', code: 'KOALA10', discountType: 'PERCENT', value: 10, status: 'ACTIVE', minSpend: 2500 },
+    { id: 'v-1', code: 'OUTLIERS10', discountType: 'PERCENT', value: 10, status: 'ACTIVE', minSpend: 2500 },
     { id: 'v-2', code: 'FREESHIP', discountType: 'FIXED', value: 99, status: 'ACTIVE', minSpend: 1500 }
   ]);
 

@@ -14,7 +14,7 @@ interface HeroSlide {
 export default function HomepageBuilderPage() {
   const [slides, setSlides] = useState<HeroSlide[]>([
     { id: 's-1', title: 'RETRO FUTURA DROP', subtitle: 'Cyberpunk graphics meets 90s aesthetic comfort clothing.', buttonText: 'Explore Capsule', imageAlt: 'Main drop banner' },
-    { id: 's-2', title: 'KOALA MASCOT SERIES', subtitle: 'Limited character print designs featuring our mascot.', buttonText: 'Shop Mascot', imageAlt: 'Mascot banner' }
+    { id: 's-2', title: 'OUTLIERS MASCOT SERIES', subtitle: 'Limited character print designs featuring our mascot.', buttonText: 'Shop Mascot', imageAlt: 'Mascot banner' }
   ]);
 
   const [activeSlide, setActiveSlide] = useState(0);

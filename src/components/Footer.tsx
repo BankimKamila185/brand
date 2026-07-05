@@ -216,7 +216,7 @@ const Footer: React.FC = () => {
                 <a href="tel:+919900975154" className="footer-link-underline">+919900975154</a>
               </p>
               <p className="footer-text">
-                <a href="mailto:support@houseofkoala.com" className="footer-link-underline">support@houseofkoala.com</a>
+                <a href="mailto:support@___HOUSEOFOUTLIERS_DOM___" className="footer-link-underline">support@___HOUSEOFOUTLIERS_DOM___</a>
               </p>
               <div className="footer-socials">
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-circle" aria-label="Instagram">
@@ -261,7 +261,7 @@ const Footer: React.FC = () => {
 
             {/* Column 4: Newsletter */}
             <div className="footer-col newsletter-col">
-              <h3 className="newsletter-heading">Join the Koala Club</h3>
+              <h3 className="newsletter-heading">Join the Outliers Club</h3>
               <form className="newsletter-form" onSubmit={handleSubscribe}>
                 <div className="input-group">
                   <span className="input-icon">
@@ -287,7 +287,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="footer-bottom">
           <div className="footer-container bottom-flex">
-            <p>©2026 House of Koala Fashion Private Limited</p>
+            <p>©2026 House of Outliers Fashion Private Limited</p>
             <p>Developed by Syscodes</p>
           </div>
         </div>

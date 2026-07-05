@@ -73,9 +73,9 @@ async function main() {
     { name: 'All', handle: 'all', description: 'All products', sortOrder: 0 },
     { name: 'Bestsellers', handle: 'bestsellers', sortOrder: 1 },
     { name: "What's New", handle: 'whats-new', sortOrder: 2 },
-    { name: 'Koala Recommends', handle: 'koala-recommends', sortOrder: 3 },
+    { name: 'Outliers Recommends', handle: 'outliers-recommends', sortOrder: 3 },
     { name: 'Retro Clothing', handle: 'retro-clothing', sortOrder: 4 },
-    { name: 'Koala K-aracter', handle: 'koala-k-aracter', sortOrder: 5 },
+    { name: 'Outliers K-aracter', handle: 'outliers-k-aracter', sortOrder: 5 },
     { name: 'Winterwear', handle: 'winterwear', sortOrder: 6 },
     { name: 'Outerwear', handle: 'outerwear', sortOrder: 7 },
   ];

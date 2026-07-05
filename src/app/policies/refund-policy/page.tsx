@@ -38,7 +38,7 @@ export default function RefundPolicyPage() {
             </ul>
 
             <h2>How to Initiate a Return</h2>
-            <p>Email us at <a href="mailto:hello@houseofkoala.com">hello@houseofkoala.com</a> with your order number and reason for return. Our team will respond within 24 hours with return instructions.</p>
+            <p>Email us at <a href="mailto:hello@___HOUSEOFOUTLIERS_DOM___">hello@___HOUSEOFOUTLIERS_DOM___</a> with your order number and reason for return. Our team will respond within 24 hours with return instructions.</p>
 
             <h2>Refund Processing</h2>
             <p>Once we receive and inspect the returned item, refunds are processed within <strong>5–7 business days</strong> to your original payment method. You will receive a confirmation email once your refund is issued.</p>
@@ -47,7 +47,7 @@ export default function RefundPolicyPage() {
             <p>We offer free exchanges for size or colour differences, subject to availability. Please email us to arrange an exchange.</p>
 
             <h2>Damaged or Wrong Items</h2>
-            <p>If you received a damaged, defective, or incorrect item, please contact us immediately at <a href="mailto:hello@houseofkoala.com">hello@houseofkoala.com</a> with photos. We will arrange a replacement or full refund at no extra cost.</p>
+            <p>If you received a damaged, defective, or incorrect item, please contact us immediately at <a href="mailto:hello@___HOUSEOFOUTLIERS_DOM___">hello@___HOUSEOFOUTLIERS_DOM___</a> with photos. We will arrange a replacement or full refund at no extra cost.</p>
           </div>
         </div>
       </main>

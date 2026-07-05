@@ -12,8 +12,8 @@ interface KeyConfig {
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'profile' | 'rbac' | 'keys'>('profile');
-  const [storeName, setStoreName] = useState('House of Koala');
-  const [storeEmail, setStoreEmail] = useState('hello@houseofkoala.com');
+  const [storeName, setStoreName] = useState('House of Outliers');
+  const [storeEmail, setStoreEmail] = useState('hello@___HOUSEOFOUTLIERS_DOM___');
   const [gstRate, setGstRate] = useState(18);
 
   const [keys, setKeys] = useState<KeyConfig[]>([

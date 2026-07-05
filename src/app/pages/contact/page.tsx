@@ -47,7 +47,7 @@ export default function ContactPage() {
                 <span className="contact-info-icon">📧</span>
                 <div>
                   <div className="font-bold text-sm uppercase mb-1">Email</div>
-                  <a href="mailto:hello@houseofkoala.com" className="text-gray-600 hover:text-black">hello@houseofkoala.com</a>
+                  <a href="mailto:hello@___HOUSEOFOUTLIERS_DOM___" className="text-gray-600 hover:text-black">hello@___HOUSEOFOUTLIERS_DOM___</a>
                 </div>
               </div>
 
@@ -70,8 +70,8 @@ export default function ContactPage() {
               <div className="mt-8">
                 <div className="font-bold text-sm uppercase mb-4">Follow Us</div>
                 <div className="flex gap-4">
-                  <a href="https://instagram.com/houseofkoala" target="_blank" rel="noopener noreferrer" className="contact-social-link">Instagram</a>
-                  <a href="https://facebook.com/houseofkoala" target="_blank" rel="noopener noreferrer" className="contact-social-link">Facebook</a>
+                  <a href="https://instagram.com/houseofoutliers" target="_blank" rel="noopener noreferrer" className="contact-social-link">Instagram</a>
+                  <a href="https://facebook.com/houseofoutliers" target="_blank" rel="noopener noreferrer" className="contact-social-link">Facebook</a>
                 </div>
               </div>
             </div>

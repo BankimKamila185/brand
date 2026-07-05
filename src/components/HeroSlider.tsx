@@ -31,15 +31,15 @@ const HERO_SLIDES: SlideData[] = [
     title: "GURKHA TROUSERS",
     subtitle: "Premium double pleated gurkha trousers in relaxed fits",
     link: "/collections/all",
-    desktopImg: "https://houseofkoala.com/cdn/shop/files/Gurkha_new_banner_Desktop.png?v=1775648537&width=2048",
-    mobileImg: "https://houseofkoala.com/cdn/shop/files/Gurkha_new_banner_600_x_480_px.png?v=1775648537&width=750"
+    desktopImg: "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Gurkha_new_banner_Desktop.png?v=1775648537&width=2048",
+    mobileImg: "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Gurkha_new_banner_600_x_480_px.png?v=1775648537&width=750"
   },
   {
     title: "LINEN COTTON WEAVES",
     subtitle: "Stay airy with our premium linen coordinate sets and shirts",
     link: "/collections/all",
-    desktopImg: "https://houseofkoala.com/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=2048",
-    mobileImg: "https://houseofkoala.com/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750"
+    desktopImg: "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=2048",
+    mobileImg: "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750"
   }
 ];
 
@@ -66,7 +66,7 @@ const HeroSlider: React.FC = () => {
               <source media="(max-width: 768px)" srcSet={slide.mobileImg} />
               <img 
                 src={slide.desktopImg} 
-                alt={slide.title || "House of Koala Brand Banner"} 
+                alt={slide.title || "House of Outliers Brand Banner"} 
                 className="hero-slide-img" 
               />
             </picture>

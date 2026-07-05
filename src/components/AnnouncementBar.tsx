@@ -7,7 +7,7 @@ const ANNOUNCEMENTS = [
   "★ Sale: Co-Ords Starting At 699/-",
   "✦ Free Shipping Across India",
   "★ Korean Baggy Trousers Restocked",
-  "✦ Use Code KOALA20 For 20% Off",
+  "✦ Use Code OUTLIERS20 For 20% Off",
   "★ Comfy-Cool Streetwear Movement"
 ];
 

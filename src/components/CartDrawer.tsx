@@ -18,19 +18,19 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
     e.preventDefault();
     const normalized = couponCode.trim().toUpperCase();
 
-    if (normalized === 'KOALA10') {
+    if (normalized === 'OUTLIERS10') {
       if (cartTotal >= 2499) {
         setActiveDiscount(10);
-        setCouponMessage('Coupon KOALA10 applied: 10% discount!');
+        setCouponMessage('Coupon OUTLIERS10 applied: 10% discount!');
       } else {
-        setCouponMessage('KOALA10 requires order above ₹2499!');
+        setCouponMessage('OUTLIERS10 requires order above ₹2499!');
       }
-    } else if (normalized === 'KOALA21') {
+    } else if (normalized === 'OUTLIERS21') {
       if (cartTotal >= 5999) {
         setActiveDiscount(21);
-        setCouponMessage('Coupon KOALA21 applied: 21% discount!');
+        setCouponMessage('Coupon OUTLIERS21 applied: 21% discount!');
       } else {
-        setCouponMessage('KOALA21 requires order above ₹5999!');
+        setCouponMessage('OUTLIERS21 requires order above ₹5999!');
       }
     } else if (normalized) {
       setCouponMessage('Invalid coupon code!');
@@ -46,7 +46,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
     if (onCheckoutSimulation) {
       onCheckoutSimulation();
     } else {
-      alert('Simulating checkout! Thank you for shopping with House of Koala.');
+      alert('Simulating checkout! Thank you for shopping with House of Outliers.');
     }
   };
 
@@ -134,7 +134,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
             <form onSubmit={handleApplyCoupon} className="flex gap-2 mb-6">
               <input
                 type="text"
-                placeholder="PROMO CODE (KOALA10, KOALA21)"
+                placeholder="PROMO CODE (OUTLIERS10, OUTLIERS21)"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm outline-none uppercase font-bold"

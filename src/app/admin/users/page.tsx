@@ -5,10 +5,10 @@ import { Shield, Plus } from 'lucide-react';
 
 export default function UsersPage() {
   const staff = [
-    { name: 'Vikram Rathore', email: 'vikram@houseofkoala.com', role: 'Owner', status: 'ACTIVE' },
-    { name: 'Maya Sen', email: 'maya@houseofkoala.com', role: 'Marketing', status: 'ACTIVE' },
-    { name: 'Rohan D.', email: 'rohan.d@houseofkoala.com', role: 'Warehouse', status: 'ACTIVE' },
-    { name: 'Sarah Khan', email: 'sarah@houseofkoala.com', role: 'Support', status: 'ACTIVE' }
+    { name: 'Vikram Rathore', email: 'vikram@___HOUSEOFOUTLIERS_DOM___', role: 'Owner', status: 'ACTIVE' },
+    { name: 'Maya Sen', email: 'maya@___HOUSEOFOUTLIERS_DOM___', role: 'Marketing', status: 'ACTIVE' },
+    { name: 'Rohan D.', email: 'rohan.d@___HOUSEOFOUTLIERS_DOM___', role: 'Warehouse', status: 'ACTIVE' },
+    { name: 'Sarah Khan', email: 'sarah@___HOUSEOFOUTLIERS_DOM___', role: 'Support', status: 'ACTIVE' }
   ];
 
   return (

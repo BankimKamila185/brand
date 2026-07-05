@@ -4,8 +4,8 @@ import { CartProvider } from "../context/CartContext";
 import { AuthProvider } from "../context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Indian Streetwear Brand for Men’s Streetwear Clothing | House of Koala",
-  description: "India’s top streetwear brand – House of Koala. Shop cargos, co-ords, neon fits, crochet shirts & premium urban streetwear styles.",
+  title: "Indian Streetwear Brand for Men’s Streetwear Clothing | House of Outliers",
+  description: "India’s top streetwear brand – House of Outliers. Shop cargos, co-ords, neon fits, crochet shirts & premium urban streetwear styles.",
 };
 
 export const viewport: Viewport = {

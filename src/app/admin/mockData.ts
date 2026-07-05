@@ -15,7 +15,7 @@ export const MOCK_COLLECTIONS = [
   { id: "col-1", name: "Bestsellers", handle: "bestsellers", description: "Community-favorite designs", sortOrder: 1 },
   { id: "col-2", name: "New Arrivals", handle: "whats-new", description: "Latest drops from the studio", sortOrder: 2 },
   { id: "col-3", name: "Retro Futura", handle: "retro-clothing", description: "90s streetwear meets cyberpunk styling", sortOrder: 3 },
-  { id: "col-4", name: "Koala K-aracter", handle: "koala-k-aracter", description: "Limited graphic mascot collection", sortOrder: 4 }
+  { id: "col-4", name: "Outliers K-aracter", handle: "outliers-k-aracter", description: "Limited graphic mascot collection", sortOrder: 4 }
 ];
 
 // Core Product type mapping to Prisma & UI needs
@@ -52,7 +52,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     description: "320 GSM 100% premium French Terry cotton drop shoulder tee. Minimal puff print detail on chest with high-density print on back. Pre-shrunk and silicone washed for a soft feel.",
     categoryName: "Oversized Tees",
     collectionName: "Bestsellers",
-    brand: "House of Koala",
+    brand: "House of Outliers",
     tags: ["heavyweight", "oversized", "graphic-tee", "vintage-wash"],
     price: 1899,
     comparePrice: 2499,
@@ -67,7 +67,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
       "https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/tee-front.jpg",
       "https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/tee-back.jpg"
     ],
-    seoTitle: "Ghost Heavyweight Oversized Streetwear Tee | House of Koala",
+    seoTitle: "Ghost Heavyweight Oversized Streetwear Tee | House of Outliers",
     seoDescription: "Shop the Ghost Heavyweight Tee. 320 GSM French Terry drop shoulder t-shirt in phantom black and off-white.",
     isActive: true,
     createdAt: "2026-05-12T14:32:00.000Z"
@@ -79,7 +79,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     description: "Ultra-wide fit parachute pants with 6 pocket detailing, knee pleats for volume, adjustable toggles at waist and cuffs. Made from water-resistant micro-ripstop nylon.",
     categoryName: "Cargos & Pants",
     collectionName: "Bestsellers",
-    brand: "House of Koala",
+    brand: "House of Outliers",
     tags: ["parachute", "cargos", "techwear", "gorpcore"],
     price: 2999,
     comparePrice: 3999,
@@ -91,7 +91,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     colors: ["Sage Green", "Matte Black", "Cobalt Blue"],
     weight: 480,
     images: ["https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/cargo-front.jpg"],
-    seoTitle: "Tactical Parachute Streetwear Cargos | House of Koala",
+    seoTitle: "Tactical Parachute Streetwear Cargos | House of Outliers",
     seoDescription: "High-performance techwear parachute cargos. Wide fit, multi-pocket, adjustable cuffs.",
     isActive: true,
     createdAt: "2026-06-01T09:15:00.000Z"
@@ -103,7 +103,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     description: "Handcrafted open-weave crochet shirt with classic camp collar and pearl buttons. Lightweight, breathable mesh-like construction, designed to drop naturally on the body.",
     categoryName: "Crochet Shirts",
     collectionName: "New Arrivals",
-    brand: "House of Koala",
+    brand: "House of Outliers",
     tags: ["crochet", "knitwear", "lace", "resortwear"],
     price: 3499,
     comparePrice: 4499,
@@ -115,7 +115,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     colors: ["Ecru", "Midnight Navy"],
     weight: 410,
     images: ["https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/crochet-front.jpg"],
-    seoTitle: "Aura Premium Crochet Camp Collar Shirt | House of Koala",
+    seoTitle: "Aura Premium Crochet Camp Collar Shirt | House of Outliers",
     seoDescription: "Elevate your wardrobe with the handcrafted Aura Crochet Shirt in ivory ecru.",
     isActive: true,
     createdAt: "2026-06-20T18:00:00.000Z"
@@ -127,7 +127,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     description: "450 GSM luxury brushed back cotton hoodie. Two-way metal zip, double lined hood without drawstrings, kangaroo pocket, ribbed cuffs and hem. Relaxed boxy fit.",
     categoryName: "Outerwear",
     collectionName: "Retro Futura",
-    brand: "House of Koala",
+    brand: "House of Outliers",
     tags: ["hoodie", "outerwear", "heavyweight", "boxy-fit"],
     price: 3899,
     comparePrice: 4999,
@@ -139,7 +139,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     colors: ["Heather Gray", "Carbon Black"],
     weight: 980,
     images: ["https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/hoodie-front.jpg"],
-    seoTitle: "450 GSM Heavyweight Zip-Up Hoodie | House of Koala",
+    seoTitle: "450 GSM Heavyweight Zip-Up Hoodie | House of Outliers",
     seoDescription: "Boxy fit, heavyweight brushed cotton fleece hoodie. Double-lined construction.",
     isActive: true,
     createdAt: "2026-04-10T11:20:00.000Z"
@@ -150,8 +150,8 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     handle: "liquid-metal-co-ord",
     description: "Structured utility set featuring matching overshirt and cargo shorts. Crafted from a high-sheen satin-blend tech fabric. Water-repellent and featuring modular utility clips.",
     categoryName: "Co-ord Sets",
-    collectionName: "Koala K-aracter",
-    brand: "House of Koala",
+    collectionName: "Outliers K-aracter",
+    brand: "House of Outliers",
     tags: ["co-ord", "matching-set", "liquid-sheen", "utility"],
     price: 5499,
     comparePrice: 6999,
@@ -163,7 +163,7 @@ export const MOCK_PRODUCTS: DashboardProduct[] = [
     colors: ["Gunmetal Chrome"],
     weight: 750,
     images: ["https://res.cloudinary.com/cdn/shopify.com/s/files/1/0000/mock/coord-set.jpg"],
-    seoTitle: "Liquid Metal Utility Overshirt & Shorts Co-ord | House of Koala",
+    seoTitle: "Liquid Metal Utility Overshirt & Shorts Co-ord | House of Outliers",
     seoDescription: "Limited edition chrome satin utility streetwear matching set.",
     isActive: false, // Draft / Unpublished
     createdAt: "2026-07-01T15:45:00.000Z"
@@ -225,7 +225,7 @@ export const MOCK_ORDERS: DashboardOrder[] = [
     paymentStatus: "PAID",
     paymentMethod: "Razorpay (UPI)",
     subtotal: 4898,
-    discount: 500, // KOALA10 coupon
+    discount: 500, // OUTLIERS10 coupon
     shippingCharge: 0,
     tax: 440,
     total: 4838,
@@ -443,7 +443,7 @@ export const MOCK_REVIEWS: DashboardReview[] = [
     customerName: "Tushar G.",
     rating: 5,
     title: "Best heavy tee in the Indian market",
-    body: "Literally 320 GSM feels super premium and boxy. Wash quality is amazing, prints didn't fade at all after 3 washes. House of Koala is unmatched.",
+    body: "Literally 320 GSM feels super premium and boxy. Wash quality is amazing, prints didn't fade at all after 3 washes. House of Outliers is unmatched.",
     approved: true,
     createdAt: "2026-07-03T18:30:00.000Z"
   },
@@ -482,7 +482,7 @@ export interface DashboardCoupon {
 }
 
 export const MOCK_COUPONS: DashboardCoupon[] = [
-  { id: "cop-1", code: "KOALA10", description: "10% off for verified community members", discountType: "PERCENTAGE", value: 10, minOrderValue: 1500, usedCount: 384, isActive: true, expiresAt: "2026-12-31" },
+  { id: "cop-1", code: "OUTLIERS10", description: "10% off for verified community members", discountType: "PERCENTAGE", value: 10, minOrderValue: 1500, usedCount: 384, isActive: true, expiresAt: "2026-12-31" },
   { id: "cop-2", code: "HEAVYFIT", description: "Flat ₹500 off on purchasing outerwear sets", discountType: "FLAT", value: 500, minOrderValue: 4000, usedCount: 192, isActive: true, expiresAt: "2026-09-30" },
   { id: "cop-3", code: "STUDIO30", description: "30% off for family & streetwear creators", discountType: "PERCENTAGE", value: 30, usedCount: 22, isActive: true, expiresAt: "2026-08-15" }
 ];

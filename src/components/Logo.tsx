@@ -11,7 +11,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', height }) => {
   return (
     <img
       src="/logo.svg"
-      alt="House of Koala Logo"
+      alt="House of Outliers Logo"
       className={className}
       style={{
         height: height ? `${height}px` : undefined,
