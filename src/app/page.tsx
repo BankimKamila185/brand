@@ -6,7 +6,6 @@ import Header from '../components/Header';
 import CartDrawer from '../components/CartDrawer';
 import Footer from '../components/Footer';
 import HeroSlider from '../components/HeroSlider';
-import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
 import { productsApi } from '../lib/api';
 import productsData from '../data/products.json';
@@ -184,9 +183,6 @@ export default function Home() {
       <main className="flex-grow">
         {/* ③ Full-width hero banner */}
         <HeroSlider />
-
-        {/* ④ Shop by Category — 4-col grid */}
-        <CategoryGrid />
 
         {/* ⑤ Trending Now */}
         <section className="container-fluid my-16">
