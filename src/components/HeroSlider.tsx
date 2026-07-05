@@ -84,8 +84,11 @@ const HeroSlider: React.FC = () => {
                 <div className="hero-slide-content">
                   <h2 className="hero-title">{slide.title}</h2>
                   <p className="hero-subtitle">{slide.subtitle}</p>
-                  <Link href={slide.link} className="hero-btn">
-                    Shop Collection
+                  <Link href={slide.link} className="hero-link-arrow">
+                    <span>Shop Collection</span>
+                    <svg className="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
                   </Link>
                 </div>
               </div>
