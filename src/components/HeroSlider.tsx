@@ -70,14 +70,6 @@ const HeroSlider: React.FC = () => {
                 className="hero-slide-img" 
               />
             </picture>
-            {slide.title && (
-              <div className="hero-slide-overlay">
-                <div className="hero-slide-content">
-                  <h2 className="hero-title">{slide.title}</h2>
-                  <p className="hero-subtitle">{slide.subtitle}</p>
-                </div>
-              </div>
-            )}
           </Link>
         </div>
       ))}
