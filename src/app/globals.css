@@ -429,8 +429,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 100px;
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .header-inner {
+    height: 80px;
+  }
 }
 
 .logo-container {
@@ -443,14 +449,14 @@ button {
 }
 
 .logo-container img {
-  height: 72px;
+  height: 90px;
   object-fit: contain;
   transition: height var(--transition-fast);
 }
 
 @media (max-width: 768px) {
   .logo-container img {
-    height: 48px;
+    height: 54px;
   }
 }
 
