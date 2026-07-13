@@ -80,6 +80,7 @@ export default function ProductDetailPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
@@ -421,31 +422,31 @@ export default function ProductDetailPage({ params }) {
                 {/* Circular Floating action overlay buttons on mobile */}
                 <button
                   onClick={() => toggleWishlist(product.id)}
-                  className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 md:hidden ${
-                    isInWishlist(product.id) ? "text-red-500" : "text-neutral-500"
-                  }`}
+                  className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 md:hidden"
                   aria-label="Wishlist"
-                  style={{ color: isInWishlist(product.id) ? '#ef4444' : '#6b7280' }}
+                  style={{ color: isInWishlist(product.id) ? '#ef4444' : '#000000' }}
                 >
-                  <span className="text-lg">{isInWishlist(product.id) ? "♥" : "♡"}</span>
+                  {isInWishlist(product.id) ? (
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  )}
                 </button>
                 <button
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: product.title,
-                        url: window.location.href
-                      });
-                    } else {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert("Link copied to clipboard!");
-                    }
-                  }}
-                  className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 text-neutral-500 md:hidden"
-                  aria-label="Share"
-                  style={{ color: '#6b7280' }}
+                  onClick={() => setLightboxOpen(true)}
+                  className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 text-neutral-800 md:hidden"
+                  aria-label="Zoom Image"
                 >
-                  <span className="text-xs">✈</span>
+                  <svg className="w-5 h-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/>
+                    <line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
                 </button>
 
                 <div 
@@ -488,11 +489,27 @@ export default function ProductDetailPage({ params }) {
                       key={img.id || i}
                       onClick={() => scrollToImage(i)}
                       className={`w-14 h-16 flex-shrink-0 border transition-all ${
-                        activeImageIndex === i ? "border-black scale-102" : "border-neutral-200"
+                        activeImageIndex === i ? "border-black border-2 scale-102" : "border-neutral-200"
                       }`}
                     >
                       <img src={img.src} className="w-full h-full object-cover" alt="" />
                     </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Mobile Carousel Pagination Dots */}
+              {product.images.length > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-4 md:hidden select-none">
+                  {product.images.map((_, i) => (
+                    <div
+                      key={i}
+                      className={`transition-all duration-200 rounded-full ${
+                        activeImageIndex === i
+                          ? "w-2.5 h-2.5 border-[1.5px] border-black bg-white"
+                          : "w-1.5 h-1.5 bg-neutral-800"
+                      }`}
+                    />
                   ))}
                 </div>
               )}
@@ -1103,6 +1120,24 @@ export default function ProductDetailPage({ params }) {
 
       {/* Side Cart Drawer */}
       <CartDrawer />
+
+      {/* Lightbox Zoom Overlay Modal */}
+      {lightboxOpen && product && product.images && product.images[activeImageIndex] && (
+        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 select-none animate-fade-in">
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-6 right-6 text-white text-3xl font-light hover:opacity-75 transition-opacity"
+            aria-label="Close Lightbox"
+          >
+            &times;
+          </button>
+          <img
+            src={product.images[activeImageIndex].src}
+            alt={product.title}
+            className="max-w-full max-h-[85vh] object-contain shadow-2xl"
+          />
+        </div>
+      )}
 
       {/* Sticky Mobile Bottom Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-150 p-3 z-40 flex items-center gap-3 shadow-[0_-6px_20px_rgba(0,0,0,0.06)]">
