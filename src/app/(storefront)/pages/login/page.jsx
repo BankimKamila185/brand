@@ -133,7 +133,7 @@ export default function LoginPage() {
         
         {/* Header Branding */}
         <div className="mb-4 select-none">
-          <Logo height={20} />
+          <Logo height={44} />
         </div>
 
         {/* Form and Status notification */}
