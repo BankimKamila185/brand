@@ -476,42 +476,52 @@ const Header = ({ onSearch }) => {
           `}} />
 
           {/* Navigation Links Accordion */}
-          <nav className="flex-1 overflow-y-auto px-6 py-4 select-none">
-            <ul className="flex flex-col gap-3">
+          <nav 
+            className="flex-grow overflow-y-auto select-none"
+            style={{
+              paddingLeft: '28px',
+              paddingRight: '28px',
+              paddingTop: '20px',
+              paddingBottom: '20px',
+              minHeight: '0'
+            }}
+          >
+            <ul className="flex flex-col">
               
               {/* Accordion 1: Shop */}
-              <li>
+              <li style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <button
                   onClick={() => setShopExpanded(!shopExpanded)}
-                  className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black transition-colors"
+                  style={{ paddingTop: '18px', paddingBottom: '18px' }}
                 >
                   <span>Shop</span>
                   <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${shopExpanded ? 'rotate-90' : ''}`} />
                 </button>
                 {shopExpanded && (
-                  <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                  <ul className="pl-4 pr-2 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
                     <li>
-                      <Link href="/collections/all" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/all" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Shop All
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/bestsellers" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/bestsellers" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Bestsellers
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/whats-new" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/whats-new" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         What&apos;s New
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/winterwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/winterwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Winterwear
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/outerwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/outerwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Outerwear
                       </Link>
                     </li>
@@ -520,16 +530,17 @@ const Header = ({ onSearch }) => {
               </li>
 
               {/* Accordion 2: Categories */}
-              <li>
+              <li style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <button
                   onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-                  className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black transition-colors"
+                  style={{ paddingTop: '18px', paddingBottom: '18px' }}
                 >
                   <span>Categories</span>
                   <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${categoriesExpanded ? 'rotate-90' : ''}`} />
                 </button>
                 {categoriesExpanded && (
-                  <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                  <ul className="pl-4 pr-2 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
                     {[
                       { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
                       { name: "Co-ord Sets", path: "/collections/co-ord-sets" },
@@ -543,7 +554,7 @@ const Header = ({ onSearch }) => {
                       { name: "Parachute Cargos", path: "/collections/parachute-cargos" },
                     ].map((cat) => (
                       <li key={cat.path}>
-                        <Link href={cat.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                        <Link href={cat.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                           {cat.name}
                         </Link>
                       </li>
@@ -553,28 +564,29 @@ const Header = ({ onSearch }) => {
               </li>
 
               {/* Accordion 3: Collections */}
-              <li>
+              <li style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <button
                   onClick={() => setCollectionsExpanded(!collectionsExpanded)}
-                  className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black transition-colors"
+                  style={{ paddingTop: '18px', paddingBottom: '18px' }}
                 >
                   <span>Collections</span>
                   <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${collectionsExpanded ? 'rotate-90' : ''}`} />
                 </button>
                 {collectionsExpanded && (
-                  <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                  <ul className="pl-4 pr-2 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
                     <li>
-                      <Link href="/collections/retro-clothing" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/retro-clothing" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Retro Clothing
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/outliers-k-aracter" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/outliers-k-aracter" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Outliers K-aracter
                       </Link>
                     </li>
                     <li>
-                      <Link href="/collections/outliers-recommends" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                      <Link href="/collections/outliers-recommends" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                         Outliers Recommends
                       </Link>
                     </li>
@@ -583,11 +595,12 @@ const Header = ({ onSearch }) => {
               </li>
 
               {/* Wishlist Link */}
-              <li>
+              <li style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <Link
                   href="/pages/wishlist"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black transition-colors"
+                  style={{ paddingTop: '18px', paddingBottom: '18px' }}
                 >
                   Wishlist
                 </Link>
@@ -597,8 +610,16 @@ const Header = ({ onSearch }) => {
           </nav>
 
           {/* Bottom Section: My Account with Log In & Register buttons */}
-          <div className="p-6 bg-white border-t border-neutral-100 flex flex-col gap-3 pb-12 flex-shrink-0">
-            <h3 className="text-lg font-bold text-neutral-900 ml-1">My Account</h3>
+          <div 
+            className="bg-white border-t border-neutral-100 flex flex-col gap-3 flex-shrink-0"
+            style={{
+              paddingLeft: '28px',
+              paddingRight: '28px',
+              paddingTop: '24px',
+              paddingBottom: '40px'
+            }}
+          >
+            <h3 className="text-xl font-bold text-neutral-900" style={{ marginBottom: '8px' }}>My Account</h3>
             
             {user ? (
               <div className="flex flex-col gap-3">
@@ -613,7 +634,15 @@ const Header = ({ onSearch }) => {
                 </div>
                 <button 
                   onClick={() => { logout(); setMobileMenuOpen(false); }}
-                  className="w-full bg-white hover:bg-neutral-50 text-black border border-neutral-800 font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  className="w-full bg-white hover:bg-neutral-50 text-black border border-neutral-800 font-bold text-center block transition-all cursor-pointer"
+                  style={{
+                    paddingTop: '15px',
+                    paddingBottom: '15px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
                 >
                   Log Out
                 </button>
@@ -623,23 +652,39 @@ const Header = ({ onSearch }) => {
                 <Link
                   href="/pages/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-black hover:bg-neutral-800 text-white font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  className="w-full bg-black hover:bg-neutral-800 text-white font-bold text-center block transition-all cursor-pointer"
+                  style={{
+                    paddingTop: '15px',
+                    paddingBottom: '15px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
                 >
                   Log In
                 </Link>
                 <Link
                   href="/pages/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-white hover:bg-neutral-50 text-black border border-black font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  className="w-full bg-white hover:bg-neutral-50 text-black border border-black font-bold text-center block transition-all cursor-pointer"
+                  style={{
+                    paddingTop: '15px',
+                    paddingBottom: '15px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase'
+                  }}
                 >
                   Register
-                  </Link>
-                </div>
-              )}
-            </div>
-
+                </Link>
+              </div>
+            )}
           </div>
-        )}
+
+        </div>
+      )}
     </header>
   );
 };
