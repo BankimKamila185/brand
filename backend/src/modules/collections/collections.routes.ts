@@ -26,7 +26,7 @@ router.get('/:handle', asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const collection = await db.collection.findUnique({
-    where: { handle: handle as string },
+    where: { handle: handle },
     select: { id: true, name: true, handle: true, description: true, imageUrl: true },
   });
   if (!collection) { sendNotFound(res, 'Collection not found'); return; }

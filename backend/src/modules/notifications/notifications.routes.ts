@@ -36,7 +36,7 @@ router.patch('/read-all', asyncHandler(async (req, res) => {
 // PATCH /api/notifications/:id/read
 router.patch('/:id/read', asyncHandler(async (req, res) => {
   await db.notification.update({
-    where: { id: req.params['id'] as string },
+    where: { id: req.params['id'] },
     data: { isRead: true },
   });
   sendSuccess(res, null, 'Notification marked as read');

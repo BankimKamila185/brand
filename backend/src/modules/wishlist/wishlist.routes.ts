@@ -32,7 +32,7 @@ router.get('/', asyncHandler(async (req, res) => {
 
 // POST /api/wishlist/:productId — toggle (add if not present, remove if present)
 router.post('/:productId', asyncHandler(async (req, res) => {
-  const productId = req.params['productId'] as string;
+  const productId = req.params['productId'];
   const userId = req.user!.sub;
 
   const product = await db.product.findUnique({ where: { id: productId }, select: { id: true } });
@@ -54,7 +54,7 @@ router.post('/:productId', asyncHandler(async (req, res) => {
 // DELETE /api/wishlist/:productId
 router.delete('/:productId', asyncHandler(async (req, res) => {
   await db.wishlistItem.deleteMany({
-    where: { userId: req.user!.sub, productId: req.params['productId'] as string },
+    where: { userId: req.user!.sub, productId: req.params['productId'] },
   });
   sendSuccess(res, null, 'Removed from wishlist');
 }));

@@ -86,7 +86,7 @@ router.post('/', authenticate, validate(createCouponSchema), asyncHandler(async 
 
 router.patch('/:id', authenticate, asyncHandler(async (req, res) => {
   const coupon = await db.coupon.update({
-    where: { id: req.params['id'] as string },
+    where: { id: req.params['id'] },
     data: req.body,
   });
   sendSuccess(res, coupon, 'Coupon updated');
@@ -94,7 +94,7 @@ router.patch('/:id', authenticate, asyncHandler(async (req, res) => {
 
 router.delete('/:id', authenticate, asyncHandler(async (req, res) => {
   await db.coupon.update({
-    where: { id: req.params['id'] as string },
+    where: { id: req.params['id'] },
     data: { isActive: false },
   });
   sendSuccess(res, null, 'Coupon deactivated');

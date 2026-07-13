@@ -179,7 +179,7 @@ router.get('/', asyncHandler(async (req, res) => {
 // GET /api/orders/:id — order detail
 router.get('/:id', asyncHandler(async (req, res) => {
   const order = await db.order.findFirst({
-    where: { id: req.params['id'] as string, userId: req.user!.sub },
+    where: { id: req.params['id'], userId: req.user!.sub },
     select: {
       id: true, status: true, subtotal: true, discount: true,
       shippingCharge: true, tax: true, total: true, notes: true,

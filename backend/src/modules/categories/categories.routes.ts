@@ -19,7 +19,7 @@ router.get('/', asyncHandler(async (_req, res) => {
 
 router.get('/:slug', asyncHandler(async (req, res) => {
   const category = await db.category.findUnique({
-    where: { slug: req.params['slug'] as string },
+    where: { slug: req.params['slug'] },
     select: {
       id: true, name: true, slug: true, description: true, imageUrl: true,
       products: {

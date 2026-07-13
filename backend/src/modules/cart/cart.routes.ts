@@ -106,18 +106,18 @@ router.patch('/items/:itemId', validate(updateItemSchema), asyncHandler(async (r
   const { quantity } = req.body as { quantity: number };
 
   const item = await db.cartItem.findFirst({
-    where: { id: itemId as string, cart: { userId: req.user!.sub } },
+    where: { id: itemId, cart: { userId: req.user!.sub } },
   });
   if (!item) throw new AppError('Cart item not found', 404);
 
   if (quantity === 0) {
-    await db.cartItem.delete({ where: { id: itemId as string } });
+    await db.cartItem.delete({ where: { id: itemId } });
     sendSuccess(res, null, 'Item removed from cart');
     return;
   }
 
   const updated = await db.cartItem.update({
-    where: { id: itemId as string },
+    where: { id: itemId },
     data: { quantity },
     select: { id: true, quantity: true },
   });
@@ -127,7 +127,7 @@ router.patch('/items/:itemId', validate(updateItemSchema), asyncHandler(async (r
 // DELETE /api/cart/items/:itemId — remove specific item
 router.delete('/items/:itemId', asyncHandler(async (req, res) => {
   const item = await db.cartItem.findFirst({
-    where: { id: req.params['itemId'] as string, cart: { userId: req.user!.sub } },
+    where: { id: req.params['itemId'], cart: { userId: req.user!.sub } },
   });
   if (!item) throw new AppError('Cart item not found', 404);
   await db.cartItem.delete({ where: { id: item.id } });

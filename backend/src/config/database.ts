@@ -3,7 +3,7 @@ import { env } from './env';
 
 declare global {
   // Prevent multiple Prisma instances in development (Next.js hot reload issue)
-  // eslint-disable-next-line no-var
+   
   var __prisma: PrismaClient | undefined;
 }
 

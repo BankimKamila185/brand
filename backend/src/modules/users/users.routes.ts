@@ -76,7 +76,7 @@ router.post('/me/addresses', validate(addressSchema), asyncHandler(async (req, r
 // PATCH /api/users/me/addresses/:id
 router.patch('/me/addresses/:id', validate(addressSchema.partial()), asyncHandler(async (req, res) => {
   const userId = req.user!.sub;
-  const id = req.params['id'] as string;
+  const id = req.params['id'];
 
   const existing = await db.address.findFirst({ where: { id, userId } });
   if (!existing) throw new AppError('Address not found', 404);
@@ -91,7 +91,7 @@ router.patch('/me/addresses/:id', validate(addressSchema.partial()), asyncHandle
 
 // DELETE /api/users/me/addresses/:id
 router.delete('/me/addresses/:id', asyncHandler(async (req, res) => {
-  const id = req.params['id'] as string;
+  const id = req.params['id'];
   const existing = await db.address.findFirst({ where: { id, userId: req.user!.sub } });
   if (!existing) throw new AppError('Address not found', 404);
   await db.address.delete({ where: { id } });

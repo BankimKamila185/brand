@@ -10,7 +10,7 @@ export const productsController = {
   }),
 
   getByHandle: asyncHandler(async (req: Request, res: Response) => {
-    const product = await productsService.findByHandle(req.params['handle'] as string);
+    const product = await productsService.findByHandle(req.params['handle']);
     sendSuccess(res, product);
   }),
 
@@ -22,7 +22,7 @@ export const productsController = {
   }),
 
   getRelated: asyncHandler(async (req: Request, res: Response) => {
-    const related = await productsService.getRelated(req.params['id'] as string);
+    const related = await productsService.getRelated(req.params['id']);
     sendSuccess(res, related);
   }),
 
@@ -33,12 +33,12 @@ export const productsController = {
   }),
 
   update: asyncHandler(async (req: Request, res: Response) => {
-    const product = await productsService.update(req.params['id'] as string, req.body);
+    const product = await productsService.update(req.params['id'], req.body);
     sendOk(res, product, 'Product updated');
   }),
 
   delete: asyncHandler(async (req: Request, res: Response) => {
-    await productsService.softDelete(req.params['id'] as string);
+    await productsService.softDelete(req.params['id']);
     sendSuccess(res, null, 'Product deleted');
   }),
 };
