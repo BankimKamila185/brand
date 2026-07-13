@@ -483,15 +483,15 @@ export default function ProductDetailPage({ params }) {
 
               {/* Mobile Thumbnails and Dots Wrapper */}
               {product.images.length > 1 && (
-                <div className="md:hidden mt-3 flex flex-col gap-4 select-none">
+                <div className="md:hidden mt-4 flex flex-col gap-5 select-none">
                   {/* Mobile Thumbnail previews */}
                   <div className="flex gap-2 overflow-x-auto overflow-y-hidden pb-1 scrollbar-none w-full">
                     {product.images.map((img, i) => (
                       <button
                         key={img.id || i}
                         onClick={() => scrollToImage(i)}
-                        className={`w-14 h-16 flex-shrink-0 border-2 transition-all outline-none focus:outline-none focus:ring-0 ${
-                          activeImageIndex === i ? "border-black scale-102" : "border-neutral-200"
+                        className={`w-14 h-16 flex-shrink-0 border-2 transition-all outline-none focus:outline-none focus:ring-0 p-0.5 bg-white ${
+                          activeImageIndex === i ? "border-neutral-800" : "border-transparent"
                         }`}
                       >
                         <img src={img.src} className="w-full h-full object-cover" alt="" />
@@ -500,13 +500,13 @@ export default function ProductDetailPage({ params }) {
                   </div>
 
                   {/* Mobile Carousel Pagination Dots */}
-                  <div className="flex justify-center items-center gap-2">
+                  <div className="flex justify-center items-center gap-2.5 h-4">
                     {product.images.map((_, i) => (
                       <div
                         key={i}
                         className={`transition-all duration-200 rounded-full ${
                           activeImageIndex === i
-                            ? "w-2.5 h-2.5 border-[1.5px] border-black bg-white"
+                            ? "w-3 h-3 border-2 border-neutral-800 bg-white"
                             : "w-1.5 h-1.5 bg-neutral-800"
                         }`}
                       />
