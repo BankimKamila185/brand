@@ -416,64 +416,68 @@ export default function ProductDetailPage({ params }) {
         <section className="container-fluid" style={{ paddingBottom: 80 }}>
           <div className="product-detail-layout">
             {/* Gallery Column (Left) */}
-            <div className="w-full relative">
-              {/* Circular Floating action overlay buttons on mobile */}
-              <button
-                onClick={() => toggleWishlist(product.id)}
-                className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 md:hidden ${
-                  isInWishlist(product.id) ? "text-red-500" : "text-neutral-500"
-                }`}
-                aria-label="Wishlist"
-              >
-                <span className="text-lg">{isInWishlist(product.id) ? "★" : "☆"}</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: product.title,
-                      url: window.location.href
-                    });
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("Link copied to clipboard!");
-                  }
-                }}
-                className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 text-neutral-500 md:hidden"
-                aria-label="Share"
-              >
-                <span className="text-xs">✈</span>
-              </button>
+            <div className="w-full">
+              <div className="relative w-full">
+                {/* Circular Floating action overlay buttons on mobile */}
+                <button
+                  onClick={() => toggleWishlist(product.id)}
+                  className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 md:hidden ${
+                    isInWishlist(product.id) ? "text-red-500" : "text-neutral-500"
+                  }`}
+                  aria-label="Wishlist"
+                  style={{ color: isInWishlist(product.id) ? '#ef4444' : '#6b7280' }}
+                >
+                  <span className="text-lg">{isInWishlist(product.id) ? "♥" : "♡"}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: product.title,
+                        url: window.location.href
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert("Link copied to clipboard!");
+                    }
+                  }}
+                  className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 text-neutral-500 md:hidden"
+                  aria-label="Share"
+                  style={{ color: '#6b7280' }}
+                >
+                  <span className="text-xs">✈</span>
+                </button>
 
-              <div 
-                ref={galleryRef}
-                className="product-detail-gallery-col w-full"
-                onScroll={handleScroll}
-              >
-                {product.images.length > 0 ? (
-                  product.images.map((img, i) => (
-                    <div 
-                      key={img.id || i} 
-                      className="pdp-main-img-wrap relative group"
-                    >
-                      {discountPercent > 0 && i === 0 && (
-                        <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black tracking-widest px-2.5 py-1.5 z-10 shadow-sm uppercase flex flex-col items-center justify-center leading-none text-center select-none">
-                          <span>-{discountPercent}%</span>
-                          <span className="text-[8px] mt-1 font-bold">OFF</span>
-                        </span>
-                      )}
-                      <img
-                        src={img.src}
-                        className="pdp-main-img w-full h-full object-cover"
-                        alt={`${product.title} view ${i + 1}`}
-                      />
+                <div 
+                  ref={galleryRef}
+                  className="product-detail-gallery-col w-full"
+                  onScroll={handleScroll}
+                >
+                  {product.images.length > 0 ? (
+                    product.images.map((img, i) => (
+                      <div 
+                        key={img.id || i} 
+                        className="pdp-main-img-wrap relative group"
+                      >
+                        {discountPercent > 0 && i === 0 && (
+                          <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black tracking-widest px-2.5 py-1.5 z-10 shadow-sm uppercase flex flex-col items-center justify-center leading-none text-center select-none">
+                            <span>-{discountPercent}%</span>
+                            <span className="text-[8px] mt-1 font-bold">OFF</span>
+                          </span>
+                        )}
+                        <img
+                          src={img.src}
+                          className="pdp-main-img w-full h-full object-cover"
+                          alt={`${product.title} view ${i + 1}`}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="pdp-main-img-wrap w-full flex items-center justify-center bg-neutral-100 text-neutral-400 text-sm">
+                      No Image Available
                     </div>
-                  ))
-                ) : (
-                  <div className="pdp-main-img-wrap w-full flex items-center justify-center bg-neutral-100 text-neutral-400 text-sm">
-                    No Image Available
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* Mobile Thumbnail previews */}
@@ -619,8 +623,8 @@ export default function ProductDetailPage({ params }) {
                       : "border-neutral-200 text-neutral-700 hover:border-black"
                   }`}
                 >
-                  <span>{isInWishlist(product.id) ? "★" : "☆"}</span>
-                  <span>{isInWishlist(product.id) ? "In Wishlist" : "Wishlist"}</span>
+                   <span>{isInWishlist(product.id) ? "♥" : "♡"}</span>
+                   <span>{isInWishlist(product.id) ? "In Wishlist" : "Wishlist"}</span>
                 </button>
                 <button
                   onClick={() => {
