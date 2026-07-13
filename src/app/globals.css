@@ -3222,3 +3222,176 @@ textarea.form-input { resize: vertical; }
 .drawer-view-cart-link:hover {
   opacity: 0.7;
 }
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* ─── Advanced Brand UI & Interaction Engine ─── */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+/* Custom Smooth Easing Variables */
+:root {
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --color-primary: #3b82f6; /* Premium accent blue */
+  --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 30px 60px -15px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ─── Custom Premium Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+  transition: background var(--transition-fast);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─── Smart Layouts & Cards ─── */
+.bento-grid {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.bento-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-premium);
+  transition: transform 0.4s var(--ease-expo), box-shadow 0.4s var(--ease-expo), border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Glassmorphic elements */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px) saturate(190%);
+  -webkit-backdrop-filter: blur(12px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-premium);
+}
+
+/* ─── Image Interaction Effects ─── */
+.img-wrapper-premium {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.img-hover-scale {
+  transition: transform 0.6s var(--ease-expo);
+}
+
+.img-wrapper-premium:hover .img-hover-scale,
+.group:hover .img-hover-scale {
+  transform: scale(1.04);
+}
+
+/* ─── Premium Text Underline Slide ─── */
+.link-underline-slide {
+  position: relative;
+  display: inline-block;
+}
+.link-underline-slide::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1.5px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.4s var(--ease-expo);
+}
+.link-underline-slide:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* ─── Smart Buttons ─── */
+.btn-primary-smart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 14px 28px;
+  border-radius: 99px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s var(--ease-expo);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary-smart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  filter: brightness(1.05);
+}
+
+.btn-primary-smart:active {
+  transform: translateY(0);
+}
+
+.btn-outline-smart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 14px 28px;
+  border-radius: 99px;
+  transition: all 0.4s var(--ease-expo);
+}
+
+.btn-outline-smart:hover {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.btn-outline-smart:active {
+  transform: translateY(0);
+}
+
+/* ─── Modern Animations ─── */
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s var(--ease-expo) forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
