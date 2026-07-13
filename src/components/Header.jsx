@@ -641,7 +641,8 @@ const Header = ({ onSearch }) => {
                     borderRadius: '4px',
                     fontSize: '11px',
                     letterSpacing: '0.1em',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    color: '#000000'
                   }}
                 >
                   Log Out
@@ -659,7 +660,8 @@ const Header = ({ onSearch }) => {
                     borderRadius: '4px',
                     fontSize: '11px',
                     letterSpacing: '0.1em',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    color: '#ffffff'
                   }}
                 >
                   Log In
@@ -674,7 +676,8 @@ const Header = ({ onSearch }) => {
                     borderRadius: '4px',
                     fontSize: '11px',
                     letterSpacing: '0.1em',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    color: '#000000'
                   }}
                 >
                   Register
