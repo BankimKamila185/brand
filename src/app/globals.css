@@ -3536,3 +3536,24 @@ textarea.form-input { resize: vertical; }
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* Sticky Mobile Bottom Bar */
+.pdp-sticky-bar {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px;
+  z-index: 40;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.06);
+}
+@media (min-width: 901px) {
+  .pdp-sticky-bar {
+    display: none !important;
+  }
+}

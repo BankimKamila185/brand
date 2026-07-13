@@ -381,6 +381,16 @@ export default function ProductDetailPage({ params }) {
 
   const isAvailable = activeVariant.available !== false;
 
+  const getVariantPrice = (sizeName) => {
+    if (!product || !product.variants) return "1,199";
+    const variant = product.variants.find(
+      (v) => v.option1 === sizeName || v.title === sizeName
+    );
+    if (!variant) return product.price;
+    const pNum = parseFloat(variant.price);
+    return isNaN(pNum) ? variant.price : pNum.toLocaleString('en-IN');
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <AnnouncementBar />
@@ -1141,18 +1151,18 @@ export default function ProductDetailPage({ params }) {
       )}
 
       {/* Sticky Mobile Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-150 p-3 z-40 flex items-center gap-3 shadow-[0_-6px_20px_rgba(0,0,0,0.06)]">
+      <div className="pdp-sticky-bar">
         {/* Size selection dropdown */}
-        <div className="w-[120px] relative">
+        <div className="flex-[1.2] relative">
           <select
             value={selectedSize}
             onChange={(e) => setSelectedSize(e.target.value)}
-            className="w-full bg-white border border-neutral-200 text-xs font-bold uppercase tracking-wider px-3 py-3.5 outline-none appearance-none rounded-none cursor-pointer pr-8"
+            className="w-full bg-white border border-neutral-200 text-xs font-bold uppercase tracking-wider pl-3 pr-8 py-3.5 outline-none appearance-none rounded-none cursor-pointer"
             style={{ color: '#000000' }}
           >
             {sizes.map((size) => (
               <option key={size} value={size}>
-                {size}
+                {size} — ₹ {getVariantPrice(size)}
               </option>
             ))}
           </select>
