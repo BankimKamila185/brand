@@ -500,8 +500,11 @@ export default function ProductDetailPage({ params }) {
                       <button
                         key={img.id || i}
                         onClick={() => scrollToImage(i)}
-                        className="w-14 h-16 flex-shrink-0 transition-all outline-none focus:outline-none focus:ring-0 p-0.5 bg-white"
-                        style={{ border: activeImageIndex === i ? '2px solid #111111' : '2px solid transparent' }}
+                        className="w-14 h-16 flex-shrink-0 transition-all outline-none focus:outline-none focus:ring-0 bg-white"
+                        style={{ 
+                          border: activeImageIndex === i ? '2px solid #111111' : '2px solid transparent',
+                          padding: '2px'
+                        }}
                       >
                         <img src={img.src} className="w-full h-full object-cover" alt="" />
                       </button>
