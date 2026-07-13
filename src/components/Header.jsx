@@ -454,7 +454,7 @@ const Header = ({ onSearch }) => {
       {/* Mobile Drawer Backdrop Overlay (starts below the header) */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 top-[90px] bg-black/60 z-[998] backdrop-blur-sm transition-opacity duration-300 md:hidden"
+          className="absolute top-full left-0 w-screen h-[calc(100dvh-90px)] bg-black/60 z-[998] backdrop-blur-sm transition-opacity duration-300 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
