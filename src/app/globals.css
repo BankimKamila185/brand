@@ -2093,63 +2093,6 @@ button {
   letter-spacing: 0.04em;
 }
 
-/* Real PDP Responsive Gallery Styles */
-.pdp-mobile-thumbs {
-  display: none;
-}
-
-@media (max-width: 900px) {
-  .product-detail-gallery-col {
-    position: static;
-    flex-direction: column;
-    gap: 12px;
-    /* On mobile the col is a single-column grid child — must not exceed viewport */
-    width: 100%;
-    min-width: 0;
-    /* Allow the internal thumbnail strip to scroll without blowing out the parent */
-    overflow: hidden;
-  }
-
-  .pdp-thumbs {
-    display: none !important;
-  }
-
-  .pdp-main-img-wrap {
-    width: 100%;
-    max-width: 100%;
-    aspect-ratio: 4 / 5;
-  }
-
-  .pdp-mobile-thumbs {
-    display: flex;
-    gap: 8px;
-    /* overflow-x: auto creates the scrollable strip */
-    overflow-x: auto;
-    /* overflow-y must be visible or hidden — never auto/scroll — to avoid
-       the double-scroll-bar issue, but mainly we need the width clamped */
-    overflow-y: hidden;
-    padding-bottom: 4px;
-    /* width + max-width together clamp the row to the column width */
-    width: 100%;
-    max-width: 100%;
-    /* box-sizing already border-box from the * rule, but be explicit */
-    box-sizing: border-box;
-    margin-top: 16px;
-    scrollbar-width: none;
-    /* Prevent the flex row's content from pushing the parent wider */
-    flex-shrink: 0;
-  }
-
-  .pdp-mobile-thumbs::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Each thumb must not flex-shrink away but also not expand parent */
-  .pdp-mobile-thumbs > * {
-    flex-shrink: 0;
-  }
-}
-
 /* Size Guide Modal */
 .size-guide-modal {
   background: #fff;
