@@ -94,7 +94,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-white flex flex-col md:flex-row p-4 md:p-6 gap-6 md:gap-10 relative overflow-x-hidden">
+    <div className="tevar-login-container relative overflow-x-hidden">
       
       {/* Close button in top right of the viewport */}
       <button 
@@ -105,7 +105,7 @@ export default function LoginPage() {
       </button>
 
       {/* Left Column: Media Card with Rounded Corners & Overlays */}
-      <div className="w-full md:w-[45%] lg:w-[40%] xl:w-[45%] relative h-[40vh] md:h-auto min-h-[300px] rounded-[2rem] overflow-hidden flex-shrink-0 z-0 shadow-sm">
+      <div className="tevar-login-left">
         <img 
           src="/login-showcase.png" 
           alt="Tevar Streetwear Showcase" 
@@ -116,19 +116,19 @@ export default function LoginPage() {
 
         {/* Progress Indicators (Carousel indicators) */}
         <div className="absolute top-6 left-6 right-6 flex gap-2.5 z-10">
-          <span className="flex-1 h-0.75 bg-white rounded-full"></span>
-          <span className="flex-1 h-0.75 bg-white/30 rounded-full"></span>
-          <span className="flex-1 h-0.75 bg-white/30 rounded-full"></span>
+          <span className="flex-grow h-0.75 bg-white rounded-full"></span>
+          <span className="flex-grow h-0.75 bg-white/30 rounded-full"></span>
+          <span className="flex-grow h-0.75 bg-white/30 rounded-full"></span>
         </div>
 
         {/* Slogan Description Overlay at the bottom */}
-        <div className="absolute bottom-6 left-6 right-6 z-10 text-white text-[11px] md:text-xs leading-relaxed font-medium bg-black/30 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-lg">
+        <div className="absolute bottom-6 left-6 right-6 z-10 text-white text-[11px] md:text-xs leading-relaxed font-medium bg-black/35 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-lg">
           Tevar is an online fashion store that provides a variety of clothes, shoes, bags, and accessories for men and women.
         </div>
       </div>
 
       {/* Right Column: Form Panel */}
-      <div className="flex-1 flex flex-col justify-between py-6 px-2 md:px-8 max-w-[480px] mx-auto w-full relative z-10 bg-white">
+      <div className="tevar-login-right">
         
         {/* Header Branding */}
         <div className="mb-4">
@@ -187,7 +187,7 @@ export default function LoginPage() {
               >
                 {/* Email Input */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] font-semibold text-neutral-500 mb-1.5 ml-1">Email</label>
+                  <label className="tevar-login-label">Email</label>
                   <input 
                     type="email"
                     required
@@ -195,13 +195,13 @@ export default function LoginPage() {
                     value={registerEmail}
                     onChange={(e) => setRegisterEmail(e.target.value)}
                     disabled={loading}
-                    className="w-full border border-neutral-200 rounded-full px-5 py-3 text-xs placeholder-neutral-400 outline-none focus:border-black transition-all bg-transparent text-neutral-900"
+                    className="tevar-login-input"
                   />
                 </div>
 
                 {/* Password Input */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] font-semibold text-neutral-500 mb-1.5 ml-1">Password</label>
+                  <label className="tevar-login-label">Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? 'text' : 'password'}
@@ -210,7 +210,7 @@ export default function LoginPage() {
                       value={registerPassword}
                       onChange={(e) => setRegisterPassword(e.target.value)}
                       disabled={loading}
-                      className="w-full border border-neutral-200 rounded-full pl-5 pr-12 py-3 text-xs placeholder-neutral-400 outline-none focus:border-black transition-all bg-transparent text-neutral-900"
+                      className="tevar-login-input pl-5 pr-12"
                     />
                     <button 
                       type="button"
@@ -223,7 +223,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Password validation requirements checklist */}
-                <div className="bg-transparent text-[10px] text-neutral-500 flex flex-col gap-2 font-medium ml-1">
+                <div className="tevar-login-checklist">
                   <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider block mb-0.5">Password must contains :</span>
                   
                   <div className="flex items-center gap-2">
@@ -239,7 +239,7 @@ export default function LoginPage() {
 
                 {/* Confirm Password Input */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] font-semibold text-neutral-500 mb-1.5 ml-1">Confirm Password</label>
+                  <label className="tevar-login-label">Confirm Password</label>
                   <div className="relative">
                     <input 
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -248,7 +248,7 @@ export default function LoginPage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       disabled={loading}
-                      className="w-full border border-neutral-200 rounded-full pl-5 pr-12 py-3 text-xs placeholder-neutral-400 outline-none focus:border-black transition-all bg-transparent text-neutral-900"
+                      className="tevar-login-input pl-5 pr-12"
                     />
                     <button 
                       type="button"
@@ -264,7 +264,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-neutral-950 hover:bg-neutral-800 text-white font-bold py-3.5 rounded-full text-xs transition-all duration-200 disabled:opacity-50 active:scale-[0.98] mt-2 cursor-pointer shadow-sm"
+                  className="tevar-login-submit"
                 >
                   {loading ? 'Creating account...' : 'Create account'}
                 </button>
@@ -281,7 +281,7 @@ export default function LoginPage() {
               >
                 {/* Email Input */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] font-semibold text-neutral-500 mb-1.5 ml-1">Email</label>
+                  <label className="tevar-login-label">Email</label>
                   <input 
                     type="email"
                     required
@@ -289,13 +289,13 @@ export default function LoginPage() {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     disabled={loading}
-                    className="w-full border border-neutral-200 rounded-full px-5 py-3 text-xs placeholder-neutral-400 outline-none focus:border-black transition-all bg-transparent text-neutral-900"
+                    className="tevar-login-input"
                   />
                 </div>
 
                 {/* Password Input */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] font-semibold text-neutral-500 mb-1.5 ml-1">Password</label>
+                  <label className="tevar-login-label">Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? 'text' : 'password'}
@@ -304,7 +304,7 @@ export default function LoginPage() {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       disabled={loading}
-                      className="w-full border border-neutral-200 rounded-full pl-5 pr-12 py-3 text-xs placeholder-neutral-400 outline-none focus:border-black transition-all bg-transparent text-neutral-900"
+                      className="tevar-login-input pl-5 pr-12"
                     />
                     <button 
                       type="button"
@@ -339,7 +339,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-neutral-950 hover:bg-neutral-800 text-white font-bold py-3.5 rounded-full text-xs transition-all duration-200 disabled:opacity-50 active:scale-[0.98] mt-2 cursor-pointer shadow-sm"
+                  className="tevar-login-submit"
                 >
                   {loading ? 'Signing in...' : 'Login'}
                 </button>
@@ -358,11 +358,11 @@ export default function LoginPage() {
             </div>
 
             {/* Google / Apple Pill Buttons */}
-            <div className="flex gap-4">
+            <div className="tevar-login-social-row">
               <button 
                 type="button"
                 onClick={() => alert('Google authentication coming soon!')}
-                className="flex-1 flex items-center justify-center gap-2 border border-neutral-200 rounded-full py-3 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 transition-all active:scale-[0.98] cursor-pointer"
+                className="tevar-login-social-btn"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -375,7 +375,7 @@ export default function LoginPage() {
               <button 
                 type="button"
                 onClick={() => alert('Apple ID authentication coming soon!')}
-                className="flex-1 flex items-center justify-center gap-2 border border-neutral-200 rounded-full py-3 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 transition-all active:scale-[0.98] cursor-pointer"
+                className="tevar-login-social-btn"
               >
                 <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.64.74-1.2 1.88-1.05 3 .98.08 2.14-.54 2.8-.29" />
