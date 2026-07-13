@@ -460,21 +460,53 @@ const Header = ({ onSearch }) => {
             }
           `}} />
           <div
-            className="fixed top-0 left-0 w-[85vw] max-w-[340px] h-full bg-white z-[1000] shadow-2xl flex flex-col rounded-r-3xl overflow-hidden"
+            className="fixed top-0 left-0 w-full md:w-[340px] h-full bg-white z-[1000] shadow-2xl flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "drawerSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards"
             }}
           >
-            {/* Header: Logo & Elegant Close button */}
-            <div className="flex justify-between items-center p-6 border-b border-neutral-100">
-              <Logo height={28} />
+            {/* Header: Exact replica of the main header but with close icon */}
+            <div className="px-6 h-16 border-b border-neutral-100 flex items-center justify-between flex-shrink-0">
+              {/* Left Close Button (replaces Hamburger) */}
               <button
-                className="w-9 h-9 flex items-center justify-center text-neutral-800 hover:opacity-75 transition-opacity cursor-pointer"
+                className="text-2xl text-black hover:opacity-75 focus:outline-none flex items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+                style={{ padding: "8px 0" }}
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              {/* Centered Logo */}
+              <Link
+                href="/"
+                className="flex items-center justify-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <X className="w-5 h-5" />
-              </button>
+                <Logo height={28} />
+              </Link>
+
+              {/* Right Utilities */}
+              <div className="flex items-center gap-4">
+                <button
+                  className="text-black hover:opacity-75 focus:outline-none"
+                  onClick={() => { setSearchOpen(true); setMobileMenuOpen(false); }}
+                  aria-label="Search"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+                <button
+                  className="text-black hover:opacity-75 focus:outline-none relative"
+                  onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }}
+                  aria-label="Cart"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                  {cartCount > 0 && (
+                    <span className="badge-count">{cartCount}</span>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Navigation Links Accordion */}
@@ -599,7 +631,7 @@ const Header = ({ onSearch }) => {
             </nav>
 
             {/* Bottom Section: My Account with Log In & Register buttons */}
-            <div className="p-6 bg-white border-t border-neutral-100 flex flex-col gap-4 select-none">
+            <div className="p-6 bg-white border-t border-neutral-100 flex flex-col gap-3 pb-16 flex-shrink-0">
               <h3 className="text-lg font-bold text-neutral-900 ml-1">My Account</h3>
               
               {user ? (
