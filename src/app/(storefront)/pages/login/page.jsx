@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { AlertCircle, CheckCircle, Eye, EyeOff, X, Check } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -131,8 +132,8 @@ export default function LoginPage() {
       <div className="tevar-login-right">
         
         {/* Header Branding */}
-        <div className="mb-4">
-          <span className="text-sm font-bold tracking-tight text-neutral-900 font-sans">Tevar</span>
+        <div className="mb-4 select-none">
+          <Logo height={20} />
         </div>
 
         {/* Form and Status notification */}
