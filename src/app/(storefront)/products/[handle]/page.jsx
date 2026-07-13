@@ -457,8 +457,9 @@ export default function ProductDetailPage({ params }) {
                       className="pdp-main-img-wrap relative group"
                     >
                       {discountPercent > 0 && i === 0 && (
-                        <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black tracking-widest px-3 py-1.5 z-10 shadow-sm uppercase">
-                          -{discountPercent}% OFF
+                        <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black tracking-widest px-2.5 py-1.5 z-10 shadow-sm uppercase flex flex-col items-center justify-center leading-none text-center select-none">
+                          <span>-{discountPercent}%</span>
+                          <span className="text-[8px] mt-1 font-bold">OFF</span>
                         </span>
                       )}
                       <img

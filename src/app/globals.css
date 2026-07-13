@@ -1823,130 +1823,112 @@ button {
 /* ============================================
    PRODUCT DETAIL PAGE (PDP)
    ============================================ */
-.product-detail-layout {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 60px;
-  align-items: start;
-  /* Prevent grid children from overflowing their cells */
-  min-width: 0;
+
+/* Desktop-specific PDP styles */
+@media (min-width: 901px) {
+  .product-detail-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 80px;
+    align-items: start;
+    min-width: 0;
+  }
+  .product-detail-layout > * {
+    min-width: 0;
+  }
+  .product-detail-gallery-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    position: static;
+    overflow: visible;
+  }
+  .pdp-thumbs {
+    display: none;
+  }
+  .pdp-main-img-wrap {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background-color: #fafafa;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .pdp-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pdp-info-col {
+    position: sticky;
+    top: 120px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .pdp-info-col::-webkit-scrollbar {
+    width: 4px;
+  }
+  .pdp-info-col::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 2px;
+  }
 }
 
-/* Both direct children need min-width: 0 so their grid tracks stay bounded.
-   We do NOT apply overflow:hidden here globally — that would clip box-shadows
-   and focus rings on the info panel. The gallery col gets its own overflow rule. */
-.product-detail-layout > * {
-  min-width: 0;
-}
-
+/* Mobile-specific PDP styles */
 @media (max-width: 900px) {
   .product-detail-layout {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
   }
-}
-
-.product-detail-gallery-col {
-  display: flex;
-  gap: 14px;
-  position: sticky;
-  top: 100px;
-  /* Prevent the gallery column from blowing past its grid track */
-  min-width: 0;
-  width: 100%;
-  overflow: hidden;
-}
-
-.pdp-thumbs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 70px;
-  flex-shrink: 0;
-}
-
-.pdp-thumb-btn {
-  width: 70px;
-  aspect-ratio: 3/4;
-  overflow: hidden;
-  border: 2px solid transparent;
-  background-color: var(--color-bg-sec);
-  cursor: pointer;
-  transition: border-color var(--transition-fast);
-}
-
-.pdp-thumb-btn img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pdp-thumb-btn.active,
-.pdp-thumb-btn:hover {
-  border-color: #000000;
-}
-
-.pdp-main-img-wrap {
-  flex: 1;
-  position: relative;
-  aspect-ratio: 3/4;
-  overflow: hidden;
-  background-color: var(--color-bg-sec);
-}
-
-.pdp-main-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pdp-img-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(255,255,255,0.85);
-  color: #000;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: bold;
-  z-index: 5;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.pdp-img-arrow.left { left: 12px; }
-.pdp-img-arrow.right { right: 12px; }
-.pdp-img-arrow:hover { background-color: #000; color: #fff; }
-
-@media (max-width: 900px) {
-  .pdp-img-arrow {
-    opacity: 1 !important;
+  .product-detail-layout > * {
+    min-width: 0;
   }
-}
-
-.pdp-info-col {
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.pdp-title {
-  font-size: 32px;
-  font-weight: 900;
-  line-height: 1.2;
-  color: var(--color-text);
-  transition: font-size var(--transition-fast);
-}
-
-@media (max-width: 768px) {
-  .pdp-title {
-    font-size: 24px;
+  .product-detail-gallery-col {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0;
+    width: 100%;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .product-detail-gallery-col::-webkit-scrollbar {
+    display: none;
+  }
+  .pdp-main-img-wrap {
+    width: 100%;
+    min-width: 100%;
+    flex-shrink: 0;
+    aspect-ratio: 3/4;
+    scroll-snap-align: start;
+    position: relative;
+    background-color: #fafafa;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .pdp-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pdp-info-col {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
   }
 }
 
@@ -3535,85 +3517,6 @@ textarea.form-input { resize: vertical; }
 }
 
 /* ─── Premium PDP Redesign ─── */
-.product-detail-layout {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 80px !important;
-  align-items: start;
-}
-
-@media (max-width: 900px) {
-  .product-detail-layout {
-    grid-template-columns: 1fr;
-    gap: 40px !important;
-  }
-}
-
-/* Gallery stacked vertical layout on desktop */
-.product-detail-gallery-col {
-  display: flex;
-  flex-direction: column !important;
-  gap: 16px !important;
-  width: 100% !important;
-  position: static !important;
-  overflow: visible !important;
-}
-
-.pdp-thumbs {
-  display: none !important; /* Hide thumbnails since images are stacked */
-}
-
-.pdp-main-img-wrap {
-  width: 100% !important;
-  aspect-ratio: 3/4 !important;
-  background-color: #fafafa !important;
-  border-radius: 0px !important;
-}
-
-/* Mobile horizontal swiper scroll snap overrides */
-@media (max-width: 900px) {
-  .product-detail-gallery-col {
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 0 !important;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
-    /* Hide scrollbar */
-    -ms-overflow-style: none !important;
-    scrollbar-width: none !important;
-  }
-  .product-detail-gallery-col::-webkit-scrollbar {
-    display: none !important;
-  }
-  .pdp-main-img-wrap {
-    width: 100% !important;
-    flex-shrink: 0 !important;
-    scroll-snap-align: start !important;
-  }
-  .pdp-mobile-thumbs {
-    display: none !important; /* Hide mobile thumbs since swiping is enough */
-  }
-}
-
-/* Sticky PDP Info Column */
-.pdp-info-col {
-  position: sticky !important;
-  top: 120px !important;
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  padding: 0 !important;
-}
-
-/* Hide scrollbar on PDP info column */
-.pdp-info-col::-webkit-scrollbar {
-  width: 4px;
-}
-.pdp-info-col::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
-  border-radius: 2px;
-}
-
 /* PDP Size Selectors - clean e-commerce boxes */
 .pdp-size-btn {
   border: 1px solid #e5e7eb !important;
