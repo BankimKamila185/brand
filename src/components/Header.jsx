@@ -13,6 +13,9 @@ const Header = ({ onSearch }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [shopExpanded, setShopExpanded] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [collectionsExpanded, setCollectionsExpanded] = useState(false);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -467,176 +470,174 @@ const Header = ({ onSearch }) => {
             <div className="flex justify-between items-center p-6 border-b border-neutral-100">
               <Logo height={28} />
               <button
-                className="w-9 h-9 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-500 hover:text-black hover:bg-neutral-100 transition-colors cursor-pointer"
+                className="w-9 h-9 flex items-center justify-center text-neutral-800 hover:opacity-75 transition-opacity cursor-pointer"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Profile Section for App Vibe */}
-            <div className="px-6 py-5 bg-neutral-50 border-b border-neutral-100 flex flex-col gap-3">
-              {user ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm">
-                    {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-neutral-400 font-bold leading-none uppercase tracking-wider">Welcome back,</p>
-                    <p className="text-sm font-bold text-neutral-900 truncate mt-1.5">{user.name || user.email}</p>
-                  </div>
-                  <button 
-                    onClick={() => { logout(); setMobileMenuOpen(false); }}
-                    className="p-2 rounded-full hover:bg-neutral-200 text-neutral-400 hover:text-red-500 transition-colors cursor-pointer"
-                    title="Logout"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-3">
-                  <Link
-                    href="/pages/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 py-2.5 rounded-full border border-neutral-300 text-center text-xs font-bold text-neutral-700 hover:bg-neutral-100 transition-colors"
-                  >
-                    Log In
-                  </Link>
-                  <Link
-                    href="/pages/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 py-2.5 rounded-full bg-black text-white text-center text-xs font-bold hover:bg-neutral-800 transition-colors"
-                  >
-                    Register
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Navigation Links */}
-            <nav className="flex-1 overflow-y-auto px-6 py-4">
-              <ul className="flex flex-col gap-1">
+            {/* Navigation Links Accordion */}
+            <nav className="flex-1 overflow-y-auto px-6 py-2 select-none">
+              <ul className="flex flex-col gap-3">
                 
-                {/* Main Link: Shop All */}
+                {/* Accordion 1: Shop */}
                 <li>
-                  <Link
-                    href="/collections/all"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3.5 border-b border-neutral-50 text-sm font-extrabold uppercase tracking-wide text-neutral-900 hover:text-neutral-500 transition-colors"
+                  <button
+                    onClick={() => setShopExpanded(!shopExpanded)}
+                    className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
                   >
-                    <span>Shop All</span>
-                    <ChevronRight className="w-4 h-4 text-neutral-400" />
-                  </Link>
-                </li>
-
-                {/* Main Link: Bestsellers */}
-                <li>
-                  <Link
-                    href="/collections/bestsellers"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3.5 border-b border-neutral-50 text-sm font-extrabold uppercase tracking-wide text-neutral-900 hover:text-neutral-500 transition-colors"
-                  >
-                    <span className="flex items-center gap-2">
-                      Bestsellers
-                      <span className="px-2 py-0.5 rounded bg-red-500 text-[8px] font-extrabold text-white tracking-widest uppercase">Hot</span>
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-neutral-400" />
-                  </Link>
-                </li>
-
-                {/* Categories Section Header */}
-                <li className="mt-4">
-                  <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-widest mb-2 pl-1 select-none">
-                    Categories
-                  </div>
-                  <ul className="flex flex-col gap-1 pl-1">
-                    {[
-                      { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
-                      { name: "Co-ord Sets", path: "/collections/co-ord-sets" },
-                      { name: "Crochet Shirts", path: "/collections/crochet-shirts", badge: "New" },
-                      { name: "Cuban Shirts", path: "/collections/cuban-shirts" },
-                      { name: "Oversized T-Shirts", path: "/collections/oversized-t-shirts" },
-                    ].map((cat) => (
-                      <li key={cat.path}>
-                        <Link
-                          href={cat.path}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center justify-between py-2.5 text-xs font-semibold text-neutral-600 hover:text-black transition-colors"
-                        >
-                          <span className="flex items-center gap-2">
-                            {cat.name}
-                            {cat.badge && (
-                              <span className="px-1.5 py-0.5 rounded bg-blue-500 text-[8px] font-bold text-white tracking-widest uppercase">{cat.badge}</span>
-                            )}
-                          </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
+                    <span>Shop</span>
+                    <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${shopExpanded ? 'rotate-90' : ''}`} />
+                  </button>
+                  {shopExpanded && (
+                    <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                      <li>
+                        <Link href="/collections/all" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Shop All
                         </Link>
                       </li>
-                    ))}
-                  </ul>
+                      <li>
+                        <Link href="/collections/bestsellers" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Bestsellers
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/collections/whats-new" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          What&apos;s New
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/collections/winterwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Winterwear
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/collections/outerwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Outerwear
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
                 </li>
 
-                {/* Separator */}
-                <li className="my-3 border-t border-neutral-100"></li>
+                {/* Accordion 2: Categories */}
+                <li>
+                  <button
+                    onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                    className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  >
+                    <span>Categories</span>
+                    <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${categoriesExpanded ? 'rotate-90' : ''}`} />
+                  </button>
+                  {categoriesExpanded && (
+                    <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                      {[
+                        { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
+                        { name: "Co-ord Sets", path: "/collections/co-ord-sets" },
+                        { name: "Textured Co-ord Sets", path: "/collections/textured-co-ord-sets" },
+                        { name: "Korean Pants", path: "/collections/korean-pants" },
+                        { name: "Linen Shirts", path: "/collections/linen-shirts" },
+                        { name: "Cuban Shirts", path: "/collections/cuban-shirts" },
+                        { name: "Crochet Shirts", path: "/collections/crochet-shirts" },
+                        { name: "Shirts", path: "/collections/shirts" },
+                        { name: "Oversized T-Shirts", path: "/collections/oversized-t-shirts" },
+                        { name: "Parachute Cargos", path: "/collections/parachute-cargos" },
+                      ].map((cat) => (
+                        <li key={cat.path}>
+                          <Link href={cat.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                            {cat.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+
+                {/* Accordion 3: Collections */}
+                <li>
+                  <button
+                    onClick={() => setCollectionsExpanded(!collectionsExpanded)}
+                    className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
+                  >
+                    <span>Collections</span>
+                    <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${collectionsExpanded ? 'rotate-90' : ''}`} />
+                  </button>
+                  {collectionsExpanded && (
+                    <ul className="pl-4 pr-2 py-1 flex flex-col gap-3 text-xs font-medium text-neutral-600 border-l border-neutral-100 ml-2">
+                      <li>
+                        <Link href="/collections/retro-clothing" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Retro Clothing
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/collections/outliers-k-aracter" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Outliers K-aracter
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/collections/outliers-recommends" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1">
+                          Outliers Recommends
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </li>
 
                 {/* Wishlist Link */}
                 <li>
                   <Link
                     href="/pages/wishlist"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3 text-xs font-bold uppercase tracking-wider text-neutral-800 hover:text-black transition-colors"
+                    className="w-full flex items-center justify-between py-3 text-sm font-semibold text-neutral-800 hover:text-black transition-colors"
                   >
-                    <span className="flex items-center gap-2">
-                      <Heart className="w-4 h-4 text-neutral-400" />
-                      Wishlist ({wishlist.length})
-                    </span>
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
-                  </Link>
-                </li>
-
-                {/* Contact Us Link */}
-                <li>
-                  <Link
-                    href="/pages/contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3 text-xs font-bold uppercase tracking-wider text-neutral-800 hover:text-black transition-colors"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-neutral-400" />
-                      Contact Us
-                    </span>
-                    <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
+                    Wishlist
                   </Link>
                 </li>
 
               </ul>
             </nav>
 
-            {/* Footer inside mobile menu */}
-            <div className="p-6 bg-neutral-50 border-t border-neutral-100 flex flex-col gap-4 select-none">
-              <div className="flex gap-4 items-center justify-center">
-                <a 
-                  href="https://instagram.com" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-neutral-200 text-neutral-500 hover:text-black hover:border-black transition-all"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
-                </a>
-                <a 
-                  href="mailto:support@tevar.com" 
-                  className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-neutral-200 text-neutral-500 hover:text-black hover:border-black transition-all"
-                >
-                  <Mail className="w-4 h-4" />
-                </a>
-              </div>
-              <p className="text-[10px] text-center text-neutral-400 font-semibold tracking-wider uppercase">
-                &copy; {new Date().getFullYear()} Tevar Studio
-              </p>
+            {/* Bottom Section: My Account with Log In & Register buttons */}
+            <div className="p-6 bg-white border-t border-neutral-100 flex flex-col gap-4 select-none">
+              <h3 className="text-lg font-bold text-neutral-900 ml-1">My Account</h3>
+              
+              {user ? (
+                <div className="flex flex-col gap-3">
+                  <div className="bg-neutral-50 p-4 rounded-lg flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
+                      {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] text-neutral-400 font-bold leading-none uppercase">Logged In</p>
+                      <p className="text-xs font-bold text-neutral-800 truncate mt-1">{user.name || user.email}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="w-full bg-white hover:bg-neutral-50 text-black border border-neutral-800 font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/pages/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full bg-black hover:bg-neutral-800 text-white font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="/pages/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full bg-white hover:bg-neutral-50 text-black border border-black font-bold py-3.5 rounded-md text-xs uppercase tracking-wider text-center block transition-all cursor-pointer"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
 
           </div>
