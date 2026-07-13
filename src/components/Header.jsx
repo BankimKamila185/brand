@@ -33,7 +33,7 @@ const Header = ({ onSearch }) => {
   };
 
   return (
-    <header className="main-header">
+    <header className={`main-header ${mobileMenuOpen ? '!z-[9999]' : ''}`}>
       <div className="container-fluid">
         <div className="header-inner">
           {/* Mobile Menu Toggle - shown on mobile, hidden on desktop via CSS */}
@@ -460,7 +460,7 @@ const Header = ({ onSearch }) => {
             }
           `}} />
           <div
-            className="fixed top-0 left-0 w-full md:w-[340px] h-full bg-white z-[1000] shadow-2xl flex flex-col overflow-hidden"
+            className="fixed top-0 left-0 w-full md:w-[340px] h-[100dvh] bg-white z-[1000] shadow-2xl flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "drawerSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards"
