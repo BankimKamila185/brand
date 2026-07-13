@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useRef } from "react";
 import Link from "next/link";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
@@ -95,8 +95,14 @@ export default function ProductDetailPage({ params }) {
 
   // Accordion Toggles
   const [descOpen, setDescOpen] = useState(true);
-  const [deliveryOpen, setDeliveryOpen] = useState(false);
+  const [careOpen, setCareOpen] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+
+  // Additional Page States
+  const [quantity, setQuantity] = useState(1);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const galleryRef = useRef(null);
 
   // Reviews State
   const [reviews, setReviews] = useState([]);
@@ -175,6 +181,29 @@ export default function ProductDetailPage({ params }) {
 
     // Fetch reviews
     loadReviews();
+
+    // Update recently viewed list in localStorage
+    try {
+      const stored = localStorage.getItem("recentlyViewed");
+      let items = stored ? JSON.parse(stored) : [];
+      items = items.filter((p) => p.id !== product.id);
+      items.unshift({
+        id: product.id,
+        title: product.title,
+        handle: product.handle,
+        images: product.images,
+        variants: product.variants,
+        vendor: product.vendor,
+        product_type: product.product_type
+      });
+      localStorage.setItem("recentlyViewed", JSON.stringify(items.slice(0, 5)));
+
+      // Load recently viewed list excluding current product
+      const filtered = items.filter((p) => p.id !== product.id);
+      setRecentlyViewed(filtered);
+    } catch (e) {
+      console.error("Failed to update recently viewed:", e);
+    }
   }, [product]);
 
   const loadReviews = async () => {
@@ -297,6 +326,34 @@ export default function ProductDetailPage({ params }) {
     }
   };
 
+  // Scroll to active thumbnail on click
+  const scrollToImage = (index) => {
+    setActiveImageIndex(index);
+    if (galleryRef.current) {
+      const width = galleryRef.current.clientWidth;
+      galleryRef.current.scrollTo({
+        left: index * width,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  // Dynamic delivery date calculator
+  const getDeliveryDateString = () => {
+    const today = new Date();
+    const minDelivery = new Date(today);
+    minDelivery.setDate(today.getDate() + 2);
+    
+    const maxDelivery = new Date(today);
+    maxDelivery.setDate(today.getDate() + 4);
+
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    const minStr = minDelivery.toLocaleDateString('en-US', options);
+    const maxStr = maxDelivery.toLocaleDateString('en-US', options);
+
+    return `Get it between ${minStr} - ${maxStr}`;
+  };
+
   // Derive sizes dynamically
   const sizes =
     product.options?.[0]?.values ||
@@ -328,26 +385,26 @@ export default function ProductDetailPage({ params }) {
       <AnnouncementBar />
       <Header />
 
-      <main className="flex-grow">
+      <main className="flex-grow pb-[80px] md:pb-0">
         {/* Breadcrumb Navigation */}
         <div
           className="container-fluid"
           style={{ paddingTop: 16, paddingBottom: 16 }}
         >
-          <nav className="text-xs uppercase tracking-wider text-neutral-500 flex flex-wrap items-center gap-y-1 gap-x-2">
+          <nav className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 flex flex-wrap items-center gap-y-1 gap-x-2 select-none font-bold">
             <Link href="/" className="hover:text-black whitespace-nowrap">
               Home
             </Link>
-            <span className="text-neutral-300">/</span>
+            <span className="text-neutral-300 text-[9px]">&gt;</span>
             <Link
               href={`/collections/${product.product_type.toLowerCase().replace(/ /g, "-")}`}
               className="hover:text-black whitespace-nowrap"
             >
               {product.product_type}
             </Link>
-            <span className="text-neutral-300">/</span>
+            <span className="text-neutral-300 text-[9px]">&gt;</span>
             <span
-              className="text-black font-semibold truncate max-w-[180px] sm:max-w-none whitespace-nowrap"
+              className="text-black font-extrabold truncate max-w-[180px] sm:max-w-none whitespace-nowrap"
               title={product.title}
             >
               {product.title}
@@ -359,8 +416,37 @@ export default function ProductDetailPage({ params }) {
         <section className="container-fluid" style={{ paddingBottom: 80 }}>
           <div className="product-detail-layout">
             {/* Gallery Column (Left) */}
-            <div className="w-full">
+            <div className="w-full relative">
+              {/* Circular Floating action overlay buttons on mobile */}
+              <button
+                onClick={() => toggleWishlist(product.id)}
+                className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 md:hidden ${
+                  isInWishlist(product.id) ? "text-red-500" : "text-neutral-500"
+                }`}
+                aria-label="Wishlist"
+              >
+                <span className="text-lg">{isInWishlist(product.id) ? "★" : "☆"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: product.title,
+                      url: window.location.href
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Link copied to clipboard!");
+                  }
+                }}
+                className="absolute bottom-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md border border-neutral-100 transition-transform active:scale-95 text-neutral-500 md:hidden"
+                aria-label="Share"
+              >
+                <span className="text-xs">✈</span>
+              </button>
+
               <div 
+                ref={galleryRef}
                 className="product-detail-gallery-col w-full"
                 onScroll={handleScroll}
               >
@@ -371,7 +457,7 @@ export default function ProductDetailPage({ params }) {
                       className="pdp-main-img-wrap relative group"
                     >
                       {discountPercent > 0 && i === 0 && (
-                        <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black tracking-widest px-3 py-1.5 z-10 shadow-sm uppercase">
+                        <span className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black tracking-widest px-3 py-1.5 z-10 shadow-sm uppercase">
                           -{discountPercent}% OFF
                         </span>
                       )}
@@ -389,17 +475,19 @@ export default function ProductDetailPage({ params }) {
                 )}
               </div>
 
-              {/* Mobile pagination dots */}
+              {/* Mobile Thumbnail previews */}
               {product.images.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-3 md:hidden">
-                  {product.images.map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-1 transition-all duration-200 ${
-                        activeImageIndex === i ? "w-6 bg-black" : "w-1.5 bg-neutral-200"
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1 select-none scrollbar-none md:hidden">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={img.id || i}
+                      onClick={() => scrollToImage(i)}
+                      className={`w-14 h-16 flex-shrink-0 border transition-all ${
+                        activeImageIndex === i ? "border-black scale-102" : "border-neutral-200"
                       }`}
-                      style={{ borderRadius: "2px" }}
-                    />
+                    >
+                      <img src={img.src} className="w-full h-full object-cover" alt="" />
+                    </button>
                   ))}
                 </div>
               )}
@@ -421,10 +509,13 @@ export default function ProductDetailPage({ params }) {
                     {"★".repeat(Math.round(avgRating || 4))}
                     {"☆".repeat(5 - Math.round(avgRating || 4))}
                   </div>
-                  <span className="text-xs text-neutral-400 font-bold tracking-wider uppercase">
+                  <span className="text-xs text-neutral-400 font-bold tracking-wider uppercase flex items-center gap-1.5">
                     {totalReviews > 0
                       ? `${avgRating.toFixed(1)} (${totalReviews} Reviews)`
                       : "No Reviews Yet"}
+                    {totalReviews > 0 && (
+                      <span className="text-green-600 text-[10px] font-extrabold uppercase bg-green-50 px-1.5 py-0.5 rounded">✓ Verified</span>
+                    )}
                   </span>
                 </div>
               </div>
@@ -436,11 +527,11 @@ export default function ProductDetailPage({ params }) {
                 </span>
                 {comparePriceNum > priceNum && (
                   <>
-                    <span className="text-lg text-neutral-400 line-through">
+                    <span className="text-lg text-neutral-400 line-through font-medium">
                       ₹{comparePriceNum}
                     </span>
-                    <span className="pdp-discount-badge bg-red-600 text-white font-bold text-xs px-2.5 py-1 rounded-full">
-                      -{discountPercent}% OFF
+                    <span className="text-green-600 font-bold text-sm tracking-wide select-none">
+                      ({discountPercent}% OFF)
                     </span>
                   </>
                 )}
@@ -455,7 +546,7 @@ export default function ProductDetailPage({ params }) {
               <div>
                 <div className="flex justify-between items-center mb-3 select-none">
                   <span className="text-xs font-bold uppercase tracking-wider text-neutral-800">
-                    Select Size
+                    Size: {selectedSize}
                   </span>
                   <button
                     className="text-xs text-neutral-500 underline hover:text-black transition-colors"
@@ -477,47 +568,103 @@ export default function ProductDetailPage({ params }) {
                 </div>
               </div>
 
-              {/* Purchase Call to Actions */}
-              <div className="flex gap-3 mt-4">
+              {/* Quantity Selector */}
+              <div className="select-none">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-2">
+                  Select Qty
+                </span>
+                <div className="w-[100px] relative">
+                  <select
+                    value={quantity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value))}
+                    className="w-full bg-white border border-neutral-200 text-xs font-bold px-3 py-3.5 outline-none appearance-none rounded-none cursor-pointer pr-8"
+                    style={{ color: '#000000' }}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-[10px]">▼</span>
+                </div>
+              </div>
+
+              {/* Primary Inline Add to Cart */}
+              <div className="mt-4">
                 <button
-                  className={`pdp-add-btn flex-1 ${
+                  className={`pdp-add-btn w-full ${
                     isAvailable
                       ? ""
                       : "opacity-50 cursor-not-allowed"
                   }`}
                   onClick={() =>
-                    isAvailable && addToCart(product, selectedSize)
+                    isAvailable && addToCart(product, selectedSize, quantity)
                   }
                   disabled={!isAvailable}
+                  style={{ color: '#ffffff' }}
                 >
                   {isAvailable ? "Add To Cart" : "Out Of Stock"}
                 </button>
+              </div>
+
+              {/* Secondary Wishlist and Share row */}
+              <div className="grid grid-cols-2 gap-3 mt-3 select-none">
                 <button
-                  className={`pdp-wishlist-btn w-14 h-14 flex items-center justify-center font-bold text-lg ${
-                    isInWishlist(product.id)
-                      ? "active"
-                      : ""
-                  }`}
                   onClick={() => toggleWishlist(product.id)}
-                  aria-label="Wishlist"
+                  className={`border py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition ${
+                    isInWishlist(product.id)
+                      ? "border-red-500 text-red-500 bg-red-50/20"
+                      : "border-neutral-200 text-neutral-700 hover:border-black"
+                  }`}
                 >
-                  {isInWishlist(product.id) ? "♥" : "♡"}
+                  <span>{isInWishlist(product.id) ? "★" : "☆"}</span>
+                  <span>{isInWishlist(product.id) ? "In Wishlist" : "Wishlist"}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: product.title,
+                        url: window.location.href
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert("Link copied to clipboard!");
+                    }
+                  }}
+                  className="border border-neutral-200 text-neutral-700 hover:border-black py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition"
+                >
+                  <span>✈</span>
+                  <span>Share</span>
                 </button>
               </div>
 
-              {/* Trust Badges */}
-              <div className="mt-8 pt-6 border-t border-neutral-100 flex flex-col gap-4 text-xs font-semibold text-neutral-800 uppercase tracking-wider select-none">
-                <div className="flex items-center gap-3.5">
-                  <span className="text-base">🚚</span>
-                  <span>Free Shipping across India on prepaid orders</span>
-                </div>
-                <div className="flex items-center gap-3.5">
-                  <span className="text-base">🔄</span>
-                  <span>Easy 7-day returns & exchange policy</span>
-                </div>
-                <div className="flex items-center gap-3.5">
-                  <span className="text-base">🔒</span>
-                  <span>100% secure checkout & encrypted payments</span>
+              {/* Order on WhatsApp Button */}
+              <a
+                href={`https://wa.me/919999999999?text=Hi%2C%20I%20am%20interested%20in%20ordering%20the%20${encodeURIComponent(product.title)}%20(Size%3A%20${selectedSize}%2C%20Qty%3A%20${quantity}).%20Link%3A%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25d366] hover:bg-[#20ba5a] text-white py-3.5 text-xs font-extrabold uppercase tracking-widest flex items-center justify-center gap-2.5 mt-3 transition-colors select-none"
+                style={{ color: '#ffffff' }}
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M12.011 20.29c-3.244 0-6.287-1.258-8.58-3.542l-.546-.546-3.69 1.157 1.15-3.69-.54-.54C-2.485 10.88-3.75 7.838-3.75 4.59.006.012 4.37.012 9.8 0c2.63 0 5.1 1.026 6.96 2.885 1.86 1.86 2.88 4.33 2.88 6.96 0 5.43-4.37 9.8-9.8 9.8l.17.65zm1.96-1.936c.27-.1.47-.15.67-.15.2.3.77.98.95 1.18.17.2.35.22.65.07.3-.15 1.26-.47 2.41-1.48.89-.8 1.49-1.78 1.66-2.08.17-.3.02-.46-.13-.61-.13-.13-.3-.35-.45-.52-.15-.17-.2-.3-.3-.5s-.05-.38.03-.53c.07-.15.67-1.62.92-2.22.25-.6.49-.51.68-.52.17-.01.37-.01.57-.01.2 0 .53.08.8 0 .37-.28 1.07-1.05 1.07-2.58s-1.12-3.1-1.37-3.4c-.25-.3-2.2-3.36-5.33-4.72-.74-.32-1.32-.52-1.78-.66-.75-.24-1.43-.2-1.97-.28-.6-.09-1.78-.73-2.03-.14-.25.7-1.78.73-1.98.78-.2.05-.35.08-.45.25-.1.15-.1.85.25 1.2M12.011 21.3c3.244 0 6.287-1.258 8.58-3.542l.546-.546 3.69 1.157-1.15-3.69.54-.54C26.485 11.88 27.75 8.838 27.75 5.59 24.006 1.012 19.63.012 14.2 0c-2.63 0-5.1 1.026-6.96 2.885-1.86 1.86-2.88 4.33-2.88 6.96 0 5.43 4.37 9.8 9.8 9.8l-.17-.65zM22.057.06l1.687 6.163c-1.041 1.804-1.588 3.849-1.587 5.946C22.06 18.652 16.723 23.99 10.112 23.99c-3.202 0-6.212-1.246-8.477-3.514C-.631 18.208-1.872 15.196-1.87 11.992c.004-6.657 5.34-11.997 11.953-11.997 2.005 0 3.973.502 5.724 1.457L22.057.06z"/>
+                </svg>
+                <span>Order on WhatsApp</span>
+              </a>
+
+              {/* Localized Delivery Estimation Banner */}
+              <div className="mt-6 border border-neutral-100 p-4 bg-neutral-50 flex items-start gap-3 select-none">
+                <span className="text-lg mt-0.5">🚚</span>
+                <div className="flex-1 text-xs">
+                  <p className="font-extrabold text-neutral-800 uppercase tracking-wide">
+                    {getDeliveryDateString()}
+                  </p>
+                  <div className="text-neutral-500 mt-1.5 flex flex-col gap-1 font-semibold">
+                    <p>✓ 100% Original Products</p>
+                    <p>✓ Pay on Delivery (Cash/UPI) available</p>
+                  </div>
                 </div>
               </div>
 
@@ -540,29 +687,38 @@ export default function ProductDetailPage({ params }) {
                 )}
               </div>
 
-              {/* Delivery Info Accordion */}
+              {/* Clean & Care Accordion */}
               <div className="border-t border-neutral-150 py-4">
                 <button
                   className="flex justify-between items-center w-full py-2 font-extrabold uppercase text-[11px] tracking-widest text-neutral-800 hover:opacity-75 transition-opacity"
-                  onClick={() => setDeliveryOpen(!deliveryOpen)}
+                  onClick={() => setCareOpen(!careOpen)}
                 >
-                  <span>Delivery & Returns</span>
-                  <span className="text-sm font-semibold">{deliveryOpen ? "—" : "+"}</span>
+                  <span>Clean & Care</span>
+                  <span className="text-sm font-semibold">{careOpen ? "—" : "+"}</span>
                 </button>
-                {deliveryOpen && (
-                  <div className="pt-3 pb-2 text-xs leading-relaxed text-neutral-600 flex flex-col gap-2.5">
-                    <p>
-                      ⚡ **Dispatch Time:** Orders are dispatched within 24-48
-                      business hours.
-                    </p>
-                    <p>
-                      📦 **Shipping Duration:** Metro cities: 2-4 days. Rest of
-                      India: 4-7 days.
-                    </p>
-                    <p>
-                      🔄 **Returns:** Easily raise a return or exchange request
-                      within 7 days of delivery through our support panel.
-                    </p>
+                {careOpen && (
+                  <div className="pt-3 pb-2 text-xs leading-relaxed text-neutral-600 flex flex-col gap-2.5 font-semibold">
+                    <p>🚿 **Washing Instructions:** Machine wash cold, inside out, with like colors. Do not bleach.</p>
+                    <p>☀️ **Drying Instructions:** Tumble dry low or line dry in shade for long-lasting color quality.</p>
+                    <p>💨 **Ironing:** Iron medium heat inside out. Do not iron directly on graphics or prints.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Return, Shipping & Exchange Accordion */}
+              <div className="border-t border-neutral-150 py-4">
+                <button
+                  className="flex justify-between items-center w-full py-2 font-extrabold uppercase text-[11px] tracking-widest text-neutral-800 hover:opacity-75 transition-opacity"
+                  onClick={() => setPolicyOpen(!policyOpen)}
+                >
+                  <span>Return, Shipping & Exchange</span>
+                  <span className="text-sm font-semibold">{policyOpen ? "—" : "+"}</span>
+                </button>
+                {policyOpen && (
+                  <div className="pt-3 pb-2 text-xs leading-relaxed text-neutral-600 flex flex-col gap-2.5 font-semibold">
+                    <p>📦 **Shipping Fee:** Free delivery across India on all prepaid orders. Flat shipping fee of ₹99 on COD orders.</p>
+                    <p>⚡ **Dispatch Info:** Orders are processed and shipped within 24-48 business hours.</p>
+                    <p>🔄 **Hassle-Free Returns:** 7-day returns or exchanges from date of delivery. Support panel handles returns instantly.</p>
                   </div>
                 )}
               </div>
@@ -590,7 +746,7 @@ export default function ProductDetailPage({ params }) {
             className="container-fluid border-t border-neutral-200 pt-16 pb-8"
             style={{ marginTop: 64, marginBottom: 32 }}
           >
-            <div className="mb-8 flex items-baseline justify-between">
+            <div className="mb-8 flex items-baseline justify-between select-none">
               <h2 className="text-xl font-black uppercase tracking-widest text-neutral-800">
                 You May Also Like
               </h2>
@@ -608,6 +764,37 @@ export default function ProductDetailPage({ params }) {
             </div>
           </section>
         )}
+
+        {/* Recently Viewed Products */}
+        {recentlyViewed.length > 0 && (
+          <section
+            className="container-fluid border-t border-neutral-200 pt-16 pb-8"
+            style={{ marginTop: 32, marginBottom: 32 }}
+          >
+            <div className="mb-8 select-none">
+              <h2 className="text-xl font-black uppercase tracking-widest text-neutral-800">
+                Recently Viewed Products
+              </h2>
+            </div>
+            <div className="product-grid">
+              {recentlyViewed.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Bottom SEO Content Section */}
+        <section className="container-fluid border-t border-neutral-200 pt-16 pb-8">
+          <div className="max-w-4xl select-none">
+            <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800 mb-4">
+              Buy Unisex {product.title} Online At Tevar Studio
+            </h2>
+            <p className="text-xs leading-relaxed text-neutral-500 font-medium">
+              Elevate your street fashion style with our signature {product.title}. Crafted from high-density, breathable fabrics and custom-tailored for a modern silhouette, this official {product.vendor} merchandise offers premium comfort and durability. Style it with minimal sneakers or layered accessories to complete your look. Discover the latest collections and wardrobe essentials with secure payments and fast dispatch across India.
+            </p>
+          </div>
+        </section>
 
         {/* Reviews Section */}
         <section
@@ -911,6 +1098,38 @@ export default function ProductDetailPage({ params }) {
 
       {/* Side Cart Drawer */}
       <CartDrawer />
+
+      {/* Sticky Mobile Bottom Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-150 p-3 z-40 flex items-center gap-3 shadow-[0_-6px_20px_rgba(0,0,0,0.06)]">
+        {/* Size selection dropdown */}
+        <div className="w-[120px] relative">
+          <select
+            value={selectedSize}
+            onChange={(e) => setSelectedSize(e.target.value)}
+            className="w-full bg-white border border-neutral-200 text-xs font-bold uppercase tracking-wider px-3 py-3.5 outline-none appearance-none rounded-none cursor-pointer pr-8"
+            style={{ color: '#000000' }}
+          >
+            {sizes.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-[10px]">▼</span>
+        </div>
+
+        {/* Add to Cart button */}
+        <button
+          onClick={() => isAvailable && addToCart(product, selectedSize, quantity)}
+          disabled={!isAvailable}
+          className={`flex-1 bg-black text-white text-xs font-extrabold uppercase tracking-widest py-3.5 hover:bg-neutral-800 transition active:scale-98 ${
+            isAvailable ? "" : "opacity-50 cursor-not-allowed"
+          }`}
+          style={{ color: '#ffffff' }}
+        >
+          {isAvailable ? "Add To Cart" : "Out Of Stock"}
+        </button>
+      </div>
     </div>
   );
 }
