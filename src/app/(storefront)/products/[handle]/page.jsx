@@ -355,6 +355,21 @@ export default function ProductDetailPage({ params }) {
     return `Get it between ${minStr} - ${maxStr}`;
   };
 
+  const getDeliveryDateStringShort = () => {
+    const today = new Date();
+    const minDelivery = new Date(today);
+    minDelivery.setDate(today.getDate() + 3);
+    
+    const maxDelivery = new Date(today);
+    maxDelivery.setDate(today.getDate() + 7);
+
+    const formatOptions = { month: 'short', day: 'numeric' };
+    const minStr = minDelivery.toLocaleDateString('en-US', formatOptions);
+    const maxStr = maxDelivery.toLocaleDateString('en-US', formatOptions);
+
+    return `${minStr} - ${maxStr}`;
+  };
+
   // Derive sizes dynamically
   const sizes =
     product.options?.[0]?.values ||
@@ -581,23 +596,34 @@ export default function ProductDetailPage({ params }) {
 
               {/* Size Selector */}
               <div>
-                <div className="flex justify-between items-center mb-3 select-none">
-                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-800">
-                    Size: {selectedSize}
-                  </span>
-                  <button
-                    className="text-xs text-neutral-500 underline hover:text-black transition-colors"
-                    onClick={() => setSizeGuideOpen(true)}
-                  >
-                    Size Guide
-                  </button>
+                <button
+                  className="flex items-center gap-1.5 text-xs text-neutral-800 hover:opacity-75 transition-opacity font-medium mb-3 select-none"
+                  onClick={() => setSizeGuideOpen(true)}
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <line x1="6" y1="6" x2="6" y2="12" />
+                    <line x1="10" y1="6" x2="10" y2="12" />
+                    <line x1="14" y1="6" x2="14" y2="12" />
+                    <line x1="18" y1="6" x2="18" y2="12" />
+                  </svg>
+                  <span>Size chart</span>
+                </button>
+
+                <div className="text-sm font-bold text-neutral-900 mb-3 select-none">
+                  Size: {selectedSize}
                 </div>
+
                 <div className="pdp-sizes flex flex-wrap gap-2.5">
                   {sizes.map((size) => (
                     <button
                       key={size}
-                      className={`pdp-size-btn ${selectedSize === size ? "active" : ""}`}
                       onClick={() => setSelectedSize(size)}
+                      className={`w-11 h-11 flex items-center justify-center text-xs font-bold transition rounded border ${
+                        selectedSize === size
+                          ? "bg-[#18181b] text-white border-[#18181b]"
+                          : "bg-white text-neutral-800 border-neutral-200 hover:border-black"
+                      }`}
                     >
                       {size}
                     </button>
@@ -606,103 +632,131 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Quantity Selector */}
-              <div className="select-none">
-                <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-2">
-                  Select Qty
-                </span>
-                <div className="w-[100px] relative">
-                  <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value))}
-                    className="w-full bg-white border border-neutral-200 text-xs font-bold px-3 py-3.5 outline-none appearance-none rounded-none cursor-pointer pr-8"
-                    style={{ color: '#000000' }}
+              <div className="flex items-center gap-4 mt-6 select-none">
+                <span className="text-sm font-bold text-neutral-900">Quantity</span>
+                <div className="flex items-center border border-neutral-200 rounded h-11 bg-white">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-full flex items-center justify-center text-neutral-500 hover:text-black transition-colors text-lg"
                   >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-[10px]">▼</span>
+                    —
+                  </button>
+                  <div className="w-12 h-full flex items-center justify-center text-sm font-bold text-neutral-900 border-x border-neutral-100 select-none">
+                    {quantity}
+                  </div>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-full flex items-center justify-center text-neutral-500 hover:text-black transition-colors text-lg"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
-              {/* Primary Inline Add to Cart */}
-              <div className="mt-4">
+              {/* Checkout buttons */}
+              <div className="flex flex-col gap-3 mt-6">
                 <button
-                  className={`pdp-add-btn w-full ${
-                    isAvailable
-                      ? ""
-                      : "opacity-50 cursor-not-allowed"
-                  }`}
-                  onClick={() =>
-                    isAvailable && addToCart(product, selectedSize, quantity)
-                  }
+                  onClick={() => isAvailable && addToCart(product, selectedSize, quantity)}
                   disabled={!isAvailable}
-                  style={{ color: '#ffffff' }}
+                  className={`w-full py-4 text-xs font-extrabold uppercase tracking-widest border border-black transition rounded active:scale-98 ${
+                    isAvailable
+                      ? "bg-white text-black hover:bg-neutral-50"
+                      : "opacity-50 cursor-not-allowed bg-neutral-100 border-neutral-300 text-neutral-400"
+                  }`}
                 >
-                  {isAvailable ? "Add To Cart" : "Out Of Stock"}
+                  {isAvailable ? "ADD TO CART" : "OUT OF STOCK"}
                 </button>
+
+                {isAvailable && (
+                  <button
+                    onClick={() => {
+                      addToCart(product, selectedSize, quantity);
+                    }}
+                    className="w-full py-4 text-xs font-extrabold uppercase tracking-widest bg-black text-white hover:bg-neutral-800 transition rounded active:scale-98"
+                  >
+                    BUY IT NOW
+                  </button>
+                )}
               </div>
 
-              {/* Secondary Wishlist and Share row */}
-              <div className="grid grid-cols-2 gap-3 mt-3 select-none">
+              {/* Ask a question and Share Row */}
+              <div className="flex items-center gap-6 mt-6 pb-6 border-b border-neutral-100 select-none">
                 <button
-                  onClick={() => toggleWishlist(product.id)}
-                  className={`border py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition ${
-                    isInWishlist(product.id)
-                      ? "border-red-500 text-red-500 bg-red-50/20"
-                      : "border-neutral-200 text-neutral-700 hover:border-black"
-                  }`}
+                  onClick={() => window.open('mailto:support@houseofkoala.com?subject=Question about ' + product.title)}
+                  className="flex items-center gap-2 text-xs font-bold text-neutral-800 hover:opacity-75 transition-opacity"
                 >
-                   <span>{isInWishlist(product.id) ? "♥" : "♡"}</span>
-                   <span>{isInWishlist(product.id) ? "In Wishlist" : "Wishlist"}</span>
+                  <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  <span>Ask a question</span>
                 </button>
+
                 <button
                   onClick={() => {
                     if (navigator.share) {
-                      navigator.share({
-                        title: product.title,
-                        url: window.location.href
-                      });
+                      navigator.share({ title: product.title, url: window.location.href });
                     } else {
                       navigator.clipboard.writeText(window.location.href);
                       alert("Link copied to clipboard!");
                     }
                   }}
-                  className="border border-neutral-200 text-neutral-700 hover:border-black py-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition"
+                  className="flex items-center gap-2 text-xs font-bold text-neutral-800 hover:opacity-75 transition-opacity"
                 >
-                  <span>✈</span>
+                  <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                  </svg>
                   <span>Share</span>
                 </button>
               </div>
 
-              {/* Order on WhatsApp Button */}
-              <a
-                href={`https://wa.me/919999999999?text=Hi%2C%20I%20am%20interested%20in%20ordering%20the%20${encodeURIComponent(product.title)}%20(Size%3A%20${selectedSize}%2C%20Qty%3A%20${quantity}).%20Link%3A%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-[#25d366] hover:bg-[#20ba5a] text-white py-3.5 text-xs font-extrabold uppercase tracking-widest flex items-center justify-center gap-2.5 mt-3 transition-colors select-none"
-                style={{ color: '#ffffff' }}
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12.011 20.29c-3.244 0-6.287-1.258-8.58-3.542l-.546-.546-3.69 1.157 1.15-3.69-.54-.54C-2.485 10.88-3.75 7.838-3.75 4.59.006.012 4.37.012 9.8 0c2.63 0 5.1 1.026 6.96 2.885 1.86 1.86 2.88 4.33 2.88 6.96 0 5.43-4.37 9.8-9.8 9.8l.17.65zm1.96-1.936c.27-.1.47-.15.67-.15.2.3.77.98.95 1.18.17.2.35.22.65.07.3-.15 1.26-.47 2.41-1.48.89-.8 1.49-1.78 1.66-2.08.17-.3.02-.46-.13-.61-.13-.13-.3-.35-.45-.52-.15-.17-.2-.3-.3-.5s-.05-.38.03-.53c.07-.15.67-1.62.92-2.22.25-.6.49-.51.68-.52.17-.01.37-.01.57-.01.2 0 .53.08.8 0 .37-.28 1.07-1.05 1.07-2.58s-1.12-3.1-1.37-3.4c-.25-.3-2.2-3.36-5.33-4.72-.74-.32-1.32-.52-1.78-.66-.75-.24-1.43-.2-1.97-.28-.6-.09-1.78-.73-2.03-.14-.25.7-1.78.73-1.98.78-.2.05-.35.08-.45.25-.1.15-.1.85.25 1.2M12.011 21.3c3.244 0 6.287-1.258 8.58-3.542l.546-.546 3.69 1.157-1.15-3.69.54-.54C26.485 11.88 27.75 8.838 27.75 5.59 24.006 1.012 19.63.012 14.2 0c-2.63 0-5.1 1.026-6.96 2.885-1.86 1.86-2.88 4.33-2.88 6.96 0 5.43 4.37 9.8 9.8 9.8l-.17-.65zM22.057.06l1.687 6.163c-1.041 1.804-1.588 3.849-1.587 5.946C22.06 18.652 16.723 23.99 10.112 23.99c-3.202 0-6.212-1.246-8.477-3.514C-.631 18.208-1.872 15.196-1.87 11.992c.004-6.657 5.34-11.997 11.953-11.997 2.005 0 3.973.502 5.724 1.457L22.057.06z"/>
-                </svg>
-                <span>Order on WhatsApp</span>
-              </a>
-
-              {/* Localized Delivery Estimation Banner */}
-              <div className="mt-6 border border-neutral-100 p-4 bg-neutral-50 flex items-start gap-3 select-none">
-                <span className="text-lg mt-0.5">🚚</span>
-                <div className="flex-1 text-xs">
-                  <p className="font-extrabold text-neutral-800 uppercase tracking-wide">
-                    {getDeliveryDateString()}
-                  </p>
-                  <div className="text-neutral-500 mt-1.5 flex flex-col gap-1 font-semibold">
-                    <p>✓ 100% Original Products</p>
-                    <p>✓ Pay on Delivery (Cash/UPI) available</p>
+              {/* Delivery and Returns Banners */}
+              <div className="flex flex-col gap-4 mt-6 select-none text-sm text-neutral-800">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-neutral-800 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                  <div>
+                    <span className="font-bold">Estimated Delivery:</span>
+                    <span className="ml-1 text-neutral-600">{getDeliveryDateStringShort()}</span>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-neutral-800 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                  <div>
+                    <span className="font-bold">Shipping & Returns:</span>
+                    <span className="ml-1 text-neutral-600">Free Delivery & Easy 15 Day Returns</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order on WhatsApp Button */}
+              <div className="mt-6 select-none">
+                <a
+                  href={`https://wa.me/919999999999?text=Hi%2C%20I%20am%20interested%20in%20ordering%20the%20${encodeURIComponent(product.title)}%20(Size%3A%20${selectedSize}%2C%20Qty%3A%20${quantity}).%20Link%3A%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#25d366] hover:bg-[#20ba5a] text-white text-sm font-bold py-2.5 px-4 rounded transition-colors"
+                  style={{ color: '#ffffff' }}
+                >
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202 0 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005 0-3.973-.502-5.724-1.457L0 24zm6.59-11.507c-.124-.208-.493-.324-1.03-.593-.536-.27-3.17-1.562-3.666-1.743-.496-.18-.856-.27-1.216.27-.36.54-1.393 1.758-1.706 2.118-.313.36-.626.406-1.163.135-.536-.27-2.266-.835-4.316-2.664-1.593-1.42-2.67-3.174-2.984-3.714-.313-.54-.033-.833.24-1.1.245-.242.536-.626.804-.94.27-.313.36-.538.54-.897.18-.36.09-.67-.045-.94-.135-.27-1.216-2.927-1.666-4.004-.438-1.055-.88-.912-1.216-.928-.313-.016-.677-.02-1.04-.02-.36 0-.948.136-1.442.676-.495.54-1.89 1.848-1.89 4.504 0 2.656 1.93 5.22 2.2 5.58.27.36 3.798 5.797 9.198 8.127 1.285.553 2.288.884 3.068 1.132 1.293.41 2.47.35 3.398.21.1.03 2.28-.93 2.6-2.28.32-1.35.32-2.51.22-2.734-.1-.22-.36-.34-.49-.406z"/>
+                  </svg>
+                  <span>Connect with us</span>
+                </a>
               </div>
 
               {/* Description Accordion */}
