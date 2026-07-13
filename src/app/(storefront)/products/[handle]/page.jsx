@@ -500,9 +500,8 @@ export default function ProductDetailPage({ params }) {
                       <button
                         key={img.id || i}
                         onClick={() => scrollToImage(i)}
-                        className={`w-14 h-16 flex-shrink-0 border-2 transition-all outline-none focus:outline-none focus:ring-0 p-0.5 bg-white ${
-                          activeImageIndex === i ? "border-neutral-800" : "border-transparent"
-                        }`}
+                        className="w-14 h-16 flex-shrink-0 border-2 transition-all outline-none focus:outline-none focus:ring-0 p-0.5 bg-white"
+                        style={{ borderColor: activeImageIndex === i ? '#111111' : 'transparent' }}
                       >
                         <img src={img.src} className="w-full h-full object-cover" alt="" />
                       </button>
@@ -514,11 +513,13 @@ export default function ProductDetailPage({ params }) {
                     {product.images.map((_, i) => (
                       <div
                         key={i}
-                        className={`transition-all duration-200 rounded-full ${
-                          activeImageIndex === i
-                            ? "w-3 h-3 border-2 border-neutral-800 bg-white"
-                            : "w-1.5 h-1.5 bg-neutral-800"
-                        }`}
+                        className="transition-all duration-200 rounded-full"
+                        style={{
+                          width: activeImageIndex === i ? '11px' : '6px',
+                          height: activeImageIndex === i ? '11px' : '6px',
+                          border: activeImageIndex === i ? '2px solid #111111' : 'none',
+                          backgroundColor: activeImageIndex === i ? '#ffffff' : '#262626'
+                        }}
                       />
                     ))}
                   </div>
