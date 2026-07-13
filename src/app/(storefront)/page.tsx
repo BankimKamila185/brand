@@ -7,6 +7,7 @@ import CartDrawer from '@/components/CartDrawer';
 import Footer from '@/components/Footer';
 import HeroSlider from '@/components/HeroSlider';
 import ProductCard from '@/components/ProductCard';
+import ImageBanner from '@/components/ImageBanner';
 import { productsApi } from '@/lib/api';
 import productsData from '@/data/products.json';
 import { Product } from '@/types';
@@ -203,6 +204,9 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* ⑥.5 Campaign Image Banner */}
+        <ImageBanner />
 
         {/* ⑦ New Arrivals */}
         <section className="container-fluid my-16">
