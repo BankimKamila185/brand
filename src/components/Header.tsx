@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 
 interface HeaderProps {
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const { cartCount, wishlist, setCartOpen } = useCart();
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -145,18 +147,40 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
               </button>
             </div>
 
-            {/* Profile / Account (Mock) */}
-            <button
-              className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center"
-              onClick={() => alert("Profile / Account option coming soon!")}
-              aria-label="Account"
-            >
-              {/* User Profile SVG */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </button>
+            {/* Profile / Account */}
+            {user ? (
+              <button
+                className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center relative group"
+                onClick={() => {
+                  if (window.confirm(`Logged in as ${user.name || user.email}. Do you want to sign out?`)) {
+                    logout();
+                  }
+                }}
+                aria-label="Account"
+                title={`Signed in as ${user.name || user.email}. Click to sign out.`}
+              >
+                {/* User Profile SVG (active/green dot style) */}
+                <div className="relative">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white"></span>
+                </div>
+              </button>
+            ) : (
+              <Link
+                href="/pages/login"
+                className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center"
+                aria-label="Account"
+              >
+                {/* User Profile SVG */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </Link>
+            )}
 
             {/* Wishlist */}
             <Link href="/pages/wishlist" className="action-btn text-black hover:opacity-70 flex items-center justify-center" aria-label="Wishlist">

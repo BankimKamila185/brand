@@ -3,6 +3,22 @@ import type { NextConfig } from "next";
 const BACKEND_URL = process.env["BACKEND_URL"] || "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // Redirects for admin dashboard
+  async redirects() {
+    return [
+      {
+        source: "/admin/dashboard",
+        destination: "/admin/dashboard/default",
+        permanent: false,
+      },
+    ];
+  },
+
   // Proxy /api/* requests to the backend service
   async rewrites() {
     return [

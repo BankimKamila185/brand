@@ -20,7 +20,6 @@ import paymentsRoutes from './modules/payments/payments.routes';
 import couponsRoutes from './modules/coupons/coupons.routes';
 import reviewsRoutes from './modules/reviews/reviews.routes';
 import usersRoutes from './modules/users/users.routes';
-import adminRoutes from './modules/admin/admin.routes';
 import notificationsRoutes from './modules/notifications/notifications.routes';
 
 const createApp = (): Application => {
@@ -103,7 +102,6 @@ const createApp = (): Application => {
   app.use('/api/coupons', couponsRoutes);
   app.use('/api/reviews', reviewsRoutes);
   app.use('/api/users', usersRoutes);
-  app.use('/api/admin', adminRoutes);
   app.use('/api/notifications', notificationsRoutes);
 
   // ── 404 handler ───────────────────────────────────────────────────────────

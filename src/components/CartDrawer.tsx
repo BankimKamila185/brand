@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { FileText, Truck, Tag } from 'lucide-react';
 
 interface CartDrawerProps {
   onCheckoutSimulation?: () => void;
@@ -13,6 +14,13 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
   const [couponCode, setCouponCode] = useState('');
   const [activeDiscount, setActiveDiscount] = useState<number>(0); // percentage
   const [couponMessage, setCouponMessage] = useState('');
+
+  // Expandable footer tabs state
+  const [showNote, setShowNote] = useState(false);
+  const [showShipping, setShowShipping] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(false);
+
+  const [cartNote, setCartNote] = useState('');
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +54,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
     if (onCheckoutSimulation) {
       onCheckoutSimulation();
     } else {
-      alert('Simulating checkout! Thank you for shopping with House of Outliers.');
+      alert('Simulating checkout! Thank you for shopping.');
     }
   };
 
@@ -59,10 +67,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
       />
 
       {/* Drawer Panel */}
-      <div className={`side-drawer ${cartOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
+      <div className={`side-drawer ${cartOpen ? 'open' : ''} transition-transform duration-300 ease-in-out`}>
         <div className="drawer-header">
-          <h2 className="drawer-title">Shopping Cart ({cart.length})</h2>
-          <button className="drawer-close" onClick={() => setCartOpen(false)}>
+          <h2 className="drawer-title">Shopping Cart</h2>
+          <button className="drawer-close" onClick={() => setCartOpen(false)} aria-label="Close cart">
             ✕
           </button>
         </div>
@@ -84,42 +92,41 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
               {cart.map((item) => {
                 const variant = item.product.variants.find(v => v.id === item.variantId) || item.product.variants[0];
                 const price = parseFloat(variant.price);
-                const itemTotal = price * item.quantity;
                 const image = item.product.images[0]?.src || '';
 
                 return (
                   <div key={item.variantId} className="cart-item">
                     <img src={image} alt={item.product.title} className="cart-item-img" />
                     
-                    <div className="cart-item-info">
+                    <div className="cart-item-details">
                       <h4 className="cart-item-title">{item.product.title}</h4>
-                      <span className="cart-item-meta">Size: {item.selectedSize}</span>
+                      <span className="cart-item-size">Size: {item.selectedSize}</span>
+                      <span className="cart-item-price">₹{price.toFixed(2)}</span>
                       
-                      <div className="cart-item-quantity">
+                      <div className="cart-item-actions-row">
+                        <div className="cart-item-quantity">
+                          <button 
+                            className="qty-btn"
+                            onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                          >
+                            -
+                          </button>
+                          <span className="qty-val">{item.quantity}</span>
+                          <button 
+                            className="qty-btn"
+                            onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                        
                         <button 
-                          className="qty-btn"
-                          onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                          className="cart-item-remove-link"
+                          onClick={() => removeFromCart(item.variantId)}
                         >
-                          -
-                        </button>
-                        <span className="qty-val">{item.quantity}</span>
-                        <button 
-                          className="qty-btn"
-                          onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                        >
-                          +
+                          Remove
                         </button>
                       </div>
-                    </div>
-
-                    <div className="cart-item-price">
-                      <span>₹{itemTotal}</span>
-                      <button 
-                        className="cart-item-remove"
-                        onClick={() => removeFromCart(item.variantId)}
-                      >
-                        Remove
-                      </button>
                     </div>
                   </div>
                 );
@@ -130,51 +137,100 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckoutSimulation }) => {
 
         {cart.length > 0 && (
           <div className="drawer-footer">
-            {/* Promo Code Input */}
-            <form onSubmit={handleApplyCoupon} className="flex gap-2 mb-6">
-              <input
-                type="text"
-                placeholder="PROMO CODE (OUTLIERS10, OUTLIERS21)"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm outline-none uppercase font-bold"
-              />
+            {/* Expandable Panel Tabs */}
+            <div className="drawer-footer-actions">
               <button 
-                type="submit"
-                className="bg-black text-white text-xs font-bold uppercase px-4 py-2 rounded"
+                className={`footer-action-btn ${showNote ? 'active' : ''}`}
+                onClick={() => { setShowNote(!showNote); setShowShipping(false); setShowCoupon(false); }}
               >
-                Apply
+                <FileText size={16} /> Note
               </button>
-            </form>
-            
-            {couponMessage && (
-              <p className={`text-xs font-bold mb-4 ${couponMessage.includes('applied') ? 'text-green-600' : 'text-red-500'}`}>
-                {couponMessage}
-              </p>
+              <button 
+                className={`footer-action-btn ${showShipping ? 'active' : ''}`}
+                onClick={() => { setShowShipping(!showShipping); setShowNote(false); setShowCoupon(false); }}
+              >
+                <Truck size={16} /> Shipping
+              </button>
+              <button 
+                className={`footer-action-btn ${showCoupon ? 'active' : ''}`}
+                onClick={() => { setShowCoupon(!showCoupon); setShowNote(false); setShowShipping(false); }}
+              >
+                <Tag size={16} /> Coupon
+              </button>
+            </div>
+
+            {/* Note Panel */}
+            {showNote && (
+              <div className="footer-panel-expand">
+                <textarea
+                  placeholder="Add special instructions for your order..."
+                  value={cartNote}
+                  onChange={(e) => setCartNote(e.target.value)}
+                  className="footer-panel-textarea"
+                />
+              </div>
             )}
 
-            <div className="drawer-summary-row text-gray-600">
+            {/* Shipping Panel */}
+            {showShipping && (
+              <div className="footer-panel-expand shipping-info">
+                <p>🚚 <strong>Free Shipping</strong> on orders above ₹1,500!</p>
+                <p className="text-gray-500 text-xs">Estimated delivery: 3-5 business days.</p>
+              </div>
+            )}
+
+            {/* Coupon Panel */}
+            {showCoupon && (
+              <div className="footer-panel-expand">
+                <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="PROMO CODE"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="footer-panel-input"
+                  />
+                  <button type="submit" className="footer-panel-submit-btn">
+                    Apply
+                  </button>
+                </form>
+                {couponMessage && (
+                  <p className={`coupon-msg ${couponMessage.includes('applied') ? 'text-green-600' : 'text-red-500'}`}>
+                    {couponMessage}
+                  </p>
+                )}
+              </div>
+            )}
+            
+            <div className="drawer-summary-row">
               <span>Subtotal</span>
-              <span className="font-bold">₹{cartTotal}</span>
+              <span className="font-bold">₹{cartTotal.toFixed(2)}</span>
             </div>
 
             {activeDiscount > 0 && (
               <div className="drawer-summary-row text-green-600">
                 <span>Discount ({activeDiscount}%)</span>
-                <span className="font-bold">-₹{discountAmount}</span>
+                <span className="font-bold">-₹{discountAmount.toFixed(2)}</span>
               </div>
             )}
 
-            <div className="drawer-summary-row total text-lg font-black text-black">
+            <div className="drawer-summary-row total">
               <span>Total</span>
-              <span>₹{finalTotal}</span>
+              <span>₹{finalTotal.toFixed(2)}</span>
             </div>
 
             <button 
               onClick={handleCheckoutClick}
-              className="drawer-checkout-btn font-bold text-center w-full block bg-black text-white py-4 uppercase tracking-widest mt-4"
+              className="drawer-checkout-btn"
             >
               Checkout
+            </button>
+
+            <button 
+              onClick={(e) => { e.preventDefault(); setCartOpen(false); }}
+              className="drawer-view-cart-link"
+            >
+              View Cart
             </button>
           </div>
         )}

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { db } from '../../config/database';
 import { asyncHandler, AppError } from '../../middleware/errorHandler';
-import { authenticate, requireAdmin } from '../../middleware/auth';
+import { authenticate } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import { sendSuccess, sendCreated, buildPaginationMeta } from '../../utils/response';
 
@@ -82,33 +82,6 @@ router.post('/', authenticate, validate(createReviewSchema), asyncHandler(async 
     : 'Review submitted and pending approval');
 }));
 
-// Admin: list unapproved
-router.get('/admin/pending', authenticate, requireAdmin, asyncHandler(async (_req, res) => {
-  const reviews = await db.review.findMany({
-    where: { approved: false },
-    select: {
-      id: true, rating: true, title: true, body: true, createdAt: true,
-      user: { select: { name: true, email: true } },
-      product: { select: { title: true, handle: true } },
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-  sendSuccess(res, reviews);
-}));
 
-// Admin: approve/reject
-router.patch('/:id/approve', authenticate, requireAdmin, asyncHandler(async (req, res) => {
-  const review = await db.review.update({
-    where: { id: req.params['id'] as string },
-    data: { approved: true },
-    select: { id: true, approved: true },
-  });
-  sendSuccess(res, review, 'Review approved');
-}));
-
-router.delete('/:id', authenticate, requireAdmin, asyncHandler(async (req, res) => {
-  await db.review.delete({ where: { id: req.params['id'] as string } });
-  sendSuccess(res, null, 'Review deleted');
-}));
 
 export default router;

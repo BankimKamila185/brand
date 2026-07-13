@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { db } from '../../config/database';
 import { asyncHandler, AppError } from '../../middleware/errorHandler';
-import { authenticate, requireAdmin } from '../../middleware/auth';
+import { authenticate } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import { sendSuccess, sendCreated, buildPaginationMeta } from '../../utils/response';
 import { sendOrderConfirmationEmail } from '../../utils/email';
@@ -201,53 +201,6 @@ router.get('/:id', asyncHandler(async (req, res) => {
   sendSuccess(res, order);
 }));
 
-// Admin: update order status
-router.patch('/:id/status', requireAdmin, asyncHandler(async (req, res) => {
-  const { status, trackingNumber } = req.body as { status: string; trackingNumber?: string };
 
-  const validStatuses = ['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
-  if (!validStatuses.includes(status)) throw new AppError('Invalid order status', 400);
-
-  const order = await db.order.update({
-    where: { id: req.params['id'] as string },
-    data: {
-      status: status as never,
-      ...(trackingNumber && { trackingNumber }),
-      ...(status === 'SHIPPED' && { shippedAt: new Date() }),
-      ...(status === 'DELIVERED' && { deliveredAt: new Date() }),
-      ...(status === 'CANCELLED' && { cancelledAt: new Date() }),
-    },
-    select: { id: true, status: true, trackingNumber: true, updatedAt: true },
-  });
-
-  sendSuccess(res, order, 'Order status updated');
-}));
-
-// Admin: list all orders
-router.get('/admin/all', requireAdmin, asyncHandler(async (req, res) => {
-  const page = parseInt(req.query['page'] as string) || 1;
-  const limit = Math.min(100, parseInt(req.query['limit'] as string) || 20);
-  const status = req.query['status'] as string | undefined;
-  const skip = (page - 1) * limit;
-
-  const where = status ? { status: status as never } : {};
-
-  const [total, orders] = await Promise.all([
-    db.order.count({ where }),
-    db.order.findMany({
-      where,
-      select: {
-        id: true, status: true, total: true, createdAt: true,
-        user: { select: { name: true, email: true } },
-        payment: { select: { status: true, razorpayPaymentId: true } },
-        _count: { select: { items: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-      skip, take: limit,
-    }),
-  ]);
-
-  sendSuccess(res, orders, 'Orders fetched', 200, buildPaginationMeta(total, page, limit));
-}));
 
 export default router;

@@ -53,20 +53,7 @@ interface RawProduct {
 async function main() {
   console.log('🌱 Starting database seed...');
 
-  // ── 1. Admin user ────────────────────────────────────────────────────────
-  const adminPassword = await bcrypt.hash('Admin@123', 12);
-  const admin = await db.user.upsert({
-    where: { email: 'admin@tevar.in' },
-    update: {},
-    create: {
-      name: 'Tevar Admin',
-      email: 'admin@tevar.in',
-      passwordHash: adminPassword,
-      role: 'ADMIN',
-      emailVerified: true,
-    },
-  });
-  console.log(`✅ Admin user: ${admin.email}`);
+
 
   // ── 2. Default collections ────────────────────────────────────────────────
   const collectionsData = [
@@ -244,8 +231,6 @@ async function main() {
   console.log(`✅ Sample coupons seeded`);
 
   console.log('\n🎉 Seed complete!');
-  console.log('   Admin login: admin@tevar.in / Admin@123');
-  console.log('   ⚠️  Change the admin password immediately after first login!');
 }
 
 function getCategorySlug(productType: string): string | null {
