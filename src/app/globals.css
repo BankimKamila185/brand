@@ -3533,3 +3533,151 @@ textarea.form-input { resize: vertical; }
   gap: 6px;
   margin-left: 4px;
 }
+
+/* ─── Premium PDP Redesign ─── */
+.product-detail-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px !important;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .product-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 40px !important;
+  }
+}
+
+/* Gallery stacked vertical layout on desktop */
+.product-detail-gallery-col {
+  display: flex;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
+  position: static !important;
+  overflow: visible !important;
+}
+
+.pdp-thumbs {
+  display: none !important; /* Hide thumbnails since images are stacked */
+}
+
+.pdp-main-img-wrap {
+  width: 100% !important;
+  aspect-ratio: 3/4 !important;
+  background-color: #fafafa !important;
+  border-radius: 0px !important;
+}
+
+/* Mobile horizontal swiper scroll snap overrides */
+@media (max-width: 900px) {
+  .product-detail-gallery-col {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 0 !important;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    /* Hide scrollbar */
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+  .product-detail-gallery-col::-webkit-scrollbar {
+    display: none !important;
+  }
+  .pdp-main-img-wrap {
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    scroll-snap-align: start !important;
+  }
+  .pdp-mobile-thumbs {
+    display: none !important; /* Hide mobile thumbs since swiping is enough */
+  }
+}
+
+/* Sticky PDP Info Column */
+.pdp-info-col {
+  position: sticky !important;
+  top: 120px !important;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding: 0 !important;
+}
+
+/* Hide scrollbar on PDP info column */
+.pdp-info-col::-webkit-scrollbar {
+  width: 4px;
+}
+.pdp-info-col::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+
+/* PDP Size Selectors - clean e-commerce boxes */
+.pdp-size-btn {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0px !important; /* square corners */
+  font-family: var(--font-stack);
+  font-size: 12px !important;
+  letter-spacing: 0.05em;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  transition: all 0.2s ease !important;
+}
+
+.pdp-size-btn:hover {
+  border-color: #000000 !important;
+}
+
+.pdp-size-btn.active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+/* CTA buttons - clean bold e-commerce look */
+.pdp-add-btn {
+  border-radius: 0px !important; /* flat rectangular shape */
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  padding: 20px 24px !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.pdp-add-btn:hover {
+  background-color: #1f2937 !important;
+  transform: translateY(-1px);
+}
+
+.pdp-wishlist-btn {
+  border-radius: 0px !important; /* flat rectangular shape */
+  border: 1px solid #e5e7eb !important;
+  transition: all 0.2s ease !important;
+}
+
+.pdp-wishlist-btn:hover {
+  border-color: #000000 !important;
+  background-color: transparent !important;
+  color: #000000 !important;
+}
+
+.pdp-wishlist-btn.active {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+/* Reviews Summary Card Redesign */
+.pdp-sk-reviews-summary {
+  background-color: #fafafa !important;
+  border-radius: 0px !important;
+  border: 1px solid #f3f4f6 !important;
+}
+
+.pdp-sk-review-card {
+  border-radius: 0px !important;
+  border: 1px solid #f3f4f6 !important;
+}

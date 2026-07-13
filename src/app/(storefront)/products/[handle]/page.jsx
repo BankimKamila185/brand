@@ -287,18 +287,13 @@ export default function ProductDetailPage({ params }) {
     );
   }
 
-  // Gallery Navigation helpers
-  const nextImg = () => {
-    if (product.images.length > 0) {
-      setActiveImageIndex((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
-  const prevImg = () => {
-    if (product.images.length > 0) {
-      setActiveImageIndex(
-        (prev) => (prev - 1 + product.images.length) % product.images.length,
-      );
+  // Gallery Navigation helper for mobile scroll snap
+  const handleScroll = (e) => {
+    const scrollLeft = e.target.scrollLeft;
+    const clientWidth = e.target.clientWidth;
+    if (clientWidth > 0) {
+      const index = Math.round(scrollLeft / clientWidth);
+      setActiveImageIndex(index);
     }
   };
 
@@ -364,115 +359,69 @@ export default function ProductDetailPage({ params }) {
         <section className="container-fluid" style={{ paddingBottom: 80 }}>
           <div className="product-detail-layout">
             {/* Gallery Column (Left) */}
-            <div className="product-detail-gallery-col w-full">
-              {/* Desktop vertical thumbnails */}
-              <div className="pdp-thumbs">
-                {product.images.map((img, i) => (
-                  <button
-                    key={img.id || i}
-                    className={`pdp-thumb-btn ${activeImageIndex === i ? "active" : ""}`}
-                    onClick={() => setActiveImageIndex(i)}
-                  >
-                    <img src={img.src} alt={`${product.title} view ${i + 1}`} />
-                  </button>
-                ))}
-              </div>
-
-              {/* Main large display image */}
-              <div className="pdp-main-img-wrap group">
-                {discountPercent > 0 && (
-                  <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black tracking-widest px-3 py-1.5 rounded-full z-10 shadow-sm">
-                    -{discountPercent}% OFF
-                  </span>
-                )}
+            <div className="w-full">
+              <div 
+                className="product-detail-gallery-col w-full"
+                onScroll={handleScroll}
+              >
                 {product.images.length > 0 ? (
-                  <img
-                    src={product.images[activeImageIndex]?.src}
-                    className="pdp-main-img"
-                    alt={product.title}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
+                  product.images.map((img, i) => (
+                    <div 
+                      key={img.id || i} 
+                      className="pdp-main-img-wrap relative group"
+                    >
+                      {discountPercent > 0 && i === 0 && (
+                        <span className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black tracking-widest px-3 py-1.5 z-10 shadow-sm uppercase">
+                          -{discountPercent}% OFF
+                        </span>
+                      )}
+                      <img
+                        src={img.src}
+                        className="pdp-main-img w-full h-full object-cover"
+                        alt={`${product.title} view ${i + 1}`}
+                      />
+                    </div>
+                  ))
                 ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
+                  <div className="pdp-main-img-wrap w-full flex items-center justify-center bg-neutral-100 text-neutral-400 text-sm">
                     No Image Available
                   </div>
                 )}
-
-                {product.images.length > 1 && (
-                  <>
-                    <button
-                      className="pdp-img-arrow left opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={prevImg}
-                      aria-label="Previous image"
-                    >
-                      &lsaquo;
-                    </button>
-                    <button
-                      className="pdp-img-arrow right opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={nextImg}
-                      aria-label="Next image"
-                    >
-                      &rsaquo;
-                    </button>
-                  </>
-                )}
               </div>
 
-              {/* Mobile horizontal thumbnails scroll */}
-              <div className="pdp-mobile-thumbs">
-                {product.images.map((img, i) => (
-                  <button
-                    key={img.id || i}
-                    className={`flex-shrink-0 w-16 h-20 border-2 overflow-hidden ${
-                      activeImageIndex === i
-                        ? "border-black"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => setActiveImageIndex(i)}
-                  >
-                    <img
-                      src={img.src}
-                      alt=""
-                      className="w-full h-full object-cover"
+              {/* Mobile pagination dots */}
+              {product.images.length > 1 && (
+                <div className="flex justify-center gap-1.5 mt-3 md:hidden">
+                  {product.images.map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-1 transition-all duration-200 ${
+                        activeImageIndex === i ? "w-6 bg-black" : "w-1.5 bg-neutral-200"
+                      }`}
+                      style={{ borderRadius: "2px" }}
                     />
-                  </button>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info Panel Column (Right) */}
             <div className="pdp-info-col">
               <div>
-                <span className="pdp-section-label tracking-widest text-neutral-500 text-xs block mb-1">
+                <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-[0.2em] block mb-2 select-none">
                   {product.vendor}
                 </span>
-                <h1 className="pdp-title text-2xl md:text-3xl font-black mb-2">
+                <h1 className="text-2xl md:text-3xl font-black mb-3 text-neutral-900 tracking-wide leading-tight">
                   {product.title}
                 </h1>
 
                 {/* Rating Summary Row */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="pdp-rating text-yellow-500 flex items-center">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="pdp-rating text-yellow-500 text-sm flex items-center">
                     {"★".repeat(Math.round(avgRating || 4))}
                     {"☆".repeat(5 - Math.round(avgRating || 4))}
                   </div>
-                  <span className="pdp-rating-count text-xs text-neutral-500 font-bold">
+                  <span className="text-xs text-neutral-400 font-bold tracking-wider uppercase">
                     {totalReviews > 0
                       ? `${avgRating.toFixed(1)} (${totalReviews} Reviews)`
                       : "No Reviews Yet"}
@@ -481,7 +430,7 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Pricing Panel */}
-              <div className="pdp-price-row flex items-baseline gap-3">
+              <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-extrabold text-black">
                   ₹{priceNum}
                 </span>
@@ -496,34 +445,30 @@ export default function ProductDetailPage({ params }) {
                   </>
                 )}
               </div>
-              <p className="text-xs text-neutral-500 -mt-2">
+              <p className="text-xs text-neutral-400 -mt-2 uppercase tracking-wider font-semibold select-none">
                 Inclusive of all taxes
               </p>
 
-              <hr className="border-neutral-200" />
+              <hr className="border-neutral-100" />
 
               {/* Size Selector */}
               <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="pdp-section-label text-xs font-bold text-neutral-800">
+                <div className="flex justify-between items-center mb-3 select-none">
+                  <span className="text-xs font-bold uppercase tracking-wider text-neutral-800">
                     Select Size
                   </span>
                   <button
-                    className="pdp-size-guide-btn text-xs text-neutral-500 underline"
+                    className="text-xs text-neutral-500 underline hover:text-black transition-colors"
                     onClick={() => setSizeGuideOpen(true)}
                   >
                     Size Guide
                   </button>
                 </div>
-                <div className="pdp-sizes flex gap-2.5">
+                <div className="pdp-sizes flex flex-wrap gap-2.5">
                   {sizes.map((size) => (
                     <button
                       key={size}
-                      className={`pdp-size-btn border rounded-md font-bold text-sm min-w-[52px] h-[52px] transition ${
-                        selectedSize === size
-                          ? "bg-black text-white border-black shadow-sm"
-                          : "border-neutral-200 text-neutral-800 hover:border-black"
-                      }`}
+                      className={`pdp-size-btn ${selectedSize === size ? "active" : ""}`}
                       onClick={() => setSelectedSize(size)}
                     >
                       {size}
@@ -533,12 +478,12 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Purchase Call to Actions */}
-              <div className="pdp-cta-row flex gap-3 mt-4">
+              <div className="flex gap-3 mt-4">
                 <button
-                  className={`pdp-add-btn flex-1 py-4.5 font-bold uppercase tracking-widest text-sm rounded-md transition ${
+                  className={`pdp-add-btn flex-1 ${
                     isAvailable
-                      ? "bg-black text-white hover:bg-neutral-800"
-                      : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                      ? ""
+                      : "opacity-50 cursor-not-allowed"
                   }`}
                   onClick={() =>
                     isAvailable && addToCart(product, selectedSize)
@@ -548,86 +493,47 @@ export default function ProductDetailPage({ params }) {
                   {isAvailable ? "Add To Cart" : "Out Of Stock"}
                 </button>
                 <button
-                  className={`pdp-wishlist-btn border rounded-md p-4.5 transition flex items-center justify-center ${
+                  className={`pdp-wishlist-btn w-14 h-14 flex items-center justify-center font-bold text-lg ${
                     isInWishlist(product.id)
-                      ? "border-red-500 text-red-500 bg-red-50/50"
-                      : "border-neutral-200 text-neutral-800 hover:border-black"
+                      ? "active"
+                      : ""
                   }`}
                   onClick={() => toggleWishlist(product.id)}
-                  aria-label={
-                    isInWishlist(product.id)
-                      ? "Remove from Wishlist"
-                      : "Add to Wishlist"
-                  }
+                  aria-label="Wishlist"
                 >
                   {isInWishlist(product.id) ? "♥" : "♡"}
                 </button>
               </div>
 
               {/* Trust Badges */}
-              <div className="pdp-badges grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
-                <div className="pdp-badge-item flex items-center gap-2.5 bg-neutral-50 border border-neutral-100 rounded-md p-3">
-                  <span className="text-lg">🚚</span>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-800">
-                      Free Shipping
-                    </p>
-                    <p className="text-[10px] text-neutral-500">
-                      On all prepaid orders
-                    </p>
-                  </div>
+              <div className="mt-8 pt-6 border-t border-neutral-100 flex flex-col gap-4 text-xs font-semibold text-neutral-800 uppercase tracking-wider select-none">
+                <div className="flex items-center gap-3.5">
+                  <span className="text-base">🚚</span>
+                  <span>Free Shipping across India on prepaid orders</span>
                 </div>
-                <div className="pdp-badge-item flex items-center gap-2.5 bg-neutral-50 border border-neutral-100 rounded-md p-3">
-                  <span className="text-lg">↩</span>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-800">
-                      Easy Returns
-                    </p>
-                    <p className="text-[10px] text-neutral-500">
-                      7 Days Return Policy
-                    </p>
-                  </div>
+                <div className="flex items-center gap-3.5">
+                  <span className="text-base">🔄</span>
+                  <span>Easy 7-day returns & exchange policy</span>
                 </div>
-                <div className="pdp-badge-item flex items-center gap-2.5 bg-neutral-50 border border-neutral-100 rounded-md p-3">
-                  <span className="text-lg">🔒</span>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-800">
-                      Secure Payments
-                    </p>
-                    <p className="text-[10px] text-neutral-500">
-                      100% Secure Checkout
-                    </p>
-                  </div>
-                </div>
-                <div className="pdp-badge-item flex items-center gap-2.5 bg-neutral-50 border border-neutral-100 rounded-md p-3">
-                  <span className="text-lg">✓</span>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-800">
-                      Genuine Brand
-                    </p>
-                    <p className="text-[10px] text-neutral-500">
-                      Official merchandise
-                    </p>
-                  </div>
+                <div className="flex items-center gap-3.5">
+                  <span className="text-base">🔒</span>
+                  <span>100% secure checkout & encrypted payments</span>
                 </div>
               </div>
 
-              <hr className="border-neutral-200 mt-6" />
-
               {/* Description Accordion */}
-              <div className="pdp-description">
+              <div className="border-t border-neutral-150 py-4 mt-6">
                 <button
-                  className="flex justify-between items-center w-full py-2 font-black uppercase text-xs tracking-widest text-neutral-800"
+                  className="flex justify-between items-center w-full py-2 font-extrabold uppercase text-[11px] tracking-widest text-neutral-800 hover:opacity-75 transition-opacity"
                   onClick={() => setDescOpen(!descOpen)}
                 >
                   <span>Description</span>
-                  <span className="text-lg">{descOpen ? "−" : "+"}</span>
+                  <span className="text-sm font-semibold">{descOpen ? "—" : "+"}</span>
                 </button>
                 {descOpen && (
-                  <div className="pt-3 pb-5">
-                    {/* TODO(security): Render HTML description safely from trusted database catalog. */}
+                  <div className="pt-3 pb-2">
                     <div
-                      className="pdp-desc-html prose prose-sm max-w-none text-neutral-600"
+                      className="pdp-desc-html prose prose-sm max-w-none text-neutral-600 text-xs leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: product.body_html }}
                     />
                   </div>
@@ -635,26 +541,25 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Delivery Info Accordion */}
-              <hr className="border-neutral-200" />
-              <div className="py-3">
+              <div className="border-t border-neutral-150 py-4">
                 <button
-                  className="flex justify-between items-center w-full py-2 font-black uppercase text-xs tracking-widest text-neutral-800"
+                  className="flex justify-between items-center w-full py-2 font-extrabold uppercase text-[11px] tracking-widest text-neutral-800 hover:opacity-75 transition-opacity"
                   onClick={() => setDeliveryOpen(!deliveryOpen)}
                 >
                   <span>Delivery & Returns</span>
-                  <span className="text-lg">{deliveryOpen ? "−" : "+"}</span>
+                  <span className="text-sm font-semibold">{deliveryOpen ? "—" : "+"}</span>
                 </button>
                 {deliveryOpen && (
-                  <div className="pt-3 pb-2 text-xs leading-relaxed text-neutral-600">
-                    <p className="mb-2">
+                  <div className="pt-3 pb-2 text-xs leading-relaxed text-neutral-600 flex flex-col gap-2.5">
+                    <p>
                       ⚡ **Dispatch Time:** Orders are dispatched within 24-48
                       business hours.
                     </p>
-                    <p className="mb-2">
+                    <p>
                       📦 **Shipping Duration:** Metro cities: 2-4 days. Rest of
                       India: 4-7 days.
                     </p>
-                    <p className="mb-2">
+                    <p>
                       🔄 **Returns:** Easily raise a return or exchange request
                       within 7 days of delivery through our support panel.
                     </p>
@@ -662,15 +567,13 @@ export default function ProductDetailPage({ params }) {
                 )}
               </div>
 
-              <hr className="border-neutral-200" />
-
               {/* Tags panel */}
               {product.tags && product.tags.length > 0 && (
-                <div className="pdp-tags flex flex-wrap gap-1.5 mt-2">
+                <div className="border-t border-neutral-150 py-4 flex flex-wrap gap-1.5">
                   {product.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="pdp-tag bg-neutral-100 text-[10px] font-bold text-neutral-500 uppercase px-2.5 py-1 rounded-full"
+                      className="bg-neutral-100 text-[9px] font-bold text-neutral-500 uppercase px-2.5 py-1 tracking-wider"
                     >
                       {tag}
                     </span>
@@ -832,19 +735,19 @@ export default function ProductDetailPage({ params }) {
             </div>
 
             {/* Write a Review Panel */}
-            <div className="border border-neutral-200 rounded-lg p-6 bg-neutral-50/50 h-fit">
-              <h3 className="text-sm font-black uppercase tracking-wider text-neutral-800 mb-4">
+            <div className="border border-neutral-100 p-6 bg-neutral-50 h-fit">
+              <h3 className="text-xs font-black uppercase tracking-wider text-neutral-800 mb-4 select-none">
                 Write a Review
               </h3>
 
               {!isAuthenticated ? (
                 <div className="text-center py-6">
-                  <p className="text-xs text-neutral-500 mb-4 font-bold">
+                  <p className="text-xs text-neutral-500 mb-4 font-semibold">
                     You must be logged in to leave a review.
                   </p>
                   <Link
                     href="/pages/account"
-                    className="bg-black text-white text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded hover:bg-neutral-800 inline-block"
+                    className="bg-black text-white text-xs font-extrabold uppercase tracking-widest px-6 py-3 hover:bg-neutral-800 transition-all inline-block select-none"
                   >
                     Log In / Sign Up
                   </Link>
@@ -855,22 +758,22 @@ export default function ProductDetailPage({ params }) {
                   className="flex flex-col gap-4"
                 >
                   {reviewError && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold p-3 rounded">
+                    <div className="bg-red-50 border border-red-100 text-red-700 text-xs font-semibold p-3">
                       {reviewError}
                     </div>
                   )}
                   {reviewSuccess && (
-                    <div className="bg-green-50 border border-green-200 text-green-700 text-xs font-bold p-3 rounded">
+                    <div className="bg-green-50 border border-green-100 text-green-700 text-xs font-semibold p-3">
                       {reviewSuccess}
                     </div>
                   )}
 
                   {/* Rating Selector */}
                   <div>
-                    <label className="text-xs font-bold text-neutral-700 block mb-1">
+                    <label className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1">
                       Overall Rating
                     </label>
-                    <div className="flex gap-1.5 text-xl">
+                    <div className="flex gap-1 text-lg">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
@@ -892,14 +795,14 @@ export default function ProductDetailPage({ params }) {
                   <div>
                     <label
                       htmlFor="review-title-input"
-                      className="text-xs font-bold text-neutral-700 block mb-1"
+                      className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1"
                     >
                       Review Title
                     </label>
                     <input
                       id="review-title-input"
                       type="text"
-                      className="w-full border border-neutral-300 rounded px-3 py-2 text-xs bg-white outline-none focus:border-black font-semibold text-neutral-800"
+                      className="w-full border border-neutral-200 px-3 py-2.5 text-xs bg-white outline-none focus:border-black font-semibold text-neutral-800 transition-colors"
                       placeholder="Summarize your experience"
                       value={reviewTitle}
                       onChange={(e) => setReviewTitle(e.target.value)}
@@ -910,14 +813,14 @@ export default function ProductDetailPage({ params }) {
                   <div>
                     <label
                       htmlFor="review-body-input"
-                      className="text-xs font-bold text-neutral-700 block mb-1"
+                      className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1"
                     >
                       Review Comments
                     </label>
                     <textarea
                       id="review-body-input"
                       rows={4}
-                      className="w-full border border-neutral-300 rounded px-3 py-2 text-xs bg-white outline-none focus:border-black font-semibold text-neutral-800"
+                      className="w-full border border-neutral-200 px-3 py-2.5 text-xs bg-white outline-none focus:border-black font-semibold text-neutral-800 transition-colors"
                       placeholder="What did you like or dislike?"
                       value={reviewBody}
                       onChange={(e) => setReviewBody(e.target.value)}
@@ -926,7 +829,7 @@ export default function ProductDetailPage({ params }) {
 
                   <button
                     type="submit"
-                    className="w-full bg-black text-white text-xs font-black uppercase tracking-widest py-3.5 rounded hover:bg-neutral-800 transition disabled:bg-neutral-300"
+                    className="w-full bg-black text-white text-xs font-extrabold uppercase tracking-widest py-3.5 hover:bg-neutral-800 transition disabled:bg-neutral-200 select-none"
                     disabled={submittingReview}
                   >
                     {submittingReview ? "Submitting..." : "Submit Review"}
