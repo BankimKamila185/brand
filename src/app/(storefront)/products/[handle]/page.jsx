@@ -600,12 +600,12 @@ export default function ProductDetailPage({ params }) {
                   className="flex items-center gap-1.5 text-xs text-neutral-800 hover:opacity-75 transition-opacity font-medium mb-3 select-none"
                   onClick={() => setSizeGuideOpen(true)}
                 >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="6" width="20" height="12" rx="2" />
-                    <line x1="6" y1="6" x2="6" y2="12" />
-                    <line x1="10" y1="6" x2="10" y2="12" />
-                    <line x1="14" y1="6" x2="14" y2="12" />
-                    <line x1="18" y1="6" x2="18" y2="12" />
+                  <svg className="w-4 h-4 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.3 9.3a1 1 0 0 0 0-1.4L16.1 2.7a1 1 0 0 0-1.4 0L2.7 14.7a1 1 0 0 0 0 1.4l5.2 5.2a1 1 0 0 0 1.4 0L21.3 9.3z" />
+                    <line x1="6" y1="12" x2="8" y2="14" />
+                    <line x1="9" y1="9" x2="11" y2="11" />
+                    <line x1="12" y1="6" x2="14" y2="8" />
+                    <line x1="15" y1="3" x2="17" y2="5" />
                   </svg>
                   <span>Size chart</span>
                 </button>
@@ -615,19 +615,24 @@ export default function ProductDetailPage({ params }) {
                 </div>
 
                 <div className="pdp-sizes flex flex-wrap gap-2.5">
-                  {sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-11 h-11 flex items-center justify-center text-xs font-bold transition rounded border ${
-                        selectedSize === size
-                          ? "bg-[#18181b] text-white border-[#18181b]"
-                          : "bg-white text-neutral-800 border-neutral-200 hover:border-black"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {sizes.map((size) => {
+                    const isActive = selectedSize === size;
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className="w-11 h-11 flex items-center justify-center text-xs font-bold transition rounded outline-none focus:outline-none focus:ring-0"
+                        style={{
+                          backgroundColor: isActive ? '#18181b' : '#ffffff',
+                          color: isActive ? '#ffffff' : '#1f2937',
+                          border: isActive ? '1px solid #18181b' : '1px solid #e5e7eb',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -658,11 +663,13 @@ export default function ProductDetailPage({ params }) {
                 <button
                   onClick={() => isAvailable && addToCart(product, selectedSize, quantity)}
                   disabled={!isAvailable}
-                  className={`w-full py-4 text-xs font-extrabold uppercase tracking-widest border border-black transition rounded active:scale-98 ${
-                    isAvailable
-                      ? "bg-white text-black hover:bg-neutral-50"
-                      : "opacity-50 cursor-not-allowed bg-neutral-100 border-neutral-300 text-neutral-400"
-                  }`}
+                  className="w-full py-4 text-xs font-extrabold uppercase tracking-widest transition rounded active:scale-98"
+                  style={{
+                    backgroundColor: isAvailable ? '#ffffff' : '#f3f4f6',
+                    color: isAvailable ? '#000000' : '#9ca3af',
+                    border: isAvailable ? '1px solid #000000' : '1px solid #d1d5db',
+                    cursor: isAvailable ? 'pointer' : 'not-allowed'
+                  }}
                 >
                   {isAvailable ? "ADD TO CART" : "OUT OF STOCK"}
                 </button>
@@ -672,7 +679,13 @@ export default function ProductDetailPage({ params }) {
                     onClick={() => {
                       addToCart(product, selectedSize, quantity);
                     }}
-                    className="w-full py-4 text-xs font-extrabold uppercase tracking-widest bg-black text-white hover:bg-neutral-800 transition rounded active:scale-98"
+                    className="w-full py-4 text-xs font-extrabold uppercase tracking-widest transition rounded active:scale-98"
+                    style={{
+                      backgroundColor: '#000000',
+                      color: '#ffffff',
+                      border: '1px solid #000000',
+                      cursor: 'pointer'
+                    }}
                   >
                     BUY IT NOW
                   </button>
@@ -749,8 +762,12 @@ export default function ProductDetailPage({ params }) {
                   href={`https://wa.me/919999999999?text=Hi%2C%20I%20am%20interested%20in%20ordering%20the%20${encodeURIComponent(product.title)}%20(Size%3A%20${selectedSize}%2C%20Qty%3A%20${quantity}).%20Link%3A%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#25d366] hover:bg-[#20ba5a] text-white text-sm font-bold py-2.5 px-4 rounded transition-colors"
-                  style={{ color: '#ffffff' }}
+                  className="inline-flex items-center gap-2 text-white text-sm font-bold py-2.5 px-4 rounded transition-colors"
+                  style={{
+                    backgroundColor: '#25d366',
+                    color: '#ffffff',
+                    cursor: 'pointer'
+                  }}
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 12.008 0c3.202 0 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005 0-3.973-.502-5.724-1.457L0 24zm6.59-11.507c-.124-.208-.493-.324-1.03-.593-.536-.27-3.17-1.562-3.666-1.743-.496-.18-.856-.27-1.216.27-.36.54-1.393 1.758-1.706 2.118-.313.36-.626.406-1.163.135-.536-.27-2.266-.835-4.316-2.664-1.593-1.42-2.67-3.174-2.984-3.714-.313-.54-.033-.833.24-1.1.245-.242.536-.626.804-.94.27-.313.36-.538.54-.897.18-.36.09-.67-.045-.94-.135-.27-1.216-2.927-1.666-4.004-.438-1.055-.88-.912-1.216-.928-.313-.016-.677-.02-1.04-.02-.36 0-.948.136-1.442.676-.495.54-1.89 1.848-1.89 4.504 0 2.656 1.93 5.22 2.2 5.58.27.36 3.798 5.797 9.198 8.127 1.285.553 2.288.884 3.068 1.132 1.293.41 2.47.35 3.398.21.1.03 2.28-.93 2.6-2.28.32-1.35.32-2.51.22-2.734-.1-.22-.36-.34-.49-.406z"/>
