@@ -216,19 +216,19 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="storefront-home flex flex-col min-h-screen">
       {/* ① Scrolling promo bar */}
       <AnnouncementBar />
 
       {/* ② Sticky header */}
       <Header />
 
-      <main className="flex-grow">
+      <main className="home-main flex-grow">
         {/* ③ Full-width hero banner */}
         <HeroSlider />
 
         {/* ⑤ Trending Now */}
-        <section className="container-fluid my-16">
+        <section className="container-fluid home-section">
           <h2 className="section-title">Trending Now</h2>
           <div className="product-grid">
             {trending.map((product) => (
@@ -238,7 +238,7 @@ export default function Home() {
         </section>
 
         {/* ⑥ Outliers Recommends */}
-        <section className="container-fluid my-16">
+        <section className="container-fluid home-section">
           <h2 className="section-title">Outliers Recommends</h2>
           <div className="sk-5col-grid">
             {recommends.map((product) => (
@@ -251,7 +251,7 @@ export default function Home() {
         <ImageBanner />
 
         {/* ⑦ New Arrivals */}
-        <section className="container-fluid my-16">
+        <section className="container-fluid home-section">
           <h2 className="section-title">New Arrivals</h2>
           <div className="sk-5col-grid">
             {newArrivals.map((product) => (

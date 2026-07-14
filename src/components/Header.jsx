@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -16,6 +16,32 @@ const Header = ({ onSearch }) => {
   const [shopExpanded, setShopExpanded] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [collectionsExpanded, setCollectionsExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!mobileMenuOpen && !searchOpen) return undefined;
+
+    const scrollY = window.scrollY;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyPosition = document.body.style.position;
+    const previousBodyTop = document.body.style.top;
+    const previousBodyWidth = document.body.style.width;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    return () => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.position = previousBodyPosition;
+      document.body.style.top = previousBodyTop;
+      document.body.style.width = previousBodyWidth;
+      window.scrollTo(0, scrollY);
+    };
+  }, [mobileMenuOpen, searchOpen]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -33,27 +59,26 @@ const Header = ({ onSearch }) => {
   };
 
   return (
-    <header className={`main-header ${mobileMenuOpen ? '!z-[9999]' : ''}`}>
+    <header className={`main-header ${mobileMenuOpen || searchOpen ? '!z-[9999]' : ''}`}>
       <div className="container-fluid">
         <div className="header-inner">
           {/* Mobile Menu Toggle - shown on mobile, hidden on desktop via CSS */}
           <button
-            className="mobile-menu-btn md:hidden text-2xl text-black hover:opacity-75 focus:outline-none flex items-center justify-center"
+            className="mobile-menu-btn md:hidden text-black hover:opacity-75 focus:outline-none flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            style={{ padding: "8px 0", width: "24px", height: "24px" }}
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
             ) : (
               /* Hamburger Icon */
               <svg
-                width="24"
-                height="24"
+                width="30"
+                height="30"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -308,7 +333,7 @@ const Header = ({ onSearch }) => {
           {/* Action Icons (Right) */}
           <div className="header-actions">
             {/* Search Input and Button */}
-            <div className="relative flex items-center">
+            <div className="mobile-search relative flex items-center">
               {searchOpen && (
                 <input
                   type="text"
@@ -344,7 +369,7 @@ const Header = ({ onSearch }) => {
             {/* Profile / Account */}
             {user ? (
               <button
-                className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center relative group"
+                className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center relative group"
                 onClick={() => {
                   if (
                     window.confirm(
@@ -378,7 +403,7 @@ const Header = ({ onSearch }) => {
             ) : (
               <Link
                 href="/pages/login"
-                className="action-btn text-black hover:opacity-70 hidden sm:flex items-center justify-center"
+                className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center"
                 aria-label="Account"
               >
                 {/* User Profile SVG */}
@@ -401,7 +426,7 @@ const Header = ({ onSearch }) => {
             {/* Wishlist */}
             <Link
               href="/pages/wishlist"
-              className="action-btn text-black hover:opacity-70 flex items-center justify-center"
+              className="action-btn wishlist-action text-black hover:opacity-70 flex items-center justify-center"
               aria-label="Wishlist"
             >
               {/* Heart SVG */}
@@ -454,7 +479,7 @@ const Header = ({ onSearch }) => {
       {/* Mobile Drawer Backdrop Overlay (starts below the header) */}
       {mobileMenuOpen && (
         <div
-          className="absolute top-full left-0 w-screen h-[calc(100dvh-90px)] bg-black/60 z-[998] backdrop-blur-sm transition-opacity duration-300 md:hidden"
+          className="absolute top-full left-0 w-screen h-[calc(100dvh-var(--header-h))] bg-black/60 z-[998] backdrop-blur-sm transition-opacity duration-300 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -462,7 +487,7 @@ const Header = ({ onSearch }) => {
       {/* Mobile Drawer Navigation (positioned below the header) */}
       {mobileMenuOpen && (
         <div
-          className="absolute top-full left-0 w-[85vw] max-w-[340px] h-[calc(100dvh-90px)] bg-white z-[999] shadow-2xl flex flex-col overflow-hidden md:hidden"
+          className="absolute top-full left-0 w-[85vw] max-w-[340px] h-[calc(100dvh-var(--header-h))] bg-white z-[999] shadow-2xl flex flex-col overflow-hidden md:hidden"
           onClick={(e) => e.stopPropagation()}
           style={{
             animation: "drawerSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards"
@@ -686,6 +711,53 @@ const Header = ({ onSearch }) => {
             )}
           </div>
 
+        </div>
+      )}
+
+      {/* Mobile full-screen search */}
+      {searchOpen && (
+        <div className="mobile-search-overlay md:hidden" role="dialog" aria-modal="true" aria-label="Search products">
+          <div className="mobile-search-overlay-header">
+            <h2>Search our store</h2>
+            <button
+              type="button"
+              className="mobile-search-close"
+              onClick={() => {
+                clearSearch();
+                setSearchOpen(false);
+              }}
+              aria-label="Close search"
+            >
+              <X aria-hidden="true" />
+            </button>
+          </div>
+
+          <form
+            className="mobile-search-form"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <input
+              type="search"
+              placeholder="Search products"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              autoFocus
+            />
+            <button type="submit" aria-label="Search products">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          </form>
         </div>
       )}
     </header>

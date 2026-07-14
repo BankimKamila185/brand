@@ -13,7 +13,7 @@ const ImageBanner = ({
   link = "/collections/all",
 }) => {
   return (
-    <section className="container-fluid my-16">
+    <section className="container-fluid home-section">
       <div className="relative w-full overflow-hidden rounded-lg group aspect-[21/9] max-md:aspect-[4/3] bg-neutral-900 shadow-md">
         <Link href={link} className="block w-full h-full relative">
           <picture className="block w-full h-full">

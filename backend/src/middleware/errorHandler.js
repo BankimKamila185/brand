@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+const { JsonWebTokenError, TokenExpiredError } = jwt;
 import { Prisma } from "@prisma/client";
 import { logger } from "../utils/logger";
 import { env } from "../config/env";

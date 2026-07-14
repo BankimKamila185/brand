@@ -12,43 +12,18 @@ const HERO_SLIDES = [
     desktopImg: "/hero-light.jpg",
     mobileImg: "/hero-light.jpg",
   },
-  {
-    title: "",
-    subtitle: "",
-    link: "/collections/all",
-    desktopImg: "/hero-dark.png",
-    mobileImg: "/hero-dark.png",
-  },
-  {
-    title: "GURKHA TROUSERS",
-    subtitle: "Premium double pleated gurkha trousers in relaxed fits",
-    link: "/collections/all",
-    desktopImg:
-      "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Gurkha_new_banner_Desktop.png?v=1775648537&width=2048",
-    mobileImg:
-      "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Gurkha_new_banner_600_x_480_px.png?v=1775648537&width=750",
-  },
-  {
-    title: "LINEN COTTON WEAVES",
-    subtitle: "Stay airy with our premium linen coordinate sets and shirts",
-    link: "/collections/all",
-    desktopImg:
-      "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=2048",
-    mobileImg:
-      "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750",
-  },
 ];
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Auto transition every 6 seconds (resets when currentSlide changes)
   useEffect(() => {
+    if (HERO_SLIDES.length < 2) return undefined;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, [currentSlide]);
+  }, []);
 
   return (
     <div className="hero-slider">
