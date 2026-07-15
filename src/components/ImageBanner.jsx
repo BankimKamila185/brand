@@ -5,8 +5,8 @@ import React from "react";
 import Link from "next/link";
 
 const ImageBanner = ({
-  desktopImg = "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=2048",
-  mobileImg = "https://___HOUSEOFOUTLIERS_DOM___/cdn/shop/files/Linen_Desktop.png?v=1776691749&width=750",
+  desktopImg = "/linen-banner.png",
+  mobileImg = "/linen-banner.png",
   title = "LINEN COTTON WEAVES",
   subtitle = "Elevate your summer wardrobe with premium coordinates and shirts.",
   buttonText = "SHOP THE COLLECTION",

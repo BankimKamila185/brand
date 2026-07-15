@@ -12,6 +12,13 @@ const HERO_SLIDES = [
     desktopImg: "/hero-light.jpg",
     mobileImg: "/hero-light.jpg",
   },
+  {
+    title: "",
+    subtitle: "",
+    link: "/collections/all",
+    desktopImg: "/hero-dark.png",
+    mobileImg: "/hero-dark.png",
+  },
 ];
 
 const HeroSlider = () => {

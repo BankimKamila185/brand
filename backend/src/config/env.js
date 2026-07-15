@@ -48,6 +48,13 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: z.string().default("12").transform(Number),
   RATE_LIMIT_WINDOW_MS: z.string().default("900000").transform(Number),
   RATE_LIMIT_MAX: z.string().default("100").transform(Number),
+
+  // Firebase Admin
+  FIREBASE_DATABASE_URL: z.string().optional(),
+  FIREBASE_SERVICE_ACCOUNT_KEY: z.string().optional(),
+  FIREBASE_PROJECT_ID: z.string().optional(),
+  FIREBASE_CLIENT_EMAIL: z.string().optional(),
+  FIREBASE_PRIVATE_KEY: z.string().optional(),
 });
 
 const _env = envSchema.safeParse(process.env);

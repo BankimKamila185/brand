@@ -161,3 +161,11 @@ export const reviewsApi = {
     api.get(`/api/reviews?productId=${productId}&page=${page}`),
   create: (data) => api.post("/api/reviews", data),
 };
+
+export const usersApi = {
+  getAddresses: () => api.get("/api/users/me/addresses"),
+  addAddress: (data) => api.post("/api/users/me/addresses", data),
+  updateAddress: (id, data) => api.patch(`/api/users/me/addresses/${id}`, data),
+  deleteAddress: (id) => api.delete(`/api/users/me/addresses/${id}`),
+};
+

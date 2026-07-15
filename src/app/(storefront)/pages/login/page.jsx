@@ -1,16 +1,18 @@
 'use strict';
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { AlertCircle, CheckCircle, Eye, EyeOff, X, Check } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Logo from '@/components/Logo';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/';
   const { login, register, isAuthenticated } = useAuth();
   const shouldReduceMotion = useReducedMotion();
 
@@ -36,12 +38,12 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If already logged in, redirect home
+  // If already logged in, redirect to target
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/');
+      router.push(redirect);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, redirect]);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +55,7 @@ export default function LoginPage() {
       await login(loginEmail, loginPassword);
       setSuccess('Logged in successfully! Redirecting...');
       setTimeout(() => {
-        router.push('/');
+        router.push(redirect);
       }, 1000);
     } catch (err) {
       setError(err?.message || 'Login failed. Please check your credentials.');
@@ -83,9 +85,9 @@ export default function LoginPage() {
         email: registerEmail,
         password: registerPassword
       });
-      setSuccess('Account created successfully! Redirecting to homepage...');
+      setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => {
-        router.push('/');
+        router.push(redirect);
       }, 1500);
     } catch (err) {
       setError(err?.message || 'Registration failed. Please try again.');
@@ -99,7 +101,7 @@ export default function LoginPage() {
       
       {/* Close button in top right of the viewport */}
       <button 
-        onClick={() => router.push('/')}
+        onClick={() => router.push(redirect)}
         className="absolute top-8 right-8 w-8 h-8 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:border-neutral-300 transition-all cursor-pointer z-20"
       >
         <X className="w-4.5 h-4.5" />
@@ -418,5 +420,13 @@ export default function LoginPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-[#F8F7F5] font-display uppercase tracking-wider text-sm font-bold text-neutral-600">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

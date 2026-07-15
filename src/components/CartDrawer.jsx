@@ -2,10 +2,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { FileText, Truck, Tag } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
+  const router = useRouter();
   const {
     cart,
     cartOpen,
@@ -54,11 +56,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
   const handleCheckoutClick = () => {
     if (cart.length === 0) return;
     setCartOpen(false);
-    if (onCheckoutSimulation) {
-      onCheckoutSimulation();
-    } else {
-      alert("Simulating checkout! Thank you for shopping.");
-    }
+    router.push("/checkout");
   };
 
   return (

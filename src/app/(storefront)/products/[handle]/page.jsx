@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useRef } from "react";
 import Link from "next/link";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
@@ -120,6 +120,100 @@ export default function ProductDetailPage({ params }) {
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+
+  const thumbnailsRef = useRef(null);
+
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const diff = touchStartX - touchEndX;
+    if (diff > 50) {
+      // Swipe Left -> Next Image
+      setActiveImg((prev) => Math.min((product?.images?.length || 1) - 1, prev + 1));
+    } else if (diff < -50) {
+      // Swipe Right -> Prev Image
+      setActiveImg((prev) => Math.max(0, prev - 1));
+    }
+    setTouchStartX(0);
+    setTouchEndX(0);
+  };
+
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [mouseStartX, setMouseStartX] = useState(0);
+  const [dragged, setDragged] = useState(false);
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest('button')) return;
+    setIsMouseDown(true);
+    setMouseStartX(e.clientX);
+    setDragged(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isMouseDown) return;
+    if (Math.abs(mouseStartX - e.clientX) > 10) {
+      setDragged(true);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    if (!isMouseDown) return;
+    const diff = mouseStartX - e.clientX;
+    if (diff > 50) {
+      setActiveImg((prev) => Math.min((product?.images?.length || 1) - 1, prev + 1));
+    } else if (diff < -50) {
+      setActiveImg((prev) => Math.max(0, prev - 1));
+    }
+    setIsMouseDown(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleHeroClick = (e) => {
+    if (dragged) {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragged(false);
+    } else {
+      setLightboxOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (thumbnailsRef.current) {
+      const activeThumbnail = thumbnailsRef.current.querySelector('.pdp-thumbnail.active');
+      if (activeThumbnail) {
+        activeThumbnail.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+  }, [activeImg]);
+
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 1025);
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1025);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Reviews
   const [reviews, setReviews] = useState([]);
@@ -272,18 +366,16 @@ export default function ProductDetailPage({ params }) {
               {/* Hero Image */}
               <div
                 className="pdp-hero-image"
-                style={{ position: "relative", background: "#f5f5f5", cursor: "zoom-in", overflow: "hidden" }}
-                onClick={() => setLightboxOpen(true)}
+                style={{ position: "relative", background: "#f5f5f5", cursor: "zoom-in", overflow: "visible" }}
+                onClick={handleHeroClick}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
               >
-                {discount > 0 && (
-                  <span style={{
-                    position: "absolute", top: 14, left: 14, zIndex: 2,
-                    background: "#e84e4e", color: "#fff", fontSize: 10,
-                    fontWeight: 800, padding: "4px 10px", borderRadius: 3, letterSpacing: "0.05em",
-                  }}>
-                    -{discount}% OFF
-                  </span>
-                )}
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
                   style={{
@@ -299,44 +391,96 @@ export default function ProductDetailPage({ params }) {
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                 </button>
+
+                {product.images.length > 1 && (
+                  <>
+                    {/* Prev Arrow */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImg((prev) => Math.max(0, prev - 1));
+                      }}
+                      disabled={activeImg === 0}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        left: isDesktop ? -60 : 16,
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: "#fff",
+                        border: "1px solid #eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 3,
+                        boxShadow: activeImg === 0 ? "none" : "0 3px 10px rgba(0,0,0,0.08)",
+                        transition: "all 0.2s ease",
+                        cursor: activeImg === 0 ? "default" : "pointer",
+                        opacity: activeImg === 0 ? 0 : 1,
+                        visibility: activeImg === 0 ? "hidden" : "visible",
+                      }}
+                      aria-label="Previous image"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
+                        <path d="M15 18l-6-6 6-6" />
+                      </svg>
+                    </button>
+
+                    {/* Next Arrow */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImg((prev) => Math.min(product.images.length - 1, prev + 1));
+                      }}
+                      disabled={activeImg === product.images.length - 1}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        right: isDesktop ? -60 : 16,
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: "#fff",
+                        border: "1px solid #eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 3,
+                        boxShadow: activeImg === product.images.length - 1 ? "none" : "0 3px 10px rgba(0,0,0,0.08)",
+                        transition: "all 0.2s ease",
+                        cursor: activeImg === product.images.length - 1 ? "default" : "pointer",
+                        opacity: activeImg === product.images.length - 1 ? 0 : 1,
+                        visibility: activeImg === product.images.length - 1 ? "hidden" : "visible",
+                      }}
+                      aria-label="Next image"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+
                 <img
                   src={product.images[activeImg]?.src}
                   alt={product.title}
                   className="pdp-hero-image-media"
-                  style={{ width: "100%", objectFit: "cover", display: "block", transition: "opacity 0.25s" }}
+                  style={{ width: "100%", objectFit: "cover", display: "block", transition: "opacity 0.25s", borderRadius: "inherit" }}
                 />
               </div>
 
-              {/* Thumbnail Strip with Arrows */}
+              {/* Thumbnail Strip */}
               {product.images.length > 1 && (
-                <div className="pdp-thumbnail-strip" style={{ position: "relative", display: "flex", alignItems: "center", gap: 10 }}>
-
-                  {/* Prev Arrow */}
-                  <button
-                    onClick={() => setActiveImg((prev) => Math.max(0, prev - 1))}
-                    disabled={activeImg === 0}
-                    style={{
-                      flexShrink: 0, width: 32, height: 32, borderRadius: "50%",
-                      background: activeImg === 0 ? "#f0f0f0" : "#fff",
-                      border: "1px solid #e0e0e0",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: activeImg === 0 ? "default" : "pointer",
-                      zIndex: 2, marginRight: 6,
-                      boxShadow: activeImg === 0 ? "none" : "0 1px 4px rgba(0,0,0,0.12)",
-                      transition: "all 0.15s",
-                      opacity: activeImg === 0 ? 0.4 : 1,
-                    }}
-                    aria-label="Previous image"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
-                      <path d="M15 18l-6-6 6-6" />
-                    </svg>
-                  </button>
+                <div className="pdp-thumbnail-strip" style={{ position: "relative" }}>
 
                   {/* Thumbnails */}
-                  <div className="pdp-thumbnails" style={{
-                    flex: 1, display: "flex", gap: 10, overflowX: "auto",
+                  <div ref={thumbnailsRef} className="pdp-thumbnails" style={{
+                    display: "flex", gap: 10, overflowX: "auto",
                     scrollbarWidth: "none", msOverflowStyle: "none",
+                    padding: "6px 4px", margin: "0 -4px",
                   }}>
                     {product.images.map((img, i) => (
                       <button
@@ -344,17 +488,15 @@ export default function ProductDetailPage({ params }) {
                         onClick={() => setActiveImg(i)}
                         className={`pdp-thumbnail${activeImg === i ? " active" : ""}`}
                         style={{
+                          position: "relative",
                           flex: "0 0 80px",
                           width: 80,
-                          height: 96,
+                          aspectRatio: "3 / 4",
                           padding: 0, border: "none", outline: "none",
                           overflow: "hidden", background: "#f5f5f5",
                           cursor: "pointer",
-                          opacity: activeImg === i ? 1 : 0.65,
-                          transition: "opacity 0.15s",
+                          opacity: 1,
                         }}
-                        onMouseEnter={(e) => { if (activeImg !== i) e.currentTarget.style.opacity = "1"; }}
-                        onMouseLeave={(e) => { if (activeImg !== i) e.currentTarget.style.opacity = "0.65"; }}
                         aria-label={`View image ${i + 1}`}
                       >
                         <img
@@ -365,28 +507,6 @@ export default function ProductDetailPage({ params }) {
                       </button>
                     ))}
                   </div>
-
-                  {/* Next Arrow */}
-                  <button
-                    onClick={() => setActiveImg((prev) => Math.min(product.images.length - 1, prev + 1))}
-                    disabled={activeImg === product.images.length - 1}
-                    style={{
-                      flexShrink: 0, width: 32, height: 32, borderRadius: "50%",
-                      background: activeImg === product.images.length - 1 ? "#f0f0f0" : "#fff",
-                      border: "1px solid #e0e0e0",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: activeImg === product.images.length - 1 ? "default" : "pointer",
-                      zIndex: 2, marginLeft: 6,
-                      boxShadow: activeImg === product.images.length - 1 ? "none" : "0 1px 4px rgba(0,0,0,0.12)",
-                      transition: "all 0.15s",
-                      opacity: activeImg === product.images.length - 1 ? 0.4 : 1,
-                    }}
-                    aria-label="Next image"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </button>
                 </div>
               )}
             </div>

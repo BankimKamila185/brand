@@ -73,10 +73,6 @@ const ProductCard = ({ product, onOpenDetails }) => {
         className="product-card cursor-pointer block text-current no-underline"
       >
         <div className="product-card-media">
-          {discountPercent > 0 && (
-            <span className="product-badge">-{discountPercent}% OFF</span>
-          )}
-
           <img
             src={firstImg}
             alt={product.title}
