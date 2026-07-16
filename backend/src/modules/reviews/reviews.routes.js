@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "../../config/database";
 import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate } from "../../middleware/auth";
+import { authenticate, requireAdmin } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import {
   sendSuccess,
@@ -18,6 +18,8 @@ const createReviewSchema = z.object({
   title: z.string().max(150).optional(),
   body: z.string().max(2000).optional(),
 });
+
+const moderateReviewSchema = z.object({ approved: z.boolean() });
 
 // GET /api/reviews?productId=xxx
 router.get(
@@ -119,6 +121,45 @@ router.post(
         ? "Review submitted successfully"
         : "Review submitted and pending approval",
     );
+  }),
+);
+
+router.use("/admin", authenticate, requireAdmin);
+
+router.get(
+  "/admin",
+  asyncHandler(async (_req, res) => {
+    const reviews = await db.review.findMany({
+      select: {
+        id: true,
+        rating: true,
+        title: true,
+        body: true,
+        approved: true,
+        createdAt: true,
+        user: { select: { name: true, email: true } },
+        product: { select: { id: true, title: true, handle: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    sendSuccess(res, reviews, "Admin reviews fetched");
+  }),
+);
+
+router.patch(
+  "/admin/:id",
+  validate(moderateReviewSchema),
+  asyncHandler(async (req, res) => {
+    const review = await db.review.update({ where: { id: req.params["id"] }, data: req.body });
+    sendSuccess(res, review, req.body.approved ? "Review approved" : "Review rejected");
+  }),
+);
+
+router.delete(
+  "/admin/:id",
+  asyncHandler(async (req, res) => {
+    await db.review.delete({ where: { id: req.params["id"] } });
+    sendSuccess(res, null, "Review deleted");
   }),
 );
 

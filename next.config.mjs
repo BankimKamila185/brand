@@ -7,12 +7,12 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Redirects for admin dashboard
+  // Preserve the previous admin entry point while serving the new dashboard route group.
   async redirects() {
     return [
       {
         source: "/admin/dashboard",
-        destination: "/admin/dashboard/default",
+        destination: "/dashboard",
         permanent: false,
       },
     ];

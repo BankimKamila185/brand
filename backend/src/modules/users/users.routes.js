@@ -2,9 +2,9 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "../../config/database";
 import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
-import { sendSuccess, sendCreated } from "../../utils/response";
+import { authenticate, requireAdmin } from "../../middleware/auth";
+import { validate, validateQuery } from "../../middleware/validate";
+import { sendSuccess, sendCreated, buildPaginationMeta } from "../../utils/response";
 
 const router = Router();
 router.use(authenticate);
@@ -21,6 +21,14 @@ const addressSchema = z.object({
   country: z.string().default("India"),
   isDefault: z.boolean().default(false),
 });
+
+const adminUsersQuerySchema = z.object({
+  page: z.string().optional().transform((value) => Math.max(1, Number.parseInt(value || "1", 10) || 1)),
+  limit: z.string().optional().transform((value) => Math.min(100, Math.max(1, Number.parseInt(value || "20", 10) || 20))),
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]).optional(),
+});
+
+const updateRoleSchema = z.object({ role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]) });
 
 // GET /api/users/me — own profile
 router.get(
@@ -129,6 +137,41 @@ router.delete(
     if (!existing) throw new AppError("Address not found", 404);
     await db.address.delete({ where: { id } });
     sendSuccess(res, null, "Address deleted");
+  }),
+);
+
+router.use("/admin", requireAdmin);
+
+router.get(
+  "/admin",
+  validateQuery(adminUsersQuerySchema),
+  asyncHandler(async (req, res) => {
+    const { page, limit, role } = req.query;
+    const where = role ? { role } : {};
+    const [total, users] = await Promise.all([
+      db.user.count({ where }),
+      db.user.findMany({
+        where,
+        select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true, lastLoginAt: true },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+    sendSuccess(res, users, "Admin users fetched", 200, buildPaginationMeta(total, page, limit));
+  }),
+);
+
+router.patch(
+  "/admin/:id/role",
+  validate(updateRoleSchema),
+  asyncHandler(async (req, res) => {
+    const user = await db.user.update({
+      where: { id: req.params["id"] },
+      data: { role: req.body.role },
+      select: { id: true, name: true, email: true, role: true },
+    });
+    sendSuccess(res, user, "User role updated");
   }),
 );
 

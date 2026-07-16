@@ -82,7 +82,7 @@ export const authorize =
       next(new AppError("Authentication required", 401));
       return;
     }
-    if (!roles.includes(req.user.role)) {
+    if (!roles.includes(req.user.dbRole)) {
       next(new AppError("Insufficient permissions", 403));
       return;
     }

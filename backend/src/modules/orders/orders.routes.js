@@ -2,8 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "../../config/database";
 import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
+import { authenticate, requireAdmin } from "../../middleware/auth";
+import { validate, validateQuery } from "../../middleware/validate";
 import {
   sendSuccess,
   sendCreated,
@@ -20,6 +20,21 @@ const createOrderSchema = z.object({
   couponCode: z.string().optional(),
   notes: z.string().max(500).optional(),
 });
+
+const adminOrderQuerySchema = z.object({
+  page: z.string().optional().transform((value) => Math.max(1, Number.parseInt(value || "1", 10) || 1)),
+  limit: z.string().optional().transform((value) => Math.min(100, Math.max(1, Number.parseInt(value || "20", 10) || 20))),
+  status: z.enum(["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"]).optional(),
+});
+
+const updateAdminOrderSchema = z
+  .object({
+    status: z.enum(["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"]).optional(),
+    trackingNumber: z.string().min(1).max(255).nullable().optional(),
+    shippedAt: z.string().datetime().nullable().optional(),
+    deliveredAt: z.string().datetime().nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, "At least one update is required");
 
 // POST /api/orders — create from cart
 router.post(
@@ -236,6 +251,55 @@ router.get(
       200,
       buildPaginationMeta(total, page, limit),
     );
+  }),
+);
+
+// Admin order operations. This must precede /:id so "admin" is not treated as an order ID.
+router.use("/admin", requireAdmin);
+
+router.get(
+  "/admin",
+  validateQuery(adminOrderQuerySchema),
+  asyncHandler(async (req, res) => {
+    const { page, limit, status } = req.query;
+    const where = status ? { status } : {};
+    const [total, orders] = await Promise.all([
+      db.order.count({ where }),
+      db.order.findMany({
+        where,
+        select: {
+          id: true,
+          status: true,
+          total: true,
+          trackingNumber: true,
+          shippedAt: true,
+          deliveredAt: true,
+          createdAt: true,
+          user: { select: { id: true, name: true, email: true } },
+          items: { select: { id: true, quantity: true, titleSnapshot: true } },
+          payment: { select: { status: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    sendSuccess(res, orders, "Admin orders fetched", 200, buildPaginationMeta(total, page, limit));
+  }),
+);
+
+router.patch(
+  "/admin/:id",
+  validate(updateAdminOrderSchema),
+  asyncHandler(async (req, res) => {
+    const data = {
+      ...req.body,
+      ...(req.body.shippedAt !== undefined && { shippedAt: req.body.shippedAt ? new Date(req.body.shippedAt) : null }),
+      ...(req.body.deliveredAt !== undefined && { deliveredAt: req.body.deliveredAt ? new Date(req.body.deliveredAt) : null }),
+    };
+    const order = await db.order.update({ where: { id: req.params["id"] }, data });
+    sendSuccess(res, order, "Order updated");
   }),
 );
 

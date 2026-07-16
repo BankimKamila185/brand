@@ -21,6 +21,7 @@ import couponsRoutes from "./modules/coupons/coupons.routes";
 import reviewsRoutes from "./modules/reviews/reviews.routes";
 import usersRoutes from "./modules/users/users.routes";
 import notificationsRoutes from "./modules/notifications/notifications.routes";
+import warehousesRoutes from "./modules/warehouses/warehouses.routes";
 
 const createApp = () => {
   const app = express();
@@ -103,6 +104,7 @@ const createApp = () => {
   app.use("/api/reviews", reviewsRoutes);
   app.use("/api/users", usersRoutes);
   app.use("/api/notifications", notificationsRoutes);
+  app.use("/api/warehouses", warehousesRoutes);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((req, res) => {

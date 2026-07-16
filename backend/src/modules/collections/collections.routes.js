@@ -1,9 +1,21 @@
 import { Router } from "express";
+import { z } from "zod";
 import { db } from "../../config/database";
-import { asyncHandler } from "../../middleware/errorHandler";
-import { sendSuccess, sendNotFound } from "../../utils/response";
+import { asyncHandler, AppError } from "../../middleware/errorHandler";
+import { authenticate, requireAdmin } from "../../middleware/auth";
+import { validate } from "../../middleware/validate";
+import { sendCreated, sendSuccess, sendNotFound } from "../../utils/response";
 
 const router = Router();
+
+const collectionSchema = z.object({
+  name: z.string().min(2).max(100),
+  handle: z.string().min(2).max(100).regex(/^[a-z0-9-]+$/),
+  description: z.string().max(1000).nullable().optional(),
+  imageUrl: z.string().url().nullable().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+  isActive: z.boolean().optional(),
+});
 
 // GET /api/collections — list all active
 router.get(
@@ -22,6 +34,35 @@ router.get(
       orderBy: { sortOrder: "asc" },
     });
     sendSuccess(res, collections);
+  }),
+);
+
+router.use("/admin", authenticate, requireAdmin);
+
+router.post(
+  "/admin",
+  validate(collectionSchema),
+  asyncHandler(async (req, res) => {
+    const collection = await db.collection.create({ data: req.body });
+    sendCreated(res, collection, "Collection created");
+  }),
+);
+
+router.patch(
+  "/admin/:id",
+  validate(collectionSchema.partial()),
+  asyncHandler(async (req, res) => {
+    if (Object.keys(req.body).length === 0) throw new AppError("At least one update is required", 400);
+    const collection = await db.collection.update({ where: { id: req.params["id"] }, data: req.body });
+    sendSuccess(res, collection, "Collection updated");
+  }),
+);
+
+router.delete(
+  "/admin/:id",
+  asyncHandler(async (req, res) => {
+    await db.collection.delete({ where: { id: req.params["id"] } });
+    sendSuccess(res, null, "Collection deleted");
   }),
 );
 

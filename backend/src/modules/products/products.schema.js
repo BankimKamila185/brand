@@ -46,6 +46,7 @@ export const createProductSchema = z.object({
   tags: z.array(z.string()).default([]),
   categoryId: z.string().optional(),
   collectionIds: z.array(z.string()).default([]),
+  images: z.array(z.object({ src: z.string().min(1), altText: z.string().optional(), position: z.number().int().positive().optional() })).default([]),
   variants: z
     .array(
       z.object({
@@ -58,6 +59,7 @@ export const createProductSchema = z.object({
         comparePrice: z.number().positive().optional(),
         weight: z.number().default(0),
         stock: z.number().int().min(0).default(0),
+        warehouseStocks: z.array(z.object({ warehouseId: z.string(), quantity: z.number().int().min(0) })).default([]),
       }),
     )
     .min(1),

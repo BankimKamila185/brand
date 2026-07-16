@@ -169,3 +169,47 @@ export const usersApi = {
   deleteAddress: (id) => api.delete(`/api/users/me/addresses/${id}`),
 };
 
+export const adminApi = {
+  dashboard: () => api.get("/api/orders/admin?limit=100"),
+  products: {
+    list: () => api.get("/api/products?limit=100"),
+    create: (data) => api.post("/api/products", data),
+    update: (id, data) => api.patch(`/api/products/${id}`, data),
+    remove: (id) => api.delete(`/api/products/${id}`),
+  },
+  orders: {
+    list: () => api.get("/api/orders/admin?limit=100"),
+    update: (id, data) => api.patch(`/api/orders/admin/${id}`, data),
+  },
+  coupons: {
+    list: () => api.get("/api/coupons"),
+    create: (data) => api.post("/api/coupons", data),
+    update: (id, data) => api.patch(`/api/coupons/${id}`, data),
+    remove: (id) => api.delete(`/api/coupons/${id}`),
+  },
+  categories: {
+    list: () => api.get("/api/categories"),
+    create: (data) => api.post("/api/categories/admin", data),
+    update: (id, data) => api.patch(`/api/categories/admin/${id}`, data),
+    remove: (id) => api.delete(`/api/categories/admin/${id}`),
+  },
+  collections: {
+    list: () => api.get("/api/collections"),
+    create: (data) => api.post("/api/collections/admin", data),
+    update: (id, data) => api.patch(`/api/collections/admin/${id}`, data),
+    remove: (id) => api.delete(`/api/collections/admin/${id}`),
+  },
+  users: {
+    list: () => api.get("/api/users/admin?limit=100"),
+    updateRole: (id, role) => api.patch(`/api/users/admin/${id}/role`, { role }),
+  },
+  reviews: {
+    list: () => api.get("/api/reviews/admin"),
+    moderate: (id, approved) => api.patch(`/api/reviews/admin/${id}`, { approved }),
+    remove: (id) => api.delete(`/api/reviews/admin/${id}`),
+  },
+  warehouses: {
+    list: () => api.get("/api/warehouses"),
+    create: (data) => api.post("/api/warehouses", data),
+  },
+};

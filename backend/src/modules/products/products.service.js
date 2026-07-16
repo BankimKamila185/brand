@@ -241,7 +241,15 @@ export const productsService = {
               comparePrice: v.comparePrice,
               weight: v.weight,
               position: i + 1,
-              inventory: { create: { quantity: v.stock } },
+              inventory: { create: { quantity: v.warehouseStocks?.length ? v.warehouseStocks.reduce((total, stock) => total + stock.quantity, 0) : v.stock } },
+              warehouseStocks: v.warehouseStocks?.length ? { create: v.warehouseStocks } : undefined,
+            })),
+          },
+          images: {
+            create: data.images.map((image, i) => ({
+              src: image.src,
+              altText: image.altText || data.title,
+              position: image.position || i + 1,
             })),
           },
         },
