@@ -9,7 +9,6 @@ import HeroSlider from "@/components/HeroSlider";
 import ProductCard from "@/components/ProductCard";
 import ImageBanner from "@/components/ImageBanner";
 import { productsApi } from "@/lib/api";
-import productsData from "@/data/products.json";
 
 // ─── Normalize API product → ProductCard prop shape ───────────────────────────
 // Backend returns camelCase fields. ProductCard expects Shopify-style snake_case.
@@ -152,8 +151,6 @@ function SkProductRow({ count = 5 }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const staticProducts = (productsData.products || []).map(normalizeProduct);
-
   const [trending, setTrending] = useState([]);
   const [recommends, setRecommends] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
@@ -163,34 +160,38 @@ export default function Home() {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [trendRes, recRes, newRes] = await Promise.all([
+        const [trendRes, recRes, newRes, allRes] = await Promise.all([
           productsApi.list({ collection: "bestsellers", limit: "8" }),
           productsApi.list({ collection: "outliers-recommends", limit: "5" }),
           productsApi.list({ collection: "whats-new", limit: "5" }),
+          productsApi.list({ limit: "24" }),
         ]);
 
-        // Each API response wraps products in data or data.products
-        const pick = (res, fallback) => {
-          if (res.success) {
+        const extract = (res) => {
+          if (res && res.success) {
             const raw = Array.isArray(res.data)
               ? res.data
               : Array.isArray(res.data?.products)
               ? res.data.products
               : [];
-            if (raw.length > 0) return raw.map(normalizeProduct);
+            return raw.map(normalizeProduct);
           }
-          return fallback;
+          return [];
         };
 
-        setTrending(pick(trendRes, staticProducts.slice(0, 8)));
-        setRecommends(pick(recRes, staticProducts.slice(8, 13)));
-        setNewArrivals(pick(newRes, staticProducts.slice(13, 18)));
+        const allDb = extract(allRes);
+        const trendDb = extract(trendRes);
+        const recDb = extract(recRes);
+        const newDb = extract(newRes);
+
+        setTrending(trendDb.length > 0 ? trendDb : allDb.slice(0, 8));
+        setRecommends(recDb.length > 0 ? recDb : allDb.slice(8, 13));
+        setNewArrivals(newDb.length > 0 ? newDb : allDb.slice(13, 18));
       } catch (e) {
         console.error("Error fetching backend products:", e);
-        // Graceful fallback to static data
-        setTrending(staticProducts.slice(0, 8));
-        setRecommends(staticProducts.slice(8, 13));
-        setNewArrivals(staticProducts.slice(13, 18));
+        setTrending([]);
+        setRecommends([]);
+        setNewArrivals([]);
       } finally {
         setLoading(false);
       }

@@ -10,7 +10,6 @@ import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { productsApi, reviewsApi } from "@/lib/api";
-import productsData from "@/data/products.json";
 
 /* ─── Data Mapper ─────────────────────────────────────────── */
 const mapProduct = (bp) => ({
@@ -109,7 +108,6 @@ export default function ProductDetailPage({ params }) {
   const { handle } = use(params);
   const { addToCart, toggleWishlist, isInWishlist } = useCart();
   const { isAuthenticated } = useAuth();
-  const staticProducts = productsData.products || [];
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -138,10 +136,8 @@ export default function ProductDetailPage({ params }) {
     if (!touchStartX || !touchEndX) return;
     const diff = touchStartX - touchEndX;
     if (diff > 50) {
-      // Swipe Left -> Next Image
       setActiveImg((prev) => Math.min((product?.images?.length || 1) - 1, prev + 1));
     } else if (diff < -50) {
-      // Swipe Right -> Prev Image
       setActiveImg((prev) => Math.max(0, prev - 1));
     }
     setTouchStartX(0);
@@ -216,7 +212,6 @@ export default function ProductDetailPage({ params }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Reviews
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
@@ -233,13 +228,9 @@ export default function ProductDetailPage({ params }) {
       try {
         const res = await productsApi.getByHandle(handle);
         if (res.success && res.data) setProduct(mapProduct(res.data));
-        else {
-          const sp = staticProducts.find((p) => p.handle === handle);
-          if (sp) setProduct(sp);
-        }
+        else setProduct(null);
       } catch {
-        const sp = staticProducts.find((p) => p.handle === handle);
-        if (sp) setProduct(sp);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
@@ -255,13 +246,14 @@ export default function ProductDetailPage({ params }) {
   useEffect(() => {
     if (!product) return;
     const sizes = getSizes(product);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (sizes.length) setSelectedSize(sizes[0]);
 
-    const related = staticProducts
-      .filter((p) => p.id !== product.id && (p.product_type === product.product_type || p.vendor === product.vendor))
-      .slice(0, 4);
-    setRelatedProducts(related);
+    // Load related products from DB
+    productsApi.getRelated(String(product.id)).then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setRelatedProducts(res.data.map(mapProduct));
+      }
+    }).catch(() => { });
 
     // Load reviews
     reviewsApi.list(String(product.id)).then((res) => {

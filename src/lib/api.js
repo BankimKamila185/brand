@@ -118,6 +118,8 @@ export const productsApi = {
   getByHandle: (handle) => api.get(`/api/products/${handle}`),
 
   search: (q) => api.get(`/api/products/search?q=${encodeURIComponent(q)}`),
+
+  getRelated: (id) => api.get(`/api/products/${id}/related`),
 };
 
 export const collectionsApi = {

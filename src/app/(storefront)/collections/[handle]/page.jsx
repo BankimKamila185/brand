@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
-import productsData from "@/data/products.json";
 import { productsApi } from "@/lib/api";
 import Link from "next/link";
 
@@ -49,8 +48,8 @@ export default function CollectionPage({ params }) {
     COLLECTION_LABELS[handle] ||
     handle.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const staticProducts = productsData.products || [];
   const [dbProducts, setDbProducts] = useState([]);
+  const [isFallback, setIsFallback] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [sortBy, setSortBy] = useState("featured");
@@ -62,33 +61,44 @@ export default function CollectionPage({ params }) {
       setLoading(true);
       try {
         const res = await productsApi.list({ collection: handle, limit: "100" });
+        let productsList = [];
+        let isFb = false;
         if (res.success && res.data && res.data.length > 0) {
-          const formatted = res.data.map((p) => ({
-            id: p.id,
-            title: p.title,
-            handle: p.handle,
-            product_type: p.productType || "",
-            vendor: p.vendor || "",
-            tags: p.tags || [],
-            published_at: p.publishedAt,
-            created_at: p.createdAt,
-            updated_at: p.updatedAt,
-            variants: (p.variants || []).map((v) => ({
-              id: v.id,
-              title: v.title,
-              price: v.price,
-              compare_at_price: v.comparePrice,
-              option1: v.option1,
-              option2: v.option2,
-              available: v.inventory ? v.inventory.quantity > 0 : true,
-            })),
-            images: (p.images || []).map((img) => ({
-              src: img.src,
-              alt: img.altText || p.title,
-            })),
-          }));
-          setDbProducts(formatted);
+          productsList = res.data;
+        } else {
+          const fallbackRes = await productsApi.list({ limit: "100" });
+          if (fallbackRes.success && fallbackRes.data) {
+            productsList = fallbackRes.data;
+            isFb = true;
+          }
         }
+        setIsFallback(isFb);
+
+        const formatted = productsList.map((p) => ({
+          id: p.id,
+          title: p.title,
+          handle: p.handle,
+          product_type: p.productType || "",
+          vendor: p.vendor || "",
+          tags: p.tags || [],
+          published_at: p.publishedAt,
+          created_at: p.createdAt,
+          updated_at: p.updatedAt,
+          variants: (p.variants || []).map((v) => ({
+            id: v.id,
+            title: v.title,
+            price: v.price,
+            compare_at_price: v.comparePrice,
+            option1: v.option1,
+            option2: v.option2,
+            available: v.inventory ? v.inventory.quantity > 0 : true,
+          })),
+          images: (p.images || []).map((img) => ({
+            src: img.src,
+            alt: img.altText || p.title,
+          })),
+        }));
+        setDbProducts(formatted);
       } catch (err) {
         console.error("Failed to load products from DB:", err);
       } finally {
@@ -98,13 +108,12 @@ export default function CollectionPage({ params }) {
     fetchProducts();
   }, [handle]);
 
-  const allProducts = dbProducts.length > 0 ? dbProducts : staticProducts;
+  const allProducts = dbProducts;
 
   const filteredProducts = useMemo(() => {
     let products = allProducts;
 
-    // Collection filter (only apply local fallback filtering if using static products)
-    if (handle !== "all" && dbProducts.length === 0) {
+    if (handle !== "all" && isFallback) {
       products = products.filter((p) => {
         const typeSlug = p.product_type.toLowerCase().replace(/ /g, "-");
         const tags = p.tags.map((t) => t.toLowerCase().replace(/ /g, "-"));
@@ -115,7 +124,6 @@ export default function CollectionPage({ params }) {
         );
       });
 
-      // Fallback: if no strict match, show similar types
       if (products.length === 0) {
         products = allProducts.slice(0, 12);
       }
