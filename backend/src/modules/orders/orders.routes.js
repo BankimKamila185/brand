@@ -289,6 +289,96 @@ router.get(
   }),
 );
 
+router.post(
+  "/admin/simulate",
+  asyncHandler(async (req, res) => {
+    // Select a random active product variant
+    const variant = await db.productVariant.findFirst({
+      where: { isActive: true },
+      include: { product: { select: { title: true } } },
+    });
+    if (!variant) {
+      throw new AppError("No variants available for simulation. Please seed the database first.", 400);
+    }
+
+    // Find or create a simulation user
+    let simUser = await db.user.findFirst({
+      where: { email: "simulator@tevar.in" },
+    });
+    if (!simUser) {
+      simUser = await db.user.create({
+        data: {
+          name: "Simulation Bot",
+          email: "simulator@tevar.in",
+          passwordHash: "$2a$12$L7pBWhY8Xo36QZ0k9jL3OeYJ4r9Z7yYVqW0R5A7G8C9D0E1F2G3H4", // dummy hash
+          role: "USER",
+        },
+      });
+    }
+
+    // Find or create a simulation address
+    let simAddress = await db.address.findFirst({
+      where: { userId: simUser.id },
+    });
+    if (!simAddress) {
+      simAddress = await db.address.create({
+        data: {
+          userId: simUser.id,
+          name: "Simulation Bot",
+          phone: "9999999999",
+          line1: "123 Outlier Street",
+          city: "New Delhi",
+          state: "Delhi",
+          pincode: "110001",
+          label: "Simulation Hub",
+        },
+      });
+    }
+
+    // Create the simulated order parameters
+    const qty = Math.floor(Math.random() * 2) + 1;
+    const price = Number(variant.price);
+    const subtotal = price * qty;
+    const shippingCharge = subtotal >= 999 ? 0 : 99;
+    const total = subtotal + shippingCharge;
+
+    const order = await db.order.create({
+      data: {
+        userId: simUser.id,
+        addressId: simAddress.id,
+        subtotal,
+        total,
+        shippingCharge,
+        status: "CONFIRMED",
+        items: {
+          create: {
+            variantId: variant.id,
+            quantity: qty,
+            priceSnapshot: variant.price,
+            titleSnapshot: variant.product.title,
+            variantSnapshot: variant.title,
+          },
+        },
+        payment: {
+          create: {
+            amount: total,
+            status: "PAID",
+            method: "SIMULATION",
+          },
+        },
+      },
+      select: {
+        id: true,
+        status: true,
+        total: true,
+        createdAt: true,
+      },
+    });
+
+    sendCreated(res, order, "Simulation order created successfully");
+  }),
+);
+
 router.patch(
   "/admin/:id",
   validate(updateAdminOrderSchema),

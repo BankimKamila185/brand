@@ -29,7 +29,7 @@ export default function ContactPage() {
       <main className="flex-grow">
         <div className="collection-hero">
           <h1 className="collection-hero-title">Contact Us</h1>
-          <p className="collection-hero-count">We'd love to hear from you</p>
+          <p className="collection-hero-count">We&apos;d love to hear from you</p>
         </div>
 
         <div className="container-fluid py-16">
@@ -49,7 +49,7 @@ export default function ContactPage() {
               </h2>
               <p className="text-gray-600 leading-relaxed mb-8">
                 Have a question about your order, sizing, or anything else? Our
-                team is happy to help. Reach out and we'll respond within 24
+                team is happy to help. Reach out and we&apos;ll respond within 24
                 hours.
               </p>
 
@@ -125,7 +125,7 @@ export default function ContactPage() {
                     Message Sent!
                   </h3>
                   <p className="text-gray-600">
-                    Thank you for reaching out. We'll reply within 24 hours.
+                    Thank you for reaching out. We&apos;ll reply within 24 hours.
                   </p>
                   <button
                     className="mt-6 text-sm font-bold underline"

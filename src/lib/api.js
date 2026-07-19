@@ -94,6 +94,8 @@ export const authApi = {
   register: (data) => api.post("/api/auth/register", data),
 
   login: (data) => api.post("/api/auth/login", data),
+  
+  socialLogin: (idToken) => api.post("/api/auth/social-login", { idToken }),
 
   logout: () => api.post("/api/auth/logout"),
 
@@ -180,6 +182,7 @@ export const adminApi = {
   orders: {
     list: () => api.get("/api/orders/admin?limit=100"),
     update: (id, data) => api.patch(`/api/orders/admin/${id}`, data),
+    simulate: () => api.post("/api/orders/admin/simulate"),
   },
   coupons: {
     list: () => api.get("/api/coupons"),

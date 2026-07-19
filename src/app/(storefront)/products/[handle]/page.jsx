@@ -204,10 +204,11 @@ export default function ProductDetailPage({ params }) {
     }
   }, [activeImg]);
 
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1025 : false
+  );
 
   useEffect(() => {
-    setIsDesktop(window.innerWidth >= 1025);
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 1025);
     };
@@ -246,10 +247,15 @@ export default function ProductDetailPage({ params }) {
     load();
   }, [handle]);
 
+  const getSizes = (p) =>
+    p.options?.[0]?.values ||
+    [...new Set(p.variants.map((v) => v.option1 || v.title).filter(Boolean))];
+
   /* after product loads */
   useEffect(() => {
     if (!product) return;
     const sizes = getSizes(product);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (sizes.length) setSelectedSize(sizes[0]);
 
     const related = staticProducts
@@ -265,11 +271,8 @@ export default function ProductDetailPage({ params }) {
         setTotalReviews(res.data.totalReviews || 0);
       }
     }).catch(() => { });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
-
-  const getSizes = (p) =>
-    p.options?.[0]?.values ||
-    [...new Set(p.variants.map((v) => v.option1 || v.title).filter(Boolean))];
 
   const getActiveVariant = () =>
     product?.variants.find((v) => v.option1 === selectedSize || v.title === selectedSize) ||

@@ -28,6 +28,18 @@ export const authController = {
     sendSuccess(res, { user, accessToken }, "Login successful");
   }),
 
+  socialLogin: asyncHandler(async (req, res) => {
+    const { accessToken, refreshToken, user } = await authService.socialLogin(
+      req.body.idToken,
+    );
+
+    // Set tokens as HTTP-only cookies
+    res.cookie("access_token", accessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie("refresh_token", refreshToken, REFRESH_COOKIE_OPTIONS);
+
+    sendSuccess(res, { user, accessToken }, "Social login successful");
+  }),
+
   refresh: asyncHandler(async (req, res) => {
     const token = req.cookies?.refresh_token;
 

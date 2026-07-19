@@ -8,6 +8,8 @@ import React, {
   useCallback,
 } from "react";
 import { authApi, ApiError } from "../lib/api";
+import { auth } from "../lib/firebase";
+import { signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 
 const AuthContext = createContext(undefined);
 
@@ -27,8 +29,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    refreshUser().finally(() => setIsLoading(false));
-  }, [refreshUser]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refreshUser().finally(() => { setIsLoading(false); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = useCallback(async (email, password) => {
     const res = await authApi.login({ email, password });
@@ -52,6 +56,28 @@ export const AuthProvider = ({ children }) => {
     // Don't auto-login — user must verify email first
   }, []);
 
+  const loginWithGoogle = useCallback(async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+    const res = await authApi.socialLogin(idToken);
+    if (res.data?.user) {
+      setUser(res.data.user);
+    }
+  }, []);
+
+  const loginWithApple = useCallback(async () => {
+    const provider = new OAuthProvider('apple.com');
+    provider.addScope('email');
+    provider.addScope('name');
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+    const res = await authApi.socialLogin(idToken);
+    if (res.data?.user) {
+      setUser(res.data.user);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -62,6 +88,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         register,
         refreshUser,
+        loginWithGoogle,
+        loginWithApple,
       }}
     >
       {children}

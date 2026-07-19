@@ -9,6 +9,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  socialLoginSchema,
 } from "./auth.schema";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.post(
   authController.register,
 );
 router.post("/login", authLimiter, validate(loginSchema), authController.login);
+router.post("/social-login", authLimiter, validate(socialLoginSchema), authController.socialLogin);
 router.post("/refresh", authController.refresh);
 router.get("/verify-email/:token", authController.verifyEmail);
 router.post(

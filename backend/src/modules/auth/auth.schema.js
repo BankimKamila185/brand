@@ -37,3 +37,7 @@ export const changePasswordSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
+
+export const socialLoginSchema = z.object({
+  idToken: z.string().min(1, "ID token is required"),
+});

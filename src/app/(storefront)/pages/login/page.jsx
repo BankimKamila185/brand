@@ -13,7 +13,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
-  const { login, register, isAuthenticated } = useAuth();
+  const { login, register, isAuthenticated, loginWithGoogle, loginWithApple } = useAuth();
   const shouldReduceMotion = useReducedMotion();
 
   const [activeTab, setActiveTab] = useState('register');
@@ -91,6 +91,40 @@ function LoginForm() {
       }, 1500);
     } catch (err) {
       setError(err?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      await loginWithGoogle();
+      setSuccess('Logged in successfully! Redirecting...');
+      setTimeout(() => {
+        router.push(redirect);
+      }, 1000);
+    } catch (err) {
+      setError(err?.message || 'Google login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      await loginWithApple();
+      setSuccess('Logged in successfully! Redirecting...');
+      setTimeout(() => {
+        router.push(redirect);
+      }, 1000);
+    } catch (err) {
+      setError(err?.message || 'Apple login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -364,7 +398,8 @@ function LoginForm() {
             <div className="tevar-login-social-row">
               <button 
                 type="button"
-                onClick={() => alert('Google authentication coming soon!')}
+                onClick={handleGoogleLogin}
+                disabled={loading}
                 className="tevar-login-social-btn"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -377,7 +412,8 @@ function LoginForm() {
               </button>
               <button 
                 type="button"
-                onClick={() => alert('Apple ID authentication coming soon!')}
+                onClick={handleAppleLogin}
+                disabled={loading}
                 className="tevar-login-social-btn"
               >
                 <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">

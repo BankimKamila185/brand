@@ -1,6 +1,7 @@
 import { db } from "../../config/database";
 import { AppError } from "../../middleware/errorHandler";
 import { buildPaginationMeta } from "../../utils/response";
+import { uploadBase64ToR2 } from "../../config/r2";
 
 // Shared select for product list (lightweight)
 const productListSelect = {
@@ -217,6 +218,18 @@ export const productsService = {
     if (existing)
       throw new AppError("A product with this handle already exists", 409);
 
+    // Upload base64 images to Cloudflare R2 if configured
+    const uploadedImages = await Promise.all(
+      (data.images || []).map(async (image, i) => {
+        const url = await uploadBase64ToR2(image.src, "products");
+        return {
+          src: url,
+          altText: image.altText || data.title,
+          position: image.position || i + 1,
+        };
+      })
+    );
+
     const product = await db.$transaction(async (tx) => {
       const created = await tx.product.create({
         data: {
@@ -246,11 +259,7 @@ export const productsService = {
             })),
           },
           images: {
-            create: data.images.map((image, i) => ({
-              src: image.src,
-              altText: image.altText || data.title,
-              position: image.position || i + 1,
-            })),
+            create: uploadedImages,
           },
         },
         select: productDetailSelect,

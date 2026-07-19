@@ -13,6 +13,7 @@ import {
   sendPasswordResetEmail,
 } from "../../utils/email";
 import { logger } from "../../utils/logger";
+import { adminAuth } from "../../config/firebase.js";
 
 export const authService = {
   async register(data) {
@@ -79,6 +80,80 @@ export const authService = {
       .createHash("sha256")
       .update(refreshToken)
       .digest("hex");
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        refreshTokenHash: refreshHash,
+        lastLoginAt: new Date(),
+      },
+    });
+
+    const userPayload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      avatar: user.avatar,
+    };
+
+    return { accessToken, refreshToken, user: userPayload };
+  },
+
+  async socialLogin(idToken) {
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch (error) {
+      logger.error("Social login token verification failed:", error);
+      throw new AppError("Invalid or expired ID token", 401);
+    }
+
+    const { email, name, picture, uid } = decodedToken;
+
+    if (!email) {
+      throw new AppError("Email is required from social provider", 400);
+    }
+
+    let user = await db.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const passwordHash = await bcrypt.hash(randomPassword, env.BCRYPT_ROUNDS);
+
+      user = await db.user.create({
+        data: {
+          name: name || email.split("@")[0],
+          email,
+          passwordHash,
+          emailVerified: true,
+          avatar: picture,
+          isActive: true,
+        },
+      });
+
+      await db.cart.create({ data: { userId: user.id } });
+    } else {
+      if (!user.isActive) {
+        throw new AppError("User account is disabled", 401);
+      }
+      user = await db.user.update({
+        where: { id: user.id },
+        data: {
+          emailVerified: true,
+          avatar: user.avatar || picture,
+        },
+      });
+    }
+
+    const accessToken = generateAccessToken(user.id, user.email, user.role);
+    const { token: refreshToken } = generateRefreshToken(user.id);
+
+    const refreshHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+      
     await db.user.update({
       where: { id: user.id },
       data: {
