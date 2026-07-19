@@ -11,3 +11,13 @@ services:
         sync: false
       - key: NODE_ENV
         value: production
+      - key: REDIS_URL
+        fromService:
+          name: tevar-redis
+          type: redis
+          property: connectionString
+
+  - type: redis
+    name: tevar-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
