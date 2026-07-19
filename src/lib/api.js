@@ -172,6 +172,7 @@ export const usersApi = {
 };
 
 export const adminApi = {
+  analytics: () => api.get("/api/analytics/dashboard"),
   dashboard: () => api.get("/api/orders/admin?limit=100"),
   products: {
     list: () => api.get("/api/products?limit=100"),

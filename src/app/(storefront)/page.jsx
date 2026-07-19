@@ -11,7 +11,46 @@ import ImageBanner from "@/components/ImageBanner";
 import { productsApi } from "@/lib/api";
 import productsData from "@/data/products.json";
 
-// ─── Skeleton primitives ──────────────────────────────────────────────────
+// ─── Normalize API product → ProductCard prop shape ───────────────────────────
+// Backend returns camelCase fields. ProductCard expects Shopify-style snake_case.
+function normalizeProduct(p) {
+  if (!p) return null;
+
+  // Map variants
+  const variants = (p.variants || []).map((v) => ({
+    ...v,
+    id: v.id,
+    title: v.title || v.option1 || "Default",
+    option1: v.option1,
+    option2: v.option2,
+    price: String(v.price || "0"),
+    compare_at_price: v.comparePrice ? String(v.comparePrice) : null,
+    comparePrice: v.comparePrice ? String(v.comparePrice) : null,
+    inventory: v.inventory,
+  }));
+
+  // Map images — ensure each has a `src` property
+  const images = (p.images || []).map((img) => ({
+    ...img,
+    src: img.src || img.url || img.imageSrc || "",
+  }));
+
+  return {
+    ...p,
+    id: p.id,
+    title: p.title,
+    handle: p.handle,
+    product_type: p.productType || p.product_type || "",
+    body_html: p.description || p.body_html || "",
+    tags: p.tags || [],
+    vendor: p.vendor || "",
+    variants: variants.length > 0 ? variants : [{ id: "default", title: "Default", price: "0", compare_at_price: null }],
+    images: images,
+    options: p.options || [{ name: "Size", values: variants.map((v) => v.option1).filter(Boolean) }],
+  };
+}
+
+// ─── Skeleton primitives ──────────────────────────────────────────────────────
 const SkBox = ({ className = "", style = {} }) => (
   <div className={`sk-box ${className}`} style={style} />
 );
@@ -20,29 +59,16 @@ const SkLine = ({ w = "100%", h = 14 }) => (
   <div className="sk-box sk-line" style={{ width: w, height: h }} />
 );
 
-// ─── Hero Slider Skeleton ──────────────────────────────────────────────────
+// ─── Hero Slider Skeleton ─────────────────────────────────────────────────────
 function SkHeroSlider() {
   return (
     <div className="sk-hero">
-      {/* Full-bleed image placeholder */}
-      <SkBox
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          borderRadius: 0,
-        }}
-      />
-
-      {/* Overlay text — bottom-left */}
+      <SkBox style={{ position: "absolute", inset: 0, width: "100%", height: "100%", borderRadius: 0 }} />
       <div className="sk-hero-content">
         <SkBox className="sk-hero-title" />
         <SkBox className="sk-hero-sub" />
         <SkBox className="sk-hero-btn" />
       </div>
-
-      {/* Arrow buttons */}
       <div className="sk-slider-controls">
         <SkBox style={{ width: 50, height: 50, borderRadius: "50%" }} />
         <SkBox style={{ width: 50, height: 50, borderRadius: "50%" }} />
@@ -51,23 +77,13 @@ function SkHeroSlider() {
   );
 }
 
-// ─── Skeleton product card ────────────────────────────────────────────────
+// ─── Skeleton product card ────────────────────────────────────────────────────
 function SkProductCard() {
   return (
     <div className="product-card">
-      {/* Image — 3:4 aspect ratio */}
       <div className="product-card-media" style={{ background: "transparent" }}>
-        <SkBox
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            borderRadius: 0,
-          }}
-        />
+        <SkBox style={{ position: "absolute", inset: 0, width: "100%", height: "100%", borderRadius: 0 }} />
       </div>
-      {/* Text rows */}
       <div className="product-card-info">
         <SkLine w="48%" h={11} />
         <SkLine w="88%" h={14} />
@@ -77,39 +93,18 @@ function SkProductCard() {
   );
 }
 
-// ─── Category Grid Skeleton ────────────────────────────────────────────────
+// ─── Category Grid Skeleton ───────────────────────────────────────────────────
 function SkCategoryGrid() {
   return (
-    <section
-      className="container-fluid sk-section"
-      style={{ marginTop: 60, marginBottom: 60 }}
-    >
+    <section className="container-fluid sk-section" style={{ marginTop: 60, marginBottom: 60 }}>
       <div className="sk-section-title-wrap">
         <SkBox style={{ width: 240, height: 28, borderRadius: 5 }} />
       </div>
-
-      {/* 4 cards — aspect-ratio 4:5 via .category-card */}
       <div className="category-grid">
         {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="category-card"
-            style={{ background: "transparent" }}
-          >
-            <SkBox
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                borderRadius: 0,
-              }}
-            />
-            {/* Label lines at bottom */}
-            <div
-              className="category-card-info"
-              style={{ zIndex: 2, gap: 10, background: "transparent" }}
-            >
+          <div key={i} className="category-card" style={{ background: "transparent" }}>
+            <SkBox style={{ position: "absolute", inset: 0, width: "100%", height: "100%", borderRadius: 0 }} />
+            <div className="category-card-info" style={{ zIndex: 2, gap: 10, background: "transparent" }}>
               <SkBox style={{ width: 120, height: 18, borderRadius: 4 }} />
               <SkBox style={{ width: 80, height: 12, borderRadius: 4 }} />
             </div>
@@ -120,24 +115,13 @@ function SkCategoryGrid() {
   );
 }
 
-// ─── Trending Now Skeleton ────────────────────────────────────────────────
+// ─── Trending Now Skeleton ────────────────────────────────────────────────────
 function SkTrendingSection() {
   return (
-    <section
-      className="container-fluid sk-section"
-      style={{ marginTop: 64, marginBottom: 64 }}
-    >
+    <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
       <div className="sk-section-title-wrap">
         <SkBox style={{ width: 200, height: 28, borderRadius: 5 }} />
       </div>
-
-      {/* Tabs */}
-      <div className="sk-tabs">
-        <SkBox style={{ width: 110, height: 20, borderRadius: 4 }} />
-        <SkBox style={{ width: 110, height: 20, borderRadius: 4 }} />
-      </div>
-
-      {/* 4-column product grid (4→3→2 via .product-grid media queries) */}
       <div className="product-grid">
         {Array.from({ length: 8 }).map((_, i) => (
           <SkProductCard key={i} />
@@ -147,25 +131,18 @@ function SkTrendingSection() {
   );
 }
 
-// ─── Outliers Recommends Skeleton ──────────────────────────────────────────────
+// ─── Row Skeleton ─────────────────────────────────────────────────────────────
 function SkProductRow({ count = 5 }) {
   return (
-    <section
-      className="container-fluid sk-section"
-      style={{ marginTop: 64, marginBottom: 64 }}
-    >
+    <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
       <div className="sk-section-title-wrap">
         <SkBox style={{ width: 280, height: 28, borderRadius: 5 }} />
       </div>
-
-      {/* 5-col → responsive via sk-5col-grid */}
       <div className="sk-5col-grid">
         {Array.from({ length: count }).map((_, i) => (
           <SkProductCard key={i} />
         ))}
       </div>
-
-      {/* CTA button */}
       <div className="sk-cta-row">
         <SkBox style={{ width: 160, height: 48, borderRadius: 4 }} />
       </div>
@@ -173,16 +150,18 @@ function SkProductRow({ count = 5 }) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const staticProducts = productsData.products || [];
-  const [trending, setTrending] = useState(staticProducts.slice(0, 8));
-  const [recommends, setRecommends] = useState(staticProducts.slice(8, 13));
-  const [newArrivals, setNewArrivals] = useState(staticProducts.slice(13, 18));
-  const [loading, setLoading] = useState(false);
+  const staticProducts = (productsData.products || []).map(normalizeProduct);
+
+  const [trending, setTrending] = useState([]);
+  const [recommends, setRecommends] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
+      setLoading(true);
       try {
         const [trendRes, recRes, newRes] = await Promise.all([
           productsApi.list({ collection: "bestsellers", limit: "8" }),
@@ -190,29 +169,34 @@ export default function Home() {
           productsApi.list({ collection: "whats-new", limit: "5" }),
         ]);
 
-        const trend =
-          trendRes.success && trendRes.data && trendRes.data.length > 0
-            ? trendRes.data
-            : staticProducts.slice(0, 8);
+        // Each API response wraps products in data or data.products
+        const pick = (res, fallback) => {
+          if (res.success) {
+            const raw = Array.isArray(res.data)
+              ? res.data
+              : Array.isArray(res.data?.products)
+              ? res.data.products
+              : [];
+            if (raw.length > 0) return raw.map(normalizeProduct);
+          }
+          return fallback;
+        };
 
-        const rec =
-          recRes.success && recRes.data && recRes.data.length > 0
-            ? recRes.data
-            : staticProducts.slice(8, 13);
-
-        const newVal =
-          newRes.success && newRes.data && newRes.data.length > 0
-            ? newRes.data
-            : staticProducts.slice(13, 18);
-
-        setTrending(trend);
-        setRecommends(rec);
-        setNewArrivals(newVal);
+        setTrending(pick(trendRes, staticProducts.slice(0, 8)));
+        setRecommends(pick(recRes, staticProducts.slice(8, 13)));
+        setNewArrivals(pick(newRes, staticProducts.slice(13, 18)));
       } catch (e) {
         console.error("Error fetching backend products:", e);
+        // Graceful fallback to static data
+        setTrending(staticProducts.slice(0, 8));
+        setRecommends(staticProducts.slice(8, 13));
+        setNewArrivals(staticProducts.slice(13, 18));
+      } finally {
+        setLoading(false);
       }
     };
     fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -228,37 +212,49 @@ export default function Home() {
         <HeroSlider />
 
         {/* ⑤ Trending Now */}
-        <section className="container-fluid home-section">
-          <h2 className="section-title">Trending Now</h2>
-          <div className="product-grid">
-            {trending.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
+        {loading ? (
+          <SkTrendingSection />
+        ) : (
+          <section className="container-fluid home-section">
+            <h2 className="section-title">Trending Now</h2>
+            <div className="product-grid">
+              {trending.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ⑥ Outliers Recommends */}
-        <section className="container-fluid home-section">
-          <h2 className="section-title">Outliers Recommends</h2>
-          <div className="sk-5col-grid">
-            {recommends.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
+        {loading ? (
+          <SkProductRow count={5} />
+        ) : (
+          <section className="container-fluid home-section">
+            <h2 className="section-title">Outliers Recommends</h2>
+            <div className="sk-5col-grid">
+              {recommends.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ⑥.5 Campaign Image Banner */}
         <ImageBanner />
 
         {/* ⑦ New Arrivals */}
-        <section className="container-fluid home-section">
-          <h2 className="section-title">New Arrivals</h2>
-          <div className="sk-5col-grid">
-            {newArrivals.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
+        {loading ? (
+          <SkProductRow count={5} />
+        ) : (
+          <section className="container-fluid home-section">
+            <h2 className="section-title">New Arrivals</h2>
+            <div className="sk-5col-grid">
+              {newArrivals.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* ⑨ Footer */}
