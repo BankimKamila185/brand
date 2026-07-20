@@ -58,7 +58,7 @@ export function AdminOperations({ type }) {
 
   const headers =
     type === "orders"
-      ? ["Order ID", "Customer", "Date", "Total", "Status", "Tracking", "Action"]
+      ? ["Order ID", "Customer", "Date", "Total", "Status", "Tracking"]
       : type === "users"
       ? ["Member", "Email address", "Role", "Joined"]
       : ["Product", "Review", "Rating", "State", "Moderate"];
@@ -89,6 +89,13 @@ export function AdminOperations({ type }) {
 
         {error && <div className="admin-error-message">{error}</div>}
 
+        {type === "orders" && (
+          <div className="bg-[#fff4d8] border border-[#bd7410]/20 text-[#bd7410] text-xs font-semibold px-4 py-3 rounded-xl mb-5 flex items-center gap-2">
+            <span>💡</span>
+            <span>Tip: Click anywhere on an order's row to open details, change status, and add tracking codes.</span>
+          </div>
+        )}
+
         <div className="admin-table-scroll">
           <table className="admin-resource-table admin-operations-table">
             <thead>
@@ -110,7 +117,11 @@ export function AdminOperations({ type }) {
                   if (type === "orders") {
                     const trInfo = parseTracking(item.trackingNumber);
                     return (
-                      <tr key={item.id}>
+                      <tr
+                        key={item.id}
+                        className="hover:bg-neutral-50 cursor-pointer transition-all duration-200"
+                        onClick={() => setSelectedOrderId(item.id)}
+                      >
                         <td className="admin-mono font-bold">#{item.id.slice(-8).toUpperCase()}</td>
                         <td>
                           <div className="text-sm font-bold text-neutral-800">
@@ -142,14 +153,6 @@ export function AdminOperations({ type }) {
                           ) : (
                             <span className="text-neutral-400 italic">Not Shipped</span>
                           )}
-                        </td>
-                        <td>
-                          <button
-                            className="bg-[#0E0D0B] hover:bg-neutral-800 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-all"
-                            onClick={() => setSelectedOrderId(item.id)}
-                          >
-                            Manage
-                          </button>
                         </td>
                       </tr>
                     );
