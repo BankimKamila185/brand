@@ -15,7 +15,7 @@ function testParse() {
         "[GSTIN]": "29AAAAA0000A1Z1",
         "[PAN]": "AAAAA0000A",
         "[CIN]": "U17299KA2026PTC123456",
-        "[SUPPORT_PHONE]": "+91 80 6900 1234 / +91 99999 88888",
+        "[SUPPORT_PHONE]": "+91 73044 06772",
         "[SUPPORT_EMAIL]": "support@theoutliersstudio.com",
         "[GRIEVANCE_EMAIL]": "grievance@theoutliersstudio.com",
         "[NODAL_EMAIL]": "nodal@theoutliersstudio.com",
