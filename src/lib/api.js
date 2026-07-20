@@ -185,6 +185,7 @@ export const adminApi = {
   },
   orders: {
     list: () => api.get("/api/orders/admin?limit=100"),
+    get: (id) => api.get(`/api/orders/admin/${id}`),
     update: (id, data) => api.patch(`/api/orders/admin/${id}`, data),
     simulate: () => api.post("/api/orders/admin/simulate"),
   },

@@ -400,6 +400,46 @@ router.patch(
   }),
 );
 
+// GET /api/orders/admin/:id — admin order detail
+router.get(
+  "/admin/:id",
+  asyncHandler(async (req, res) => {
+    const order = await db.order.findUnique({
+      where: { id: req.params["id"] },
+      select: {
+        id: true,
+        status: true,
+        subtotal: true,
+        discount: true,
+        shippingCharge: true,
+        tax: true,
+        total: true,
+        notes: true,
+        trackingNumber: true,
+        createdAt: true,
+        shippedAt: true,
+        deliveredAt: true,
+        address: true,
+        user: { select: { name: true, email: true } },
+        items: {
+          select: {
+            id: true,
+            quantity: true,
+            priceSnapshot: true,
+            titleSnapshot: true,
+            variantSnapshot: true,
+            imageSnapshot: true,
+          },
+        },
+        payment: true,
+      },
+    });
+
+    if (!order) throw new AppError("Order not found", 404);
+    sendSuccess(res, order);
+  }),
+);
+
 // GET /api/orders/:id — order detail
 router.get(
   "/:id",

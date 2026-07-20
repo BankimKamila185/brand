@@ -140,6 +140,32 @@ function getTrackingSteps(status) {
   return steps;
 }
 
+function parseTracking(trackingNumber) {
+  if (!trackingNumber) return { courier: "", number: "", url: "" };
+  if (trackingNumber.includes(":")) {
+    const parts = trackingNumber.split(":");
+    const courier = parts[0].trim();
+    const number = parts.slice(1).join(":").trim();
+    
+    let url = "";
+    const lowerCourier = courier.toLowerCase();
+    if (lowerCourier.includes("delhivery")) {
+      url = `https://www.delhivery.com/track/package/${number}`;
+    } else if (lowerCourier.includes("fedex")) {
+      url = `https://www.fedex.com/apps/fedextrack/?tracknumbers=${number}`;
+    } else if (lowerCourier.includes("dhl")) {
+      url = `https://www.dhl.com/in-en/home/tracking/tracking-express.html?submit=1&tracking-id=${number}`;
+    } else if (lowerCourier.includes("bluedart")) {
+      url = `https://www.bluedart.com/`;
+    } else if (lowerCourier.includes("dtdc")) {
+      url = `https://www.dtdc.in/`;
+    }
+    
+    return { courier, number, url };
+  }
+  return { courier: "", number: trackingNumber, url: "" };
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -843,12 +869,34 @@ export default function ProfilePage() {
                                 <Truck size={14} /> Shipment Tracker
                               </p>
                               
-                              {order.trackingNumber && (
-                                <div className="mb-4 text-sm bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 inline-flex items-center gap-2">
-                                  <span className="text-neutral-500 font-medium">Tracking Number:</span>
-                                  <span className="font-mono font-bold text-neutral-800">{order.trackingNumber}</span>
-                                </div>
-                              )}
+                              {order.trackingNumber && (() => {
+                                const tr = parseTracking(order.trackingNumber);
+                                return (
+                                  <div className="mb-5 flex flex-wrap items-center gap-3">
+                                    <div className="text-sm bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-200 flex flex-wrap items-center gap-x-4 gap-y-2">
+                                      {tr.courier && (
+                                        <span className="flex items-center gap-1.5 text-neutral-600 font-medium">
+                                          <Truck size={14} className="text-neutral-400" />
+                                          Courier: <strong className="text-neutral-800">{tr.courier}</strong>
+                                        </span>
+                                      )}
+                                      <span className="flex items-center gap-1.5 text-neutral-600 font-medium border-l border-neutral-200 pl-0 md:pl-4">
+                                        Tracking ID: <strong className="font-mono text-neutral-900">{tr.number}</strong>
+                                      </span>
+                                    </div>
+                                    {tr.url && (
+                                      <a
+                                        href={tr.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs bg-[#0E0D0B] text-white hover:bg-neutral-800 font-bold px-4 py-3.5 rounded-xl transition-all duration-200"
+                                      >
+                                        Track shipment ↗
+                                      </a>
+                                    )}
+                                  </div>
+                                );
+                              })()}
 
                               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-4 mt-2">
                                 {getTrackingSteps(order.status).map((step, idx, arr) => (
