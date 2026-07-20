@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import { CircleHelp, LogOut, Menu, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function AdminShell({ user, sidebarItems, children }) {
+import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
+
+export function AdminShell({ user, children }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 

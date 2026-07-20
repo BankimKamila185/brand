@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import "./admin.css";
 
-import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import { AdminShell } from "./_components/admin-shell";
 
 export const metadata = { title: "Tevar Admin", description: "Tevar operations dashboard." };
@@ -22,7 +21,7 @@ export default async function AdminLayout({ children }) {
   if (!user || !["ADMIN", "SUPER_ADMIN"].includes(user.role || user.dbRole)) redirect("/admin/login");
 
   return (
-    <AdminShell user={user} sidebarItems={sidebarItems}>
+    <AdminShell user={user}>
       {children}
     </AdminShell>
   );
