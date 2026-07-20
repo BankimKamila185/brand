@@ -132,11 +132,11 @@ export function AdminOperations({ type }) {
                           </div>
                         </td>
                         <td className="text-xs text-neutral-500">
-                          {new Date(item.createdAt).toLocaleDateString("en-IN", {
+                          {item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN", {
                             day: "numeric",
                             month: "short",
                             year: "numeric",
-                          })}
+                          }) : "—"}
                         </td>
                         <td className="admin-amount">{currency.format(Number(item.total))}</td>
                         <td>
@@ -181,7 +181,7 @@ export function AdminOperations({ type }) {
                             <option>SUPER_ADMIN</option>
                           </select>
                         </td>
-                        <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                        <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—"}</td>
                       </tr>
                     );
                   }
@@ -465,18 +465,18 @@ function OrderDetailView({ orderId, onBack }) {
                 <div className="admin-info-rows">
                   <div className="admin-info-row">
                     <span>Placed At:</span>
-                    <strong>{new Date(order.createdAt).toLocaleString("en-IN")}</strong>
+                    <strong>{order.createdAt ? new Date(order.createdAt).toLocaleString("en-IN") : "—"}</strong>
                   </div>
                   {order.shippedAt && (
                     <div className="admin-info-row">
                       <span>Dispatched At:</span>
-                      <strong>{new Date(order.shippedAt).toLocaleString("en-IN")}</strong>
+                      <strong>{order.shippedAt ? new Date(order.shippedAt).toLocaleString("en-IN") : "—"}</strong>
                     </div>
                   )}
                   {order.deliveredAt && (
                     <div className="admin-info-row">
                       <span>Delivered At:</span>
-                      <strong>{new Date(order.deliveredAt).toLocaleString("en-IN")}</strong>
+                      <strong>{order.deliveredAt ? new Date(order.deliveredAt).toLocaleString("en-IN") : "—"}</strong>
                     </div>
                   )}
                 </div>
