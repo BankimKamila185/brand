@@ -329,6 +329,17 @@ function OrderDetailView({ orderId, onBack }) {
     );
   }
 
+  if (!order) {
+    return (
+      <div className="admin-operations-page min-h-[400px] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <RefreshCw className="animate-spin text-neutral-400" size={32} />
+          <p className="text-sm text-neutral-500 font-medium">Loading order details…</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-operations-page max-w-6xl mx-auto px-4 md:px-0">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -489,7 +500,7 @@ function OrderDetailView({ orderId, onBack }) {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full bg-neutral-550 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
+                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 >
                   <option value="PENDING">PENDING</option>
                   <option value="CONFIRMED">CONFIRMED</option>
@@ -505,7 +516,7 @@ function OrderDetailView({ orderId, onBack }) {
                 <select
                   value={courier}
                   onChange={(e) => setCourier(e.target.value)}
-                  className="w-full bg-neutral-550 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
+                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 >
                   <option value="Delhivery">Delhivery</option>
                   <option value="BlueDart">BlueDart</option>
@@ -524,7 +535,7 @@ function OrderDetailView({ orderId, onBack }) {
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder="e.g. 128919018012"
-                  className="w-full bg-neutral-550 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
+                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 />
               </div>
 
