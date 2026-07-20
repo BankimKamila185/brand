@@ -58,10 +58,12 @@ const EMPTY_ADDRESS = {
 
 const ORDER_STATUS_CONFIG = {
   pending:    { label: "Pending",     color: "#bd7410", bg: "#fff4d8", icon: Clock },
+  confirmed:  { label: "Confirmed",   color: "#16a34a", bg: "#dcfce7", icon: CheckCircle2 },
   processing: { label: "Processing",  color: "#2563eb", bg: "#eff6ff", icon: Package },
   shipped:    { label: "Shipped",     color: "#7c3aed", bg: "#f5f3ff", icon: Truck },
   delivered:  { label: "Delivered",   color: "#1a9e5d", bg: "#e8f3ed", icon: CheckCircle2 },
   cancelled:  { label: "Cancelled",   color: "#d94f3b", bg: "#fef2f2", icon: X },
+  refunded:   { label: "Refunded",    color: "#6b7280", bg: "#f3f4f6", icon: X },
 };
 
 const ADDRESS_LABELS = ["Home", "Work", "Other"];
@@ -141,7 +143,9 @@ function getTrackingSteps(status) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
-  const cfg = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending;
+  const cfg =
+    ORDER_STATUS_CONFIG[String(status).toLowerCase()] ||
+    ORDER_STATUS_CONFIG.pending;
   const Icon = cfg.icon;
   return (
     <span
@@ -755,10 +759,10 @@ export default function ProfilePage() {
                               {(order.items || order.orderItems || []).map((item, i) => (
                                 <div key={i} className="profile-order-item">
                                   <div className="profile-order-item-img">
-                                    {item.image || item.product?.images?.[0]?.src ? (
+                                    {item.imageSnapshot || item.image || item.product?.images?.[0]?.src ? (
                                       <img
-                                        src={item.image || item.product?.images?.[0]?.src}
-                                        alt={item.title || item.product?.title}
+                                        src={item.imageSnapshot || item.image || item.product?.images?.[0]?.src}
+                                        alt={item.titleSnapshot || item.title || item.product?.title}
                                         onError={(e) => { e.target.style.display = "none"; }}
                                       />
                                     ) : (
@@ -766,14 +770,14 @@ export default function ProfilePage() {
                                     )}
                                   </div>
                                   <div className="profile-order-item-info">
-                                    <strong>{item.title || item.product?.title || "Product"}</strong>
-                                    {(item.variantTitle || item.size) && (
-                                      <span>Size: {item.variantTitle || item.size}</span>
+                                    <strong>{item.titleSnapshot || item.title || item.product?.title || "Product"}</strong>
+                                    {(item.variantSnapshot || item.variantTitle || item.size) && (
+                                      <span>Size: {item.variantSnapshot || item.variantTitle || item.size}</span>
                                     )}
                                     <span>Qty: {item.quantity}</span>
                                   </div>
                                   <strong className="profile-order-item-price">
-                                    {formatCurrency(Number(item.price) * item.quantity)}
+                                    {formatCurrency(Number(item.priceSnapshot || item.price || 0) * item.quantity)}
                                   </strong>
                                 </div>
                               ))}
