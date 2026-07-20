@@ -92,7 +92,7 @@ router.post(
       throw new AppError("Payment verification failed", 400);
     }
 
-    // Update payment and order status
+    // Update payment and order status, and clear user's cart
     await db.$transaction([
       db.payment.update({
         where: { orderId },
@@ -105,6 +105,13 @@ router.post(
       db.order.update({
         where: { id: orderId },
         data: { status: "CONFIRMED" },
+      }),
+      db.cartItem.deleteMany({
+        where: {
+          cart: {
+            userId: req.user.sub,
+          },
+        },
       }),
     ]);
 

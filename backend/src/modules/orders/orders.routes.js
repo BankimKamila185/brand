@@ -185,9 +185,6 @@ router.post(
         },
       });
 
-      // Clear cart
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
-
       return newOrder;
     });
 
