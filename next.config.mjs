@@ -2,6 +2,10 @@ const BACKEND_URL = process.env["BACKEND_URL"] || "http://localhost:4000";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Keep Turbopack scoped to this app; a parent lockfile otherwise causes stale CSS in development.
+  turbopack: {
+    root: process.cwd(),
+  },
   reactCompiler: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
