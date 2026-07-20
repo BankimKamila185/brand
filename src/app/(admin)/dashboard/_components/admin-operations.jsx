@@ -341,166 +341,163 @@ function OrderDetailView({ orderId, onBack }) {
   }
 
   return (
-    <div className="admin-operations-page max-w-6xl mx-auto px-4 md:px-0">
-      <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <button onClick={onBack} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-500 hover:text-black mb-2 transition-all">
-            <ArrowLeft size={14} /> Back to orders queue
-          </button>
-          <h1 className="font-display text-2xl font-extrabold text-neutral-900 flex items-center gap-2">
-            Order Detail <span className="font-mono text-neutral-400">#{order.id.slice(-8).toUpperCase()}</span>
-          </h1>
-        </div>
+    <div className="admin-order-detail">
+      <header className="admin-order-detail-header">
+        <button onClick={onBack} className="admin-back-btn">
+          <ArrowLeft size={12} /> Back to orders queue
+        </button>
+        <h1>
+          Order Detail <span className="admin-mono">#{order.id.slice(-8).toUpperCase()}</span>
+        </h1>
       </header>
 
-      {message && <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium">{message}</div>}
-      {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium">{error}</div>}
+      {message && <div className="product-builder-message">{message}</div>}
+      {error && <div className="admin-error-message">{error}</div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="admin-order-detail-grid">
         
         {/* Left Column (Items & Info) */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="admin-order-detail-left" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Order Details Card */}
-          <div className="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2 mb-5">
-              <ShoppingBag size={15} /> Order Items
+          <div className="admin-detail-card">
+            <h2>
+              <ShoppingBag size={14} /> Order Items
             </h2>
-            <div className="divide-y divide-neutral-100">
+            <div className="admin-order-items-list">
               {(order.items || []).map((item, idx) => (
-                <div key={idx} className="py-4 flex items-center justify-between first:pt-0 last:pb-0 gap-4">
-                  <div className="flex items-center gap-4">
+                <div key={idx} className="admin-order-item-row">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     {item.imageSnapshot ? (
                       <img
                         src={item.imageSnapshot}
                         alt={item.titleSnapshot}
-                        className="w-14 h-14 object-cover rounded-xl border border-neutral-100"
+                        className="admin-order-item-thumb"
                       />
                     ) : (
-                      <div className="w-14 h-14 bg-neutral-50 border border-neutral-100 rounded-xl flex items-center justify-center text-neutral-400">
-                        <ShoppingBag size={20} />
+                      <div className="admin-order-item-thumb" style={{ display: 'flex', alignItems: 'center', justifyCenter: 'center', background: '#fafafa' }}>
+                        <ShoppingBag size={18} style={{ color: '#a1a1aa' }} />
                       </div>
                     )}
-                    <div>
-                      <p className="font-bold text-neutral-900">{item.titleSnapshot}</p>
+                    <div className="admin-order-item-meta">
+                      <strong>{item.titleSnapshot}</strong>
                       {item.variantSnapshot && (
-                        <p className="text-xs text-neutral-400 mt-0.5">Size: <strong className="text-neutral-600 font-bold">{item.variantSnapshot}</strong></p>
+                        <span>Size: {item.variantSnapshot}</span>
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-mono text-neutral-900 font-bold">
+                  <div className="admin-order-item-pricing">
+                    <p>
                       {item.quantity} × {currency.format(Number(item.priceSnapshot))}
                     </p>
-                    <p className="text-xs text-neutral-400 mt-0.5">
+                    <span>
                       Subtotal: {currency.format(Number(item.priceSnapshot) * item.quantity)}
-                    </p>
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Calculations Breakdown */}
-            <div className="mt-6 pt-6 border-t border-dashed border-neutral-100 space-y-2.5 max-w-xs ml-auto">
-              <div className="flex justify-between text-sm text-neutral-500">
+            <div className="admin-order-breakdown">
+              <div className="admin-breakdown-row">
                 <span>Subtotal</span>
-                <span>{currency.format(Number(order.subtotal))}</span>
+                <strong>{currency.format(Number(order.subtotal))}</strong>
               </div>
               {Number(order.discount) > 0 && (
-                <div className="flex justify-between text-sm text-green-600 font-medium">
+                <div className="admin-breakdown-row discount">
                   <span>Discount</span>
-                  <span>–{currency.format(Number(order.discount))}</span>
+                  <strong>–{currency.format(Number(order.discount))}</strong>
                 </div>
               )}
-              <div className="flex justify-between text-sm text-neutral-500">
+              <div className="admin-breakdown-row">
                 <span>Shipping</span>
-                <span>{Number(order.shippingCharge) === 0 ? "Free" : currency.format(Number(order.shippingCharge))}</span>
+                <strong>{Number(order.shippingCharge) === 0 ? "Free" : currency.format(Number(order.shippingCharge))}</strong>
               </div>
-              <div className="flex justify-between text-base text-neutral-900 font-extrabold pt-2.5 border-t border-neutral-100">
+              <div className="admin-breakdown-row total">
                 <span>Total Amount</span>
-                <span>{currency.format(Number(order.total))}</span>
+                <strong>{currency.format(Number(order.total))}</strong>
               </div>
             </div>
           </div>
 
           {/* Payment & General Details Card */}
-          <div className="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 mb-3">
-                <CreditCard size={14} /> Payment Information
-              </h3>
-              <div className="text-sm space-y-2">
-                <div className="flex justify-between border-b border-neutral-50 pb-1.5">
-                  <span className="text-neutral-500">Gateway:</span>
-                  <span className="font-bold text-neutral-800">Razorpay</span>
-                </div>
-                <div className="flex justify-between border-b border-neutral-50 pb-1.5">
-                  <span className="text-neutral-500">Payment Status:</span>
-                  <span className={`font-bold text-xs uppercase px-2 py-0.5 rounded-full ${
-                    order.payment?.status === "PAID" 
-                      ? "bg-green-50 text-green-700" 
-                      : "bg-orange-50 text-orange-700"
-                  }`}>
-                    {order.payment?.status || "PENDING"}
-                  </span>
-                </div>
-                {order.payment?.razorpayPaymentId && (
-                  <div className="flex justify-between border-b border-neutral-50 pb-1.5">
-                    <span className="text-neutral-500">Razorpay Payment ID:</span>
-                    <span className="font-mono text-xs font-bold text-neutral-800">{order.payment.razorpayPaymentId}</span>
+          <div className="admin-detail-card">
+            <div className="admin-info-subgrid">
+              
+              <div className="admin-info-item">
+                <h3>
+                  <CreditCard size={13} /> Payment Information
+                </h3>
+                <div className="admin-info-rows">
+                  <div className="admin-info-row">
+                    <span>Gateway:</span>
+                    <strong>Razorpay</strong>
                   </div>
-                )}
-                {order.payment?.razorpayOrderId && (
-                  <div className="flex justify-between">
-                    <span className="text-neutral-500">Razorpay Order ID:</span>
-                    <span className="font-mono text-xs text-neutral-500">{order.payment.razorpayOrderId}</span>
+                  <div className="admin-info-row">
+                    <span>Payment Status:</span>
+                    <strong className={`admin-status-badge status-${(order.payment?.status || "PENDING").toLowerCase()}`}>
+                      {order.payment?.status || "PENDING"}
+                    </strong>
                   </div>
-                )}
+                  {order.payment?.razorpayPaymentId && (
+                    <div className="admin-info-row">
+                      <span>Payment ID:</span>
+                      <strong className="admin-mono">{order.payment.razorpayPaymentId}</strong>
+                    </div>
+                  )}
+                  {order.payment?.razorpayOrderId && (
+                    <div className="admin-info-row">
+                      <span>Order ID:</span>
+                      <strong className="admin-mono">{order.payment.razorpayOrderId}</strong>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 mb-3">
-                <Calendar size={14} /> Timestamps
-              </h3>
-              <div className="text-sm space-y-2">
-                <div className="flex justify-between border-b border-neutral-50 pb-1.5">
-                  <span className="text-neutral-500">Placed At:</span>
-                  <span className="font-bold text-neutral-800">{new Date(order.createdAt).toLocaleString("en-IN")}</span>
+              <div className="admin-info-item">
+                <h3>
+                  <Calendar size={13} /> Timestamps
+                </h3>
+                <div className="admin-info-rows">
+                  <div className="admin-info-row">
+                    <span>Placed At:</span>
+                    <strong>{new Date(order.createdAt).toLocaleString("en-IN")}</strong>
+                  </div>
+                  {order.shippedAt && (
+                    <div className="admin-info-row">
+                      <span>Dispatched At:</span>
+                      <strong>{new Date(order.shippedAt).toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
+                  {order.deliveredAt && (
+                    <div className="admin-info-row">
+                      <span>Delivered At:</span>
+                      <strong>{new Date(order.deliveredAt).toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
                 </div>
-                {order.shippedAt && (
-                  <div className="flex justify-between border-b border-neutral-50 pb-1.5">
-                    <span className="text-neutral-500">Dispatched At:</span>
-                    <span className="font-bold text-neutral-800">{new Date(order.shippedAt).toLocaleString("en-IN")}</span>
-                  </div>
-                )}
-                {order.deliveredAt && (
-                  <div className="flex justify-between">
-                    <span className="text-neutral-500">Delivered At:</span>
-                    <span className="font-bold text-neutral-800">{new Date(order.deliveredAt).toLocaleString("en-IN")}</span>
-                  </div>
-                )}
               </div>
+
             </div>
           </div>
 
         </div>
 
         {/* Right Column (Fulfillment Controls & Addresses) */}
-        <div className="space-y-6">
+        <div className="admin-order-detail-right" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Fulfillment Form Card */}
-          <div className="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2 mb-5">
-              <Truck size={15} /> Shipment Fulfillment
+          <div className="admin-detail-card">
+            <h2>
+              <Truck size={14} /> Shipment Fulfillment
             </h2>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-neutral-500 uppercase mb-2">Order Status</label>
+            <form onSubmit={handleSave} className="admin-fulfillment-form">
+              <div className="admin-form-group">
+                <label>Order Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 >
                   <option value="PENDING">PENDING</option>
                   <option value="CONFIRMED">CONFIRMED</option>
@@ -511,12 +508,11 @@ function OrderDetailView({ orderId, onBack }) {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-neutral-500 uppercase mb-2">Shipping Partner</label>
+              <div className="admin-form-group">
+                <label>Shipping Partner</label>
                 <select
                   value={courier}
                   onChange={(e) => setCourier(e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 >
                   <option value="Delhivery">Delhivery</option>
                   <option value="BlueDart">BlueDart</option>
@@ -528,62 +524,61 @@ function OrderDetailView({ orderId, onBack }) {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-neutral-500 uppercase mb-2">Tracking ID</label>
+              <div className="admin-form-group">
+                <label>Tracking ID</label>
                 <input
                   type="text"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder="e.g. 128919018012"
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-sm focus:border-black outline-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-[#0E0D0B] hover:bg-neutral-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2 mt-4"
+                className="admin-save-btn"
               >
-                <Save size={16} /> {saving ? "Saving Changes…" : "Update Fulfillment"}
+                <Save size={14} /> {saving ? "Saving Changes…" : "Update Fulfillment"}
               </button>
             </form>
           </div>
 
           {/* Delivery Address Card */}
-          <div className="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2 mb-5">
-              <MapPin size={15} /> Delivery Destination
+          <div className="admin-detail-card">
+            <h2>
+              <MapPin size={14} /> Delivery Destination
             </h2>
             {order.address ? (
-              <div className="text-sm text-neutral-800 space-y-1.5">
-                <p className="font-extrabold text-neutral-900 text-base">{order.address.name}</p>
-                <p className="text-neutral-600">{order.address.line1}</p>
-                {order.address.line2 && <p className="text-neutral-600">{order.address.line2}</p>}
-                <p className="text-neutral-600">
-                  {order.address.city}, {order.address.state} — <strong className="text-neutral-900 font-bold">{order.address.pincode}</strong>
+              <div className="admin-address-block">
+                <strong>{order.address.name}</strong>
+                <p>{order.address.line1}</p>
+                {order.address.line2 && <p>{order.address.line2}</p>}
+                <p>
+                  {order.address.city}, {order.address.state} — <strong>{order.address.pincode}</strong>
                 </p>
-                <p className="text-neutral-500 font-bold flex items-center gap-1.5 pt-3 border-t border-neutral-50">
-                  <Phone size={13} className="text-neutral-400" /> {order.address.phone}
-                </p>
+                <div className="admin-phone-row">
+                  <Phone size={12} /> {order.address.phone}
+                </div>
               </div>
             ) : (
-              <p className="text-sm text-neutral-400 italic">No delivery address saved</p>
+              <p className="admin-mono" style={{ color: '#a1a1aa', fontStyle: 'italic' }}>No address saved</p>
             )}
           </div>
 
           {/* Customer Details Card */}
-          <div className="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2 mb-5">
-              <User size={15} /> Buyer Profile
+          <div className="admin-detail-card">
+            <h2>
+              <User size={14} /> Buyer Profile
             </h2>
-            <div className="text-sm space-y-2">
-              <div className="flex items-center gap-2">
-                <User size={14} className="text-neutral-400" />
-                <span className="font-bold text-neutral-800">{order.user?.name || "Guest Account"}</span>
+            <div className="admin-customer-profile">
+              <div className="admin-customer-row">
+                <User size={12} style={{ color: '#a1a1aa' }} />
+                <span>{order.user?.name || "Guest Account"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail size={14} className="text-neutral-400" />
-                <span className="text-neutral-500 font-medium">{order.user?.email || "No email info"}</span>
+              <div className="admin-customer-row email">
+                <Mail size={12} style={{ color: '#a1a1aa' }} />
+                <span>{order.user?.email || "No email info"}</span>
               </div>
             </div>
           </div>

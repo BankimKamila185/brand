@@ -34,3 +34,362 @@
 .admin-low-stock-qty{font-size:11px;font-weight:700;border-radius:999px;padding:4px 8px;flex-shrink:0}
 .admin-low-stock-qty.low{background:#fff4d8;color:#bd7410}
 .admin-low-stock-qty.out{background:#fee2e2;color:#cf3030}
+
+/* Order Details Page View Styling */
+.admin-order-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #f5f5f3;
+  width: 100%;
+}
+
+.admin-order-detail-header {
+  margin-bottom: 8px;
+}
+
+.admin-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #71717a;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+
+.admin-back-btn:hover {
+  color: #121212;
+}
+
+.admin-order-detail h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #121212;
+  margin: 0;
+}
+
+.admin-order-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  gap: 24px;
+}
+
+.admin-detail-card {
+  background: #fff;
+  border: 1px solid #e7e7e8;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(24,24,27,.035);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.admin-detail-card h2 {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #df5c35;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Items Card Table */
+.admin-order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #efeff0;
+  padding-bottom: 16px;
+  gap: 16px;
+}
+
+.admin-order-item-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-order-item-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #efeff0;
+  flex-shrink: 0;
+}
+
+.admin-order-item-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-order-item-meta strong {
+  display: block;
+  font-size: 14px;
+  color: #18181b;
+  font-weight: 700;
+}
+
+.admin-order-item-meta span {
+  display: block;
+  font-size: 11px;
+  color: #71717a;
+  margin-top: 4px;
+}
+
+.admin-order-item-pricing {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.admin-order-item-pricing p {
+  margin: 0;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: #18181b;
+}
+
+.admin-order-item-pricing span {
+  display: block;
+  font-size: 11px;
+  color: #a1a1aa;
+  margin-top: 2px;
+}
+
+/* Calculation breakdown list */
+.admin-order-breakdown {
+  border-top: 1px dashed #efeff0;
+  margin-top: 16px;
+  padding-top: 16px;
+  max-width: 280px;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #71717a;
+}
+
+.admin-breakdown-row.discount {
+  color: #21835a;
+  font-weight: 600;
+}
+
+.admin-breakdown-row.total {
+  border-top: 1px solid #efeff0;
+  padding-top: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #121212;
+}
+
+/* Info grid inside details */
+.admin-info-subgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.admin-info-item h3 {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a1a1aa;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  border-bottom: 1px solid #f8f8fa;
+  padding-bottom: 8px;
+}
+
+.admin-info-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-info-row span {
+  color: #71717a;
+}
+
+.admin-info-row strong {
+  color: #18181b;
+  font-weight: 700;
+}
+
+/* Form layout for shipment */
+.admin-fulfillment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-form-group label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #71717a;
+}
+
+.admin-form-group select,
+.admin-form-group input {
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  color: #18181b;
+  font: inherit;
+  font-size: 13px;
+  padding: 12px 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.admin-form-group select:focus,
+.admin-form-group input:focus {
+  background: #fff;
+  border-color: #df5c35;
+  box-shadow: 0 0 0 3px rgba(223,92,53,.12);
+}
+
+.admin-save-btn {
+  background: #121212;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.admin-save-btn:hover {
+  background: #27272a;
+}
+
+/* Shipping Address Card */
+.admin-address-block {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #52525b;
+}
+
+.admin-address-block strong {
+  font-size: 15px;
+  color: #18181b;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.admin-phone-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #71717a;
+  font-weight: 700;
+  margin-top: 12px;
+  border-top: 1px solid #efeff0;
+  padding-top: 10px;
+}
+
+.admin-customer-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.admin-customer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #52525b;
+}
+
+.admin-customer-row span {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.admin-customer-row.email {
+  color: #71717a;
+}
+
+/* Status Badge */
+.admin-status-badge {
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  display: inline-block;
+  text-align: center;
+  width: fit-content;
+}
+
+.admin-status-badge.status-pending { background: #fff4d8; color: #bd7410; }
+.admin-status-badge.status-confirmed { background: #dcfce7; color: #16a34a; }
+.admin-status-badge.status-processing { background: #eff6ff; color: #2563eb; }
+.admin-status-badge.status-shipped { background: #f5f3ff; color: #7c3aed; }
+.admin-status-badge.status-delivered { background: #e8f3ed; color: #1a9e5d; }
+.admin-status-badge.status-cancelled { background: #fef2f2; color: #d94f3b; }
+
+@media(max-width: 900px) {
+  .admin-order-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-info-subgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
