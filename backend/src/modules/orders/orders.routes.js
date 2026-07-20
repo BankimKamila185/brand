@@ -273,7 +273,17 @@ router.get(
           deliveredAt: true,
           createdAt: true,
           user: { select: { id: true, name: true, email: true } },
-          items: { select: { id: true, quantity: true, titleSnapshot: true } },
+          address: true,
+          items: {
+            select: {
+              id: true,
+              quantity: true,
+              titleSnapshot: true,
+              priceSnapshot: true,
+              variantSnapshot: true,
+              imageSnapshot: true,
+            },
+          },
           payment: { select: { status: true } },
         },
         orderBy: { createdAt: "desc" },
