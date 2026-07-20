@@ -13,6 +13,17 @@ export function ProductCatalog() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("new") === "true") {
+        setAdding(true);
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
+      }
+    }
+  }, []);
+
   const load = async () => {
     setLoading(true);
     try {
