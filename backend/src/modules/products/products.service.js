@@ -271,26 +271,154 @@ export const productsService = {
   },
 
   async update(id, data) {
-    const existing = await db.product.findUnique({ where: { id } });
+    const existing = await db.product.findUnique({
+      where: { id },
+      include: { variants: { where: { isActive: true } }, images: true },
+    });
     if (!existing) throw new AppError("Product not found", 404);
 
-    const product = await db.product.update({
-      where: { id },
-      data: {
-        ...(data.title && { title: data.title }),
-        ...(data.description !== undefined && {
+    // Upload base64 images to R2 and reuse existing URLs
+    let uploadedImages = null;
+    if (data.images) {
+      uploadedImages = await Promise.all(
+        data.images.map(async (image, i) => {
+          if (image.src.startsWith("data:")) {
+            const url = await uploadBase64ToR2(image.src, "products");
+            return {
+              src: url,
+              altText: image.altText || data.title || existing.title,
+              position: i + 1,
+            };
+          }
+          return {
+            src: image.src,
+            altText: image.altText || data.title || existing.title,
+            position: i + 1,
+          };
+        })
+      );
+    }
+
+    await db.$transaction(async (tx) => {
+      // 1. Update basic product info
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: {
+          title: data.title,
           description: data.description,
-        }),
-        ...(data.vendor && { vendor: data.vendor }),
-        ...(data.productType !== undefined && {
+          vendor: data.vendor,
           productType: data.productType,
-        }),
-        ...(data.tags && { tags: data.tags }),
-        ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
-      },
+          categoryId: data.categoryId,
+        },
+      });
+
+      // 2. Update images
+      if (uploadedImages) {
+        await tx.productImage.deleteMany({ where: { productId: id } });
+        await tx.productImage.createMany({
+          data: uploadedImages.map((img) => ({
+            productId: id,
+            src: img.src,
+            altText: img.altText,
+            position: img.position,
+          })),
+        });
+      }
+
+      // 3. Update variants and warehouse stocks
+      if (data.variants) {
+        const activeOption1s = data.variants.map((v) => v.option1).filter(Boolean);
+
+        // Mark removed variants as inactive
+        await tx.productVariant.updateMany({
+          where: {
+            productId: id,
+            option1: { notIn: activeOption1s },
+          },
+          data: { isActive: false },
+        });
+
+        for (const v of data.variants) {
+          const existingVariant = await tx.productVariant.findFirst({
+            where: { productId: id, option1: v.option1 },
+          });
+
+          if (existingVariant) {
+            // Update existing variant
+            await tx.productVariant.update({
+              where: { id: existingVariant.id },
+              data: {
+                price: v.price,
+                comparePrice: v.comparePrice,
+                sku: v.sku,
+                isActive: true,
+              },
+            });
+
+            // Update inventory
+            if (v.stock !== undefined) {
+              await tx.inventory.update({
+                where: { variantId: existingVariant.id },
+                data: { quantity: v.stock },
+              });
+
+              if (data.warehouseId) {
+                await tx.warehouseInventory.upsert({
+                  where: {
+                    warehouseId_variantId: {
+                      warehouseId: data.warehouseId,
+                      variantId: existingVariant.id,
+                    },
+                  },
+                  create: {
+                    warehouseId: data.warehouseId,
+                    variantId: existingVariant.id,
+                    quantity: v.stock,
+                  },
+                  update: {
+                    quantity: v.stock,
+                  },
+                });
+              }
+            }
+          } else {
+            // Create new variant
+            const newVar = await tx.productVariant.create({
+              data: {
+                productId: id,
+                title: v.title,
+                option1: v.option1,
+                price: v.price,
+                comparePrice: v.comparePrice,
+                sku: v.sku,
+                isActive: true,
+                inventory: {
+                  create: { quantity: v.stock || 0 },
+                },
+              },
+            });
+
+            if (data.warehouseId && v.stock !== undefined) {
+              await tx.warehouseInventory.create({
+                data: {
+                  warehouseId: data.warehouseId,
+                  variantId: newVar.id,
+                  quantity: v.stock,
+                },
+              });
+            }
+          }
+        }
+      }
+
+      return updatedProduct;
+    });
+
+    // Return full updated product structure
+    return db.product.findUnique({
+      where: { id },
       select: productDetailSelect,
     });
-    return product;
   },
 
   async softDelete(id) {
