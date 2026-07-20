@@ -171,6 +171,7 @@ export const usersApi = {
   addAddress: (data) => api.post("/api/users/me/addresses", data),
   updateAddress: (id, data) => api.patch(`/api/users/me/addresses/${id}`, data),
   deleteAddress: (id) => api.delete(`/api/users/me/addresses/${id}`),
+  updateProfile: (data) => api.patch("/api/users/me", data),
 };
 
 export const adminApi = {

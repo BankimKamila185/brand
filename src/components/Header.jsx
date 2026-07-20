@@ -368,19 +368,11 @@ const Header = ({ onSearch }) => {
 
             {/* Profile / Account */}
             {user ? (
-              <button
+              <Link
+                href="/profile"
                 className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center relative group"
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Logged in as ${user.name || user.email}. Do you want to sign out?`,
-                    )
-                  ) {
-                    logout();
-                  }
-                }}
-                aria-label="Account"
-                title={`Signed in as ${user.name || user.email}. Click to sign out.`}
+                aria-label="My Profile"
+                title={`Signed in as ${user.name || user.email}. View profile.`}
               >
                 {/* User Profile SVG (active/green dot style) */}
                 <div className="relative">
@@ -399,7 +391,8 @@ const Header = ({ onSearch }) => {
                   </svg>
                   <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white"></span>
                 </div>
-              </button>
+              </Link>
+
             ) : (
               <Link
                 href="/pages/login"
@@ -657,6 +650,22 @@ const Header = ({ onSearch }) => {
                     <p className="text-xs font-bold text-neutral-800 truncate mt-1">{user.name || user.email}</p>
                   </div>
                 </div>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full bg-black hover:bg-neutral-800 text-white font-bold text-center block transition-all cursor-pointer"
+                  style={{
+                    paddingTop: '15px',
+                    paddingBottom: '15px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: '#ffffff'
+                  }}
+                >
+                  My Profile
+                </Link>
                 <button 
                   onClick={() => { logout(); setMobileMenuOpen(false); }}
                   className="w-full bg-white hover:bg-neutral-50 text-black border border-neutral-800 font-bold text-center block transition-all cursor-pointer"
@@ -673,6 +682,7 @@ const Header = ({ onSearch }) => {
                   Log Out
                 </button>
               </div>
+
             ) : (
               <div className="flex flex-col gap-3">
                 <Link
