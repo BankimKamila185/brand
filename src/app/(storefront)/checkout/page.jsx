@@ -184,7 +184,7 @@ export default function CheckoutPage() {
         key: keyId,
         amount,
         currency,
-        name: "TEVAR STREETWEAR",
+        name: "The Outliers Studio",
         description: `Order #${order.id.slice(-8).toUpperCase()}`,
         order_id: razorpayOrderId,
         prefill: { name: user?.name || "", email: user?.email || "", contact: user?.phone || "" },
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
       <main className="checkout-v3-main flex-1">
         <div className="checkout-v3-shell mx-auto max-w-[1240px] px-4 md:px-6">
           <button onClick={() => step === "payment" ? setStep("shipping") : router.back()} className="checkout-v3-back"><ArrowLeft size={15} /> {step === "payment" ? "Edit shipping" : "Back to cart"}</button>
-          <header className="checkout-v3-hero"><div><p className="checkout-v3-eyebrow">Tevar / secure checkout</p><h1>{step === "shipping" ? "Set your delivery point." : "Ready when you are."}</h1></div><p className="checkout-v3-security"><ShieldCheck size={16} /> Encrypted and protected</p></header>
+          <header className="checkout-v3-hero"><div><p className="checkout-v3-eyebrow">Outliers Studio / secure checkout</p><h1>{step === "shipping" ? "Set your delivery point." : "Ready when you are."}</h1></div><p className="checkout-v3-security"><ShieldCheck size={16} /> Encrypted and protected</p></header>
           <ol className="checkout-v3-progress"><li className={step === "shipping" ? "is-active" : "is-complete"}><span>{step === "shipping" ? "01" : <Check size={14} />}</span> Delivery</li><li className={step === "payment" ? "is-active" : ""}><span>02</span> Payment</li></ol>
           {checkoutError && <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><AlertCircle size={17} />{checkoutError}</div>}
 
