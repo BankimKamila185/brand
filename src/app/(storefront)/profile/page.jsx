@@ -102,6 +102,42 @@ function getInitials(name, email) {
   return email?.[0]?.toUpperCase() || "?";
 }
 
+function getTrackingSteps(status) {
+  const normalized = String(status).toLowerCase();
+  
+  const steps = [
+    { label: "Confirmed", desc: "Order received", active: false, complete: false },
+    { label: "Processing", desc: "Packing items", active: false, complete: false },
+    { label: "Shipped", desc: "In transit", active: false, complete: false },
+    { label: "Delivered", desc: "Arrived", active: false, complete: false },
+  ];
+
+  if (normalized === "cancelled") {
+    return [
+      { label: "Cancelled", desc: "Order cancelled", active: true, complete: false, isCancelled: true }
+    ];
+  }
+
+  if (normalized === "pending" || normalized === "confirmed") {
+    steps[0].active = true;
+  } else if (normalized === "processing") {
+    steps[0].complete = true;
+    steps[1].active = true;
+  } else if (normalized === "shipped") {
+    steps[0].complete = true;
+    steps[1].complete = true;
+    steps[2].active = true;
+  } else if (normalized === "delivered") {
+    steps[0].complete = true;
+    steps[1].complete = true;
+    steps[2].complete = true;
+    steps[3].complete = true;
+    steps[3].active = true;
+  }
+
+  return steps;
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -360,6 +396,21 @@ export default function ProfilePage() {
       router.push("/");
     }
   }, [authLoading, isAuthenticated, router]);
+
+  // ── Read active tab and order ID from URL on mount ────────────────────────
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && TABS.some((t) => t.id === tab)) {
+        setActiveTab(tab);
+      }
+      const orderId = params.get("orderId");
+      if (orderId) {
+        setExpandedOrder(orderId);
+      }
+    }
+  }, []);
 
   // ── Sync settings form from user ──────────────────────────────────────────
   useEffect(() => {
@@ -781,6 +832,50 @@ export default function ProfilePage() {
                                 )}
                               </div>
                             )}
+
+                            {/* Shipment Tracker Timeline */}
+                            <div className="profile-order-tracking mt-6 pt-6 border-t border-neutral-100">
+                              <p className="profile-order-shipping-label flex items-center gap-1.5 text-xs font-bold text-neutral-800 uppercase tracking-wider mb-4">
+                                <Truck size={14} /> Shipment Tracker
+                              </p>
+                              
+                              {order.trackingNumber && (
+                                <div className="mb-4 text-sm bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 inline-flex items-center gap-2">
+                                  <span className="text-neutral-500 font-medium">Tracking Number:</span>
+                                  <span className="font-mono font-bold text-neutral-800">{order.trackingNumber}</span>
+                                </div>
+                              )}
+
+                              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-4 mt-2">
+                                {getTrackingSteps(order.status).map((step, idx, arr) => (
+                                  <div key={step.label} className="flex-1 w-full relative">
+                                    <div className="flex md:flex-col items-center gap-3 md:gap-2 text-left md:text-center">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                                        step.isCancelled 
+                                          ? "bg-red-500 text-white"
+                                          : step.complete
+                                            ? "bg-[#1a9e5d] text-white"
+                                            : step.active
+                                              ? "bg-[#0E0D0B] text-white ring-4 ring-neutral-100"
+                                              : "bg-neutral-100 text-neutral-400"
+                                      }`}>
+                                        {step.isCancelled ? "✕" : step.complete ? "✓" : idx + 1}
+                                      </div>
+                                      <div>
+                                        <p className={`text-sm font-bold ${step.active ? "text-neutral-900" : "text-neutral-500"}`}>{step.label}</p>
+                                        <p className="text-xs text-neutral-400">{step.desc}</p>
+                                      </div>
+                                    </div>
+                                    {/* Line connector between steps */}
+                                    {idx < arr.length - 1 && !step.isCancelled && (
+                                      <div className={`hidden md:block absolute top-4 left-[calc(50%+16px)] right-[calc(-50%+16px)] h-0.5 transition-all duration-300 ${
+                                        step.complete ? "bg-[#1a9e5d]" : "bg-neutral-200"
+                                      }`} style={{ top: '16px' }} />
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>

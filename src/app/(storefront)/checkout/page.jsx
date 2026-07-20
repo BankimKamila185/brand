@@ -218,7 +218,77 @@ export default function CheckoutPage() {
   if (authLoading) return <CheckoutFrame><div className="flex flex-1 items-center justify-center py-32"><Loader2 className="animate-spin" /></div></CheckoutFrame>;
 
   if (completedOrder) {
-    return <CheckoutFrame><main className="checkout-v3-main flex-1"><section className="checkout-v3-shell mx-auto max-w-xl px-4 text-center"><div className="checkout-v3-panel checkout-v3-success"><PackageCheck className="mx-auto mb-5 h-14 w-14 text-[#b9ff57]" /><p className="checkout-v3-eyebrow">Payment verified</p><h1>Order placed</h1><p className="checkout-v3-copy">Your order #{completedOrder.id.slice(-8).toUpperCase()} has been confirmed.</p><div className="checkout-v3-receipt"><p><strong>Delivering to</strong> {completedOrder.address?.name}</p><p>{completedOrder.address?.line1}, {completedOrder.address?.city}</p><p><strong>₹{completedOrder.total.toFixed(2)}</strong> paid with Razorpay</p></div><Link href="/" className="checkout-v3-action">Continue shopping <ChevronRight size={15} /></Link></div></section></main></CheckoutFrame>;
+    return (
+      <CheckoutFrame>
+        <main className="checkout-v3-main flex-1 py-12 md:py-20">
+          <section className="checkout-v3-shell mx-auto max-w-xl px-4 text-center">
+            <div className="checkout-v3-panel checkout-v3-success bg-white border border-neutral-100 rounded-3xl p-8 shadow-lg">
+              <PackageCheck className="mx-auto mb-6 h-16 w-16 text-[#1a9e5d]" />
+              <p className="checkout-v3-eyebrow text-xs font-bold uppercase tracking-wider text-[#1a9e5d] mb-2">
+                Thank you for your order!
+              </p>
+              <h1 className="font-display text-3xl font-extrabold text-neutral-900 tracking-tight leading-tight">
+                Order placed successfully
+              </h1>
+              <p className="checkout-v3-copy text-sm text-neutral-500 mt-3 max-w-md mx-auto">
+                Your order <span className="font-mono font-bold text-neutral-800">#{completedOrder.id.slice(-8).toUpperCase()}</span> has been confirmed. We've sent a confirmation email to your registered address.
+              </p>
+
+              {/* Shipment Roadmap */}
+              <div className="my-8 py-6 px-4 bg-neutral-50 rounded-2xl border border-neutral-100">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-5 text-left">
+                  Shipment Roadmap
+                </p>
+                <div className="flex justify-between items-center gap-2">
+                  <div className="flex-1 text-center">
+                    <span className="w-6 h-6 rounded-full bg-[#1a9e5d] text-white flex items-center justify-center text-xs mx-auto font-bold mb-1">✓</span>
+                    <p className="text-xs font-bold text-neutral-800">Placed</p>
+                  </div>
+                  <div className="w-12 h-0.5 bg-[#1a9e5d]"></div>
+                  <div className="flex-1 text-center">
+                    <span className="w-6 h-6 rounded-full bg-[#0E0D0B] text-white flex items-center justify-center text-xs mx-auto font-bold mb-1">2</span>
+                    <p className="text-xs font-bold text-neutral-800">Processing</p>
+                  </div>
+                  <div className="w-12 h-0.5 bg-neutral-200"></div>
+                  <div className="flex-1 text-center">
+                    <span className="w-6 h-6 rounded-full bg-neutral-200 text-neutral-400 flex items-center justify-center text-xs mx-auto font-bold mb-1">3</span>
+                    <p className="text-xs text-neutral-400 font-medium">Shipped</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Receipt */}
+              <div className="checkout-v3-receipt bg-neutral-50 rounded-2xl p-6 text-left border border-neutral-100 mb-8 space-y-3">
+                <p className="text-sm text-neutral-700">
+                  <strong className="text-neutral-500 font-medium">Delivering to:</strong> {completedOrder.address?.name}
+                </p>
+                <p className="text-sm text-neutral-600 leading-relaxed pl-4 border-l-2 border-neutral-200">
+                  {completedOrder.address?.line1}, {completedOrder.address?.city}, {completedOrder.address?.state} {completedOrder.address?.pincode}
+                </p>
+                <p className="text-sm text-neutral-700 pt-2 border-t border-dashed border-neutral-200">
+                  <strong className="text-neutral-500 font-medium">Amount Paid:</strong> <span className="font-bold text-neutral-900">₹{completedOrder.total.toFixed(2)}</span> paid securely with Razorpay
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href={`/profile?tab=orders&orderId=${completedOrder.id}`}
+                  className="bg-[#0E0D0B] hover:bg-[#1C1B18] text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 flex-1"
+                >
+                  <Truck size={16} /> Track shipment
+                </Link>
+                <Link
+                  href="/"
+                  className="bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 font-bold py-3.5 px-6 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-1.5 flex-1"
+                >
+                  Continue shopping
+                </Link>
+              </div>
+            </div>
+          </section>
+        </main>
+      </CheckoutFrame>
+    );
   }
 
   if (!cart.length) {
