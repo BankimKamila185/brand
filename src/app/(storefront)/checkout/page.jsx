@@ -315,7 +315,7 @@ export default function CheckoutPage() {
               {showAddressForm && <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2"><h3 className="col-span-full font-display text-sm font-bold uppercase">New shipping address</h3>{addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}
                 <button
           type="button"
-          className="col-span-full flex items-center justify-center gap-2 bg-[#0E0D0B] hover:bg-[#1C1B18] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white transition-all duration-200 rounded-lg disabled:opacity-50"
+          className="col-span-full flex items-center justify-center gap-2 bg-white border border-neutral-300 hover:border-neutral-800 hover:bg-neutral-100 px-4 py-3 text-xs font-bold uppercase tracking-widest text-neutral-800 transition-all duration-200 rounded-lg disabled:opacity-50"
           onClick={() => {
             setLocating(true);
             setAddressError("");
