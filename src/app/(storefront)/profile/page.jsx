@@ -336,7 +336,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
               }
             );
           }}
-          className="w-full flex items-center justify-center gap-2 bg-white border border-neutral-200 hover:border-neutral-800 hover:bg-neutral-50 px-4 py-3 text-xs font-bold uppercase tracking-widest text-neutral-800 transition-all duration-200"
+          className="w-full flex items-center justify-center gap-2 bg-white border border-neutral-200 hover:border-neutral-800 hover:bg-neutral-50 px-4 py-3 text-xs font-bold uppercase tracking-widest text-neutral-800 transition-all duration-200 rounded-lg"
           disabled={locating}
         >
           <MapPin size={14} /> {locating ? "Getting location..." : "Use Current Location"}
