@@ -25,7 +25,6 @@ import {
   Tag,
   Trash2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const EMPTY_ADDRESS = {
   label: "Home",
@@ -314,10 +313,9 @@ export default function CheckoutPage() {
             <div className="checkout-v3-stage"><section className="checkout-v3-panel">
               <div className="checkout-v3-section-head"><div><p className="checkout-v3-eyebrow">Step 01</p><h2>Delivery address</h2><p>Select a saved location or create a new one.</p></div><button onClick={() => setShowAddressForm((visible) => !visible)} className="checkout-v3-secondary"><Plus size={14} /> New address</button></div>
               {showAddressForm && <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2"><h3 className="col-span-full font-display text-sm font-bold uppercase">New shipping address</h3>{addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}
-                <Button
+                <button
           type="button"
-          variant="outline"
-          className="col-span-full flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest py-6"
+          className="col-span-full flex items-center justify-center gap-2 bg-[#0E0D0B] hover:bg-[#1C1B18] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white transition-all duration-200 rounded-lg disabled:opacity-50"
           onClick={() => {
             setLocating(true);
             setAddressError("");
@@ -335,7 +333,7 @@ export default function CheckoutPage() {
           disabled={locating}
         >
           <MapPin size={14} /> {locating ? "Getting location..." : "Use Current Location"}
-        </Button>
+        </button>
                 <Input label="Full name" name="name" value={newAddress.name} onChange={setNewAddress} /><Input label="Phone number" name="phone" value={newAddress.phone} onChange={setNewAddress} /><Input label="Address line 1" name="line1" value={newAddress.line1} onChange={setNewAddress} full /><Input label="Address line 2 (optional)" name="line2" value={newAddress.line2} onChange={setNewAddress} full /><Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} /><Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} /><Input label="PIN code" name="pincode" value={newAddress.pincode} onChange={setNewAddress} /><button className="bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white">Save address</button></form>}
               {isAddressLoading ? <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div> : <div className="grid gap-3 md:grid-cols-2">{addresses.map((address) => <button key={address.id} onClick={() => setSelectedAddressId(address.id)} className={`checkout-address text-left ${selectedAddressId === address.id ? "is-selected" : ""}`}><div className="mb-4 flex justify-between"><span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{address.label}</span>{selectedAddressId === address.id && <Check size={17} />}</div><p className="font-bold">{address.name}</p><p className="mt-1 text-sm leading-relaxed text-neutral-500">{address.line1}{address.line2 ? `, ${address.line2}` : ""}<br />{address.city}, {address.state} — {address.pincode}<br />{address.phone}</p><span onClick={(event) => deleteAddress(address.id, event)} className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-red-600"><Trash2 size={13} /> Remove</span></button>)}</div>}
               {!isAddressLoading && !addresses.length && !showAddressForm && <div className="rounded-xl border border-dashed border-neutral-300 py-10 text-center text-sm text-neutral-500"><MapPin className="mx-auto mb-2 text-neutral-300" />Add your delivery address to continue.</div>}
