@@ -237,9 +237,47 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
   );
 }
 
+async function getCurrentLocationAddress(onSuccess, onError) {
+  if (!navigator.geolocation) {
+    onError("Geolocation is not supported by your browser");
+    return;
+  }
+  
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+        );
+        const data = await response.json();
+        if (data.address) {
+          const address = {
+            line1: data.address.road ? `${data.address.house_number || ""} ${data.address.road}`.trim() : "",
+            line2: data.address.suburb || data.address.neighbourhood || "",
+            city: data.address.city || data.address.town || data.address.village || "",
+            state: data.address.state || "",
+            pincode: data.address.postcode || "",
+            country: data.address.country || "India"
+          };
+          onSuccess(address);
+        } else {
+          onError("Could not retrieve address from location");
+        }
+      } catch {
+        onError("Failed to fetch address from location");
+      }
+    },
+    (geoError) => {
+      onError(geoError.message || "Failed to get current location");
+    }
+  );
+}
+
 function AddressForm({ initial, onSave, onCancel, loading }) {
   const [form, setForm] = useState(initial || EMPTY_ADDRESS);
   const [errors, setErrors] = useState({});
+  const [locating, setLocating] = useState(false);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -281,6 +319,30 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
         </div>
       </div>
 
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => {
+            setLocating(true);
+            setErrors({});
+            getCurrentLocationAddress(
+              (addr) => {
+                setForm((prev) => ({ ...prev, ...addr }));
+                setLocating(false);
+              },
+              (err) => {
+                setErrors({ general: err });
+                setLocating(false);
+              }
+            );
+          }}
+          className="w-full flex items-center justify-center gap-2 bg-white border border-neutral-200 hover:border-neutral-800 hover:bg-neutral-50 px-4 py-3 text-xs font-bold uppercase tracking-widest text-neutral-800 transition-all duration-200"
+          disabled={locating}
+        >
+          <MapPin size={14} /> {locating ? "Getting location..." : "Use Current Location"}
+        </button>
+        {errors.general && <p className="mt-2 text-xs text-red-600">{errors.general}</p>}
+      </div>
       <div className="profile-addr-form-grid">
         <div className="profile-addr-form-field">
           <label className="profile-addr-form-label">Full Name *</label>
