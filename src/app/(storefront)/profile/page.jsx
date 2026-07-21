@@ -322,7 +322,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       <div className="mb-4">
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2 bg-[#0E0D0B] hover:bg-neutral-700 active:scale-[0.98] text-white px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="profile-addr-btn profile-addr-btn--primary w-full justify-center disabled:opacity-40 disabled:pointer-events-none"
           onClick={() => {
             setLocating(true);
             setErrors({});
