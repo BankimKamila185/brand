@@ -312,29 +312,61 @@ export default function CheckoutPage() {
           {step === "shipping" ? (
             <div className="checkout-v3-stage"><section className="checkout-v3-panel">
               <div className="checkout-v3-section-head"><div><p className="checkout-v3-eyebrow">Step 01</p><h2>Delivery address</h2><p>Select a saved location or create a new one.</p></div><button onClick={() => setShowAddressForm((visible) => !visible)} className="checkout-v3-secondary"><Plus size={14} /> New address</button></div>
-              {showAddressForm && <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2"><h3 className="col-span-full font-display text-sm font-bold uppercase">New shipping address</h3>{addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}
+
+              {/* ── Use Current Location ── */}
+              <div className="mb-6">
                 <button
-          type="button"
-          className="col-span-full flex items-center justify-center gap-2 bg-[#0E0D0B] hover:bg-neutral-700 active:scale-[0.98] text-white px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-          onClick={() => {
-            setLocating(true);
-            setAddressError("");
-            getCurrentLocationAddress(
-              (addr) => {
-                setNewAddress((prev) => ({ ...prev, ...addr }));
-                setLocating(false);
-              },
-              (err) => {
-                setAddressError(err);
-                setLocating(false);
-              }
-            );
-          }}
-          disabled={locating}
-        >
-          <MapPin size={14} /> {locating ? "Getting location..." : "Use Current Location"}
-        </button>
-                <Input label="Full name" name="name" value={newAddress.name} onChange={setNewAddress} /><Input label="Phone number" name="phone" value={newAddress.phone} onChange={setNewAddress} /><Input label="Address line 1" name="line1" value={newAddress.line1} onChange={setNewAddress} full /><Input label="Address line 2 (optional)" name="line2" value={newAddress.line2} onChange={setNewAddress} full /><Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} /><Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} /><Input label="PIN code" name="pincode" value={newAddress.pincode} onChange={setNewAddress} /><button className="bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white">Save address</button></form>}
+                  type="button"
+                  disabled={locating}
+                  onClick={() => {
+                    if (!showAddressForm) setShowAddressForm(true);
+                    setLocating(true);
+                    setAddressError("");
+                    getCurrentLocationAddress(
+                      (addr) => {
+                        setNewAddress((prev) => ({ ...prev, ...addr }));
+                        setLocating(false);
+                      },
+                      (err) => {
+                        setAddressError(err);
+                        setLocating(false);
+                      }
+                    );
+                  }}
+                  className="group w-full flex items-center gap-4 rounded-2xl border-2 border-dashed border-neutral-300 bg-white hover:border-black hover:bg-neutral-50 active:scale-[0.99] transition-all duration-200 px-5 py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-md group-hover:shadow-lg transition-shadow">
+                    {locating ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <MapPin size={18} />
+                    )}
+                    {!locating && (
+                      <span className="absolute inset-0 rounded-full animate-ping bg-black opacity-20" />
+                    )}
+                  </span>
+                  <span className="flex flex-col text-left">
+                    <span className="text-sm font-bold text-neutral-900 leading-tight">
+                      {locating ? "Detecting your location…" : "Use Current Location"}
+                    </span>
+                    <span className="text-xs text-neutral-500 mt-0.5">
+                      {locating ? "Please wait" : "Auto-fill address using GPS"}
+                    </span>
+                  </span>
+                  {!locating && (
+                    <ChevronRight size={16} className="ml-auto text-neutral-400 group-hover:text-black transition-colors" />
+                  )}
+                </button>
+                {addressError && (
+                  <div className="mt-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+                    <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                    <span>{addressError}</span>
+                  </div>
+                )}
+              </div>
+
+              {showAddressForm && <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2"><h3 className="col-span-full font-display text-sm font-bold uppercase">New shipping address</h3>
+                <Input label="Full name" name="name" value={newAddress.name} onChange={setNewAddress} /><Input label="Phone number" name="phone" value={newAddress.phone} onChange={setNewAddress} /><Input label="Address line 1" name="line1" value={newAddress.line1} onChange={setNewAddress} full /><Input label="Address line 2 (optional)" name="line2" value={newAddress.line2} onChange={setNewAddress} full /><Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} /><Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} /><Input label="PIN code" name="pincode" value={newAddress.pincode} onChange={setNewAddress} /><button className="bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white col-span-full">Save address</button></form>}
               {isAddressLoading ? <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div> : <div className="grid gap-3 md:grid-cols-2">{addresses.map((address) => <button key={address.id} onClick={() => setSelectedAddressId(address.id)} className={`checkout-address text-left ${selectedAddressId === address.id ? "is-selected" : ""}`}><div className="mb-4 flex justify-between"><span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{address.label}</span>{selectedAddressId === address.id && <Check size={17} />}</div><p className="font-bold">{address.name}</p><p className="mt-1 text-sm leading-relaxed text-neutral-500">{address.line1}{address.line2 ? `, ${address.line2}` : ""}<br />{address.city}, {address.state} — {address.pincode}<br />{address.phone}</p><span onClick={(event) => deleteAddress(address.id, event)} className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-red-600"><Trash2 size={13} /> Remove</span></button>)}</div>}
               {!isAddressLoading && !addresses.length && !showAddressForm && <div className="rounded-xl border border-dashed border-neutral-300 py-10 text-center text-sm text-neutral-500"><MapPin className="mx-auto mb-2 text-neutral-300" />Add your delivery address to continue.</div>}
               <button onClick={continueToPayment} className="checkout-v3-action checkout-v3-full"><span>Continue to payment</span><ChevronRight size={17} /></button>
@@ -353,38 +385,67 @@ export default function CheckoutPage() {
 
 async function getCurrentLocationAddress(onSuccess, onError) {
   if (!navigator.geolocation) {
-    onError("Geolocation is not supported by your browser");
+    onError("Geolocation is not supported by your browser.");
     return;
   }
-  
+
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0,
+  };
+
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const { latitude, longitude } = position.coords;
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+          { headers: { "Accept-Language": "en" } }
         );
         const data = await response.json();
         if (data.address) {
           const address = {
-            line1: data.address.road ? `${data.address.house_number || ""} ${data.address.road}`.trim() : "",
+            line1: data.address.road
+              ? `${data.address.house_number || ""} ${data.address.road}`.trim()
+              : "",
             line2: data.address.suburb || data.address.neighbourhood || "",
-            city: data.address.city || data.address.town || data.address.village || "",
+            city:
+              data.address.city ||
+              data.address.town ||
+              data.address.village ||
+              "",
             state: data.address.state || "",
             pincode: data.address.postcode || "",
-            country: data.address.country || "India"
+            country: data.address.country || "India",
           };
           onSuccess(address);
         } else {
-          onError("Could not retrieve address from location");
+          onError("Could not retrieve address details from your location.");
         }
       } catch {
-        onError("Failed to fetch address from location");
+        onError("Failed to fetch address. Please check your connection.");
       }
     },
     (geoError) => {
-      onError(geoError.message || "Failed to get current location");
-    }
+      if (geoError.code === 1) {
+        // PERMISSION_DENIED
+        onError(
+          "Location access was denied. Please allow location permission in your browser settings and try again."
+        );
+      } else if (geoError.code === 2) {
+        // POSITION_UNAVAILABLE
+        onError(
+          "Your location is currently unavailable. Make sure Location Services are enabled on your device, then try again."
+        );
+      } else if (geoError.code === 3) {
+        // TIMEOUT
+        onError("Location request timed out. Please try again.");
+      } else {
+        onError(geoError.message || "Failed to get current location.");
+      }
+    },
+    options
   );
 }
 
