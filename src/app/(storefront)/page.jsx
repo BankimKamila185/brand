@@ -9,13 +9,28 @@ import HeroSlider from "@/components/HeroSlider";
 import ProductCard from "@/components/ProductCard";
 import ImageBanner from "@/components/ImageBanner";
 import { productsApi } from "@/lib/api";
+import localProducts from "@/data/products.json";
 
 // ─── Normalize API product → ProductCard prop shape ───────────────────────────
 // Backend returns camelCase fields. ProductCard expects Shopify-style snake_case.
 function normalizeProduct(p) {
   if (!p) return null;
 
-  // Map variants
+  // If it's already a Shopify-style product (has product_type, body_html), just return it
+  if (p.product_type || p.body_html) {
+    // Ensure images have src (they should already, but just in case)
+    const images = (p.images || []).map((img) => ({ ...img, src: img.src || "" }));
+    // Ensure variants have compare_at_price
+    const variants = (p.variants || []).map((v) => ({
+      ...v,
+      price: String(v.price || "0"),
+      compare_at_price: v.compare_at_price ? String(v.compare_at_price) : (v.comparePrice ? String(v.comparePrice) : null),
+      comparePrice: v.compare_at_price ? String(v.compare_at_price) : (v.comparePrice ? String(v.comparePrice) : null),
+    }));
+    return { ...p, images, variants };
+  }
+
+  // Map variants (backend camelCase to Shopify snake_case)
   const variants = (p.variants || []).map((v) => ({
     ...v,
     id: v.id,
@@ -156,6 +171,26 @@ export default function Home() {
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Helper to get products from local data (matching collection tags)
+  const getLocalProductsByCollection = (collection, limit) => {
+    const all = localProducts.products;
+    let filtered = all;
+    if (collection === "bestsellers") {
+      filtered = all.filter((p) =>
+        p.tags.some((t) => ["bestseller", "best-seller", "trending"].includes(t.toLowerCase()))
+      );
+    } else if (collection === "outliers-recommends") {
+      filtered = all.filter((p) =>
+        p.tags.some((t) => t.toLowerCase().includes("outliers"))
+      );
+    } else if (collection === "whats-new") {
+      filtered = all.filter((p) =>
+        p.tags.some((t) => ["new", "new-arrival", "whats-new"].includes(t.toLowerCase()))
+      );
+    }
+    return filtered.slice(0, limit).map(normalizeProduct);
+  };
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
@@ -184,14 +219,15 @@ export default function Home() {
         const recDb = extract(recRes);
         const newDb = extract(newRes);
 
-        setTrending(trendDb.length > 0 ? trendDb : allDb.slice(0, 8));
-        setRecommends(recDb.length > 0 ? recDb : allDb.slice(8, 13));
-        setNewArrivals(newDb.length > 0 ? newDb : allDb.slice(13, 18));
+        setTrending(trendDb.length > 0 ? trendDb : (allDb.length > 0 ? allDb.slice(0, 8) : getLocalProductsByCollection("bestsellers", 8)));
+        setRecommends(recDb.length > 0 ? recDb : (allDb.length > 0 ? allDb.slice(8, 13) : getLocalProductsByCollection("outliers-recommends", 5)));
+        setNewArrivals(newDb.length > 0 ? newDb : (allDb.length > 0 ? allDb.slice(13, 18) : getLocalProductsByCollection("whats-new", 5)));
       } catch (e) {
-        console.error("Error fetching backend products:", e);
-        setTrending([]);
-        setRecommends([]);
-        setNewArrivals([]);
+        console.error("Error fetching backend products, using local data:", e);
+        // Fallback to local products
+        setTrending(getLocalProductsByCollection("bestsellers", 8));
+        setRecommends(getLocalProductsByCollection("outliers-recommends", 5));
+        setNewArrivals(getLocalProductsByCollection("whats-new", 5));
       } finally {
         setLoading(false);
       }

@@ -10,6 +10,7 @@ import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { productsApi, reviewsApi } from "@/lib/api";
+import localProducts from "@/data/products.json";
 
 /* ─── Data Mapper ─────────────────────────────────────────── */
 const mapProduct = (bp) => ({
@@ -227,10 +228,71 @@ export default function ProductDetailPage({ params }) {
       setLoading(true);
       try {
         const res = await productsApi.getByHandle(handle);
-        if (res.success && res.data) setProduct(mapProduct(res.data));
-        else setProduct(null);
+        if (res.success && res.data) {
+          setProduct(mapProduct(res.data));
+        } else {
+          // Fallback to local product
+          const localProduct = localProducts.products.find(p => p.handle === handle);
+          if (localProduct) {
+            setProduct({
+              id: localProduct.id,
+              title: localProduct.title,
+              handle: localProduct.handle,
+              body_html: localProduct.body_html,
+              vendor: localProduct.vendor,
+              product_type: localProduct.product_type,
+              tags: localProduct.tags,
+              variants: localProduct.variants.map(v => ({
+                id: v.id,
+                title: v.title,
+                option1: v.option1,
+                option2: v.option2,
+                price: v.price,
+                compare_at_price: v.compare_at_price,
+                available: v.available
+              })),
+              images: localProduct.images.map(img => ({
+                id: img.id,
+                src: img.src,
+                alt_text: img.alt
+              })),
+              options: localProduct.options
+            });
+          } else {
+            setProduct(null);
+          }
+        }
       } catch {
-        setProduct(null);
+        // Fallback to local product if API fails
+        const localProduct = localProducts.products.find(p => p.handle === handle);
+        if (localProduct) {
+          setProduct({
+            id: localProduct.id,
+            title: localProduct.title,
+            handle: localProduct.handle,
+            body_html: localProduct.body_html,
+            vendor: localProduct.vendor,
+            product_type: localProduct.product_type,
+            tags: localProduct.tags,
+            variants: localProduct.variants.map(v => ({
+              id: v.id,
+              title: v.title,
+              option1: v.option1,
+              option2: v.option2,
+              price: v.price,
+              compare_at_price: v.compare_at_price,
+              available: v.available
+            })),
+            images: localProduct.images.map(img => ({
+              id: img.id,
+              src: img.src,
+              alt_text: img.alt
+            })),
+            options: localProduct.options
+          });
+        } else {
+          setProduct(null);
+        }
       } finally {
         setLoading(false);
       }
@@ -252,8 +314,74 @@ export default function ProductDetailPage({ params }) {
     productsApi.getRelated(String(product.id)).then((res) => {
       if (res.success && Array.isArray(res.data)) {
         setRelatedProducts(res.data.map(mapProduct));
+      } else {
+        // Fallback to local related products
+        const currentIndex = localProducts.products.findIndex(p => p.handle === product.handle);
+        const related = [];
+        for (let i = 1; i <= 4; i++) {
+          const idx = (currentIndex + i) % localProducts.products.length;
+          const p = localProducts.products[idx];
+          related.push({
+            id: p.id,
+            title: p.title,
+            handle: p.handle,
+            body_html: p.body_html,
+            vendor: p.vendor,
+            product_type: p.product_type,
+            tags: p.tags,
+            variants: p.variants.map(v => ({
+              id: v.id,
+              title: v.title,
+              option1: v.option1,
+              option2: v.option2,
+              price: v.price,
+              compare_at_price: v.compare_at_price,
+              available: v.available
+            })),
+            images: p.images.map(img => ({
+              id: img.id,
+              src: img.src,
+              alt_text: img.alt
+            })),
+            options: p.options
+          });
+        }
+        setRelatedProducts(related);
       }
-    }).catch(() => { });
+    }).catch(() => {
+      // Fallback to local related products if API fails
+      const currentIndex = localProducts.products.findIndex(p => p.handle === product.handle);
+      const related = [];
+      for (let i = 1; i <= 4; i++) {
+        const idx = (currentIndex + i) % localProducts.products.length;
+        const p = localProducts.products[idx];
+        related.push({
+          id: p.id,
+          title: p.title,
+          handle: p.handle,
+          body_html: p.body_html,
+          vendor: p.vendor,
+          product_type: p.product_type,
+          tags: p.tags,
+          variants: p.variants.map(v => ({
+            id: v.id,
+            title: v.title,
+            option1: v.option1,
+            option2: v.option2,
+            price: v.price,
+            compare_at_price: v.compare_at_price,
+            available: v.available
+          })),
+          images: p.images.map(img => ({
+            id: img.id,
+            src: img.src,
+            alt_text: img.alt
+          })),
+          options: p.options
+        });
+      }
+      setRelatedProducts(related);
+    });
 
     // Load reviews
     reviewsApi.list(String(product.id)).then((res) => {
