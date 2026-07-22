@@ -4,8 +4,28 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { categoriesApi, collectionsApi } from "../lib/api";
 import Logo from "./Logo";
 import { ChevronRight, Mail, LogOut, User, Heart, X } from "lucide-react";
+
+const DEFAULT_CATEGORIES = [
+  { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
+  { name: "Co-Ord Sets", path: "/collections/co-ord-sets" },
+  { name: "Textured / Printed Casual Shirts", path: "/collections/textured-co-ord-sets" },
+  { name: "Korean Pants", path: "/collections/korean-pants" },
+  { name: "Linen Shirts", path: "/collections/linen-shirts" },
+  { name: "Cuban Shirts", path: "/collections/cuban-shirts" },
+  { name: "Crochet Shirts", path: "/collections/crochet-shirts" },
+  { name: "Korean Shirts", path: "/collections/shirts" },
+  { name: "Oversized T-Shirts", path: "/collections/oversized-t-shirts" },
+  { name: "Parachute Cargo Trousers", path: "/collections/parachute-cargos" },
+];
+
+const DEFAULT_COLLECTIONS = [
+  { name: "Retro Clothing", path: "/collections/retro-clothing" },
+  { name: "Outliers K-aracter", path: "/collections/outliers-k-aracter" },
+  { name: "Outliers Recommends", path: "/collections/outliers-recommends" },
+];
 
 const Header = ({ onSearch }) => {
   const { cartCount, wishlist, setCartOpen } = useCart();
@@ -16,6 +36,45 @@ const Header = ({ onSearch }) => {
   const [shopExpanded, setShopExpanded] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [collectionsExpanded, setCollectionsExpanded] = useState(false);
+  const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
+  const [collectionsList, setCollectionsList] = useState(DEFAULT_COLLECTIONS);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchNavItems = async () => {
+      try {
+        const [catRes, colRes] = await Promise.allSettled([
+          categoriesApi.list(),
+          collectionsApi.list(),
+        ]);
+
+        if (!isMounted) return;
+
+        if (catRes.status === "fulfilled" && catRes.value?.data?.length > 0) {
+          const liveCats = catRes.value.data.map((cat) => ({
+            name: cat.name,
+            path: `/collections/${cat.slug}`,
+          }));
+          setCategoriesList(liveCats);
+        }
+
+        if (colRes.status === "fulfilled" && colRes.value?.data?.length > 0) {
+          const liveCols = colRes.value.data.map((col) => ({
+            name: col.name,
+            path: `/collections/${col.handle}`,
+          }));
+          setCollectionsList(liveCols);
+        }
+      } catch (err) {
+        // Fallback to static defaults if backend offline
+      }
+    };
+
+    fetchNavItems();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!mobileMenuOpen && !searchOpen) return undefined;
@@ -181,86 +240,13 @@ const Header = ({ onSearch }) => {
                 </span>
                 <div className="dropdown-pane">
                   <ul className="dropdown-list">
-                    <li>
-                      <Link
-                        href="/collections/cargo-trousers-for-men"
-                        className="dropdown-link"
-                      >
-                        Cargo Trousers
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/co-ord-sets"
-                        className="dropdown-link"
-                      >
-                        Co-Ord Sets
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/textured-co-ord-sets"
-                        className="dropdown-link"
-                      >
-                        Textured / Printed Casual Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/korean-pants"
-                        className="dropdown-link"
-                      >
-                        Korean Pants
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/linen-shirts"
-                        className="dropdown-link"
-                      >
-                        Linen Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/cuban-shirts"
-                        className="dropdown-link"
-                      >
-                        Cuban Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/crochet-shirts"
-                        className="dropdown-link"
-                      >
-                        Crochet Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/shirts"
-                        className="dropdown-link"
-                      >
-                        Korean Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/oversized-t-shirts"
-                        className="dropdown-link"
-                      >
-                        Oversized T-Shirts
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/parachute-cargos"
-                        className="dropdown-link"
-                      >
-                        Parachute Cargo Trousers
-                      </Link>
-                    </li>
+                    {categoriesList.map((cat) => (
+                      <li key={cat.path}>
+                        <Link href={cat.path} className="dropdown-link">
+                          {cat.name}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </li>
@@ -291,30 +277,13 @@ const Header = ({ onSearch }) => {
                 </span>
                 <div className="dropdown-pane">
                   <ul className="dropdown-list">
-                    <li>
-                      <Link
-                        href="/collections/retro-clothing"
-                        className="dropdown-link"
-                      >
-                        Retro Clothing
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/outliers-k-aracter"
-                        className="dropdown-link"
-                      >
-                        Outliers K-aracter
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/collections/outliers-recommends"
-                        className="dropdown-link"
-                      >
-                        Outliers Recommends
-                      </Link>
-                    </li>
+                    {collectionsList.map((col) => (
+                      <li key={col.path}>
+                        <Link href={col.path} className="dropdown-link">
+                          {col.name}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </li>
@@ -559,18 +528,7 @@ const Header = ({ onSearch }) => {
                 </button>
                 {categoriesExpanded && (
                   <ul className="pl-4 pr-2 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
-                    {[
-                      { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
-                      { name: "Co-ord Sets", path: "/collections/co-ord-sets" },
-                      { name: "Textured Co-ord Sets", path: "/collections/textured-co-ord-sets" },
-                      { name: "Korean Pants", path: "/collections/korean-pants" },
-                      { name: "Linen Shirts", path: "/collections/linen-shirts" },
-                      { name: "Cuban Shirts", path: "/collections/cuban-shirts" },
-                      { name: "Crochet Shirts", path: "/collections/crochet-shirts" },
-                      { name: "Shirts", path: "/collections/shirts" },
-                      { name: "Oversized T-Shirts", path: "/collections/oversized-t-shirts" },
-                      { name: "Parachute Cargos", path: "/collections/parachute-cargos" },
-                    ].map((cat) => (
+                    {categoriesList.map((cat) => (
                       <li key={cat.path}>
                         <Link href={cat.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
                           {cat.name}
@@ -593,21 +551,13 @@ const Header = ({ onSearch }) => {
                 </button>
                 {collectionsExpanded && (
                   <ul className="pl-4 pr-2 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
-                    <li>
-                      <Link href="/collections/retro-clothing" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
-                        Retro Clothing
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/collections/outliers-k-aracter" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
-                        Outliers K-aracter
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/collections/outliers-recommends" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
-                        Outliers Recommends
-                      </Link>
-                    </li>
+                    {collectionsList.map((col) => (
+                      <li key={col.path}>
+                        <Link href={col.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">
+                          {col.name}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 )}
               </li>

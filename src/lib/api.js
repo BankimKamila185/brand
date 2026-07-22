@@ -174,6 +174,11 @@ export const usersApi = {
   updateProfile: (data) => api.patch("/api/users/me", data),
 };
 
+export const categoriesApi = {
+  list: () => api.get("/api/categories"),
+  getBySlug: (slug) => api.get(`/api/categories/${slug}`),
+};
+
 export const adminApi = {
   analytics: () => api.get("/api/analytics/dashboard"),
   dashboard: () => api.get("/api/orders/admin?limit=100"),
