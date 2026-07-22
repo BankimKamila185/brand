@@ -510,12 +510,12 @@ const Footer = () => {
             <ul className="hoo-nav-links">
               <li><Link href="/policies/refund-policy">Return / Exchange</Link></li>
               <li><Link href="/policies/shipping-policy">Shipping Policy</Link></li>
-              <li><Link href="#">Rewards Program</Link></li>
-              <li><Link href="#">Track Order</Link></li>
+              <li><Link href="/policies/terms-of-service">Rewards Program</Link></li>
+              <li><Link href="/profile">Track Order</Link></li>
               <li><Link href="/policies/privacy-policy">Privacy Policy</Link></li>
               <li><Link href="/policies/terms-of-service">Terms of Service</Link></li>
               <li><Link href="/pages/contact">Contact Us</Link></li>
-              <li><Link href="#">Blog</Link></li>
+              <li><Link href="/collections/whats-new">Lookbook &amp; Drops</Link></li>
             </ul>
           </div>
 

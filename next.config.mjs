@@ -22,12 +22,28 @@ const nextConfig = {
     ];
   },
 
-  // Proxy /api/* requests to the backend service
+  // Proxy /api/* requests to the backend service & handle route aliases
   async rewrites() {
     return [
       {
         source: "/api/:path*",
         destination: `${BACKEND_URL}/api/:path*`,
+      },
+      {
+        source: "/contact",
+        destination: "/pages/contact",
+      },
+      {
+        source: "/login",
+        destination: "/pages/login",
+      },
+      {
+        source: "/register",
+        destination: "/pages/login",
+      },
+      {
+        source: "/wishlist",
+        destination: "/pages/wishlist",
       },
     ];
   },
