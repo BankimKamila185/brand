@@ -705,7 +705,7 @@ const Header = ({ onSearch }) => {
             {/* Left: Brand Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" onClick={() => setSearchOpen(false)}>
-                <Logo />
+                <Logo height={32} />
               </Link>
             </div>
 
