@@ -472,12 +472,6 @@ export default function ProfilePage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (activeTab === "orders" && orders.length === 0) {
-      fetchOrders(1);
-    }
-  }, [activeTab, fetchOrders, orders.length]);
-
   // ── Fetch addresses ───────────────────────────────────────────────────────
   const fetchAddresses = useCallback(async () => {
     setAddrLoading(true);
@@ -492,10 +486,11 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === "addresses") {
+    if (isAuthenticated) {
+      fetchOrders(1);
       fetchAddresses();
     }
-  }, [activeTab, fetchAddresses]);
+  }, [isAuthenticated, fetchOrders, fetchAddresses]);
 
   // ── Address handlers ──────────────────────────────────────────────────────
   const handleSaveAddress = async (formData) => {
@@ -573,7 +568,7 @@ export default function ProfilePage() {
 
   const initials = getInitials(user?.name, user?.email);
   const totalSpend = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const deliveredCount = orders.filter((o) => o.status === "delivered").length;
+  const deliveredCount = orders.filter((o) => String(o.status).toLowerCase() === "delivered").length;
 
   // ─────────────────────────────────────────────────────────────────────────
 

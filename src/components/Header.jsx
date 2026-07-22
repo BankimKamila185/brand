@@ -117,6 +117,18 @@ const Header = ({ onSearch }) => {
     }
   };
 
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        clearSearch();
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchOpen]);
+
   return (
     <header className={`main-header ${mobileMenuOpen || searchOpen ? '!z-[9999]' : ''}`}>
       <div className="container-fluid">
@@ -301,18 +313,8 @@ const Header = ({ onSearch }) => {
 
           {/* Action Icons (Right) */}
           <div className="header-actions">
-            {/* Search Input and Button */}
+            {/* Search Trigger Button */}
             <div className="mobile-search relative flex items-center">
-              {searchOpen && (
-                <input
-                  type="text"
-                  placeholder="Search streetwear..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="border border-black rounded-full px-4 py-1 text-xs mr-2 w-36 md:w-44 outline-none"
-                  autoFocus
-                />
-              )}
               <button
                 className="action-btn text-black hover:opacity-70 flex items-center justify-center"
                 onClick={() => setSearchOpen(!searchOpen)}
@@ -674,51 +676,195 @@ const Header = ({ onSearch }) => {
         </div>
       )}
 
-      {/* Mobile full-screen search */}
+      {/* Top Slide-Down Search Bar Overlay */}
       {searchOpen && (
-        <div className="mobile-search-overlay md:hidden" role="dialog" aria-modal="true" aria-label="Search products">
-          <div className="mobile-search-overlay-header">
-            <h2>Search our store</h2>
-            <button
-              type="button"
-              className="mobile-search-close"
-              onClick={() => {
-                clearSearch();
-                setSearchOpen(false);
-              }}
-              aria-label="Close search"
-            >
-              <X aria-hidden="true" />
-            </button>
-          </div>
+        <>
+          {/* Dark backdrop overlay */}
+          <div
+            className="fixed inset-0 bg-black/40 z-[9998] transition-opacity duration-300"
+            onClick={() => {
+              clearSearch();
+              setSearchOpen(false);
+            }}
+          />
 
-          <form
-            className="mobile-search-form"
-            onSubmit={(event) => event.preventDefault()}
+          {/* Search Popup Header Bar */}
+          <div
+            className="fixed top-0 left-0 right-0 z-[9999] bg-white border-b border-neutral-200 shadow-md py-3 px-4 md:px-10 flex items-center justify-between gap-4 md:gap-8"
+            style={{
+              animation: "searchPopDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            }}
           >
-            <input
-              type="search"
-              placeholder="Search products"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              autoFocus
-            />
-            <button type="submit" aria-label="Search products">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes searchPopDown {
+                from { transform: translateY(-100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+              }
+            `}} />
+
+            {/* Left: Brand Logo */}
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/" onClick={() => setSearchOpen(false)}>
+                <Logo />
+              </Link>
+            </div>
+
+            {/* Middle: Wide Search Bar */}
+            <form
+              className="flex-1 max-w-2xl relative flex items-center"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  window.location.href = `/collections/all?q=${encodeURIComponent(searchQuery.trim())}`;
+                }
+              }}
+            >
+              <div className="relative w-full flex items-center">
+                <input
+                  type="text"
+                  placeholder="Search products"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  autoFocus
+                  className="w-full border border-neutral-400 rounded-md py-2 px-4 pr-10 text-sm md:text-base text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all bg-white"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 text-neutral-600 hover:text-black transition-colors"
+                  aria-label="Search"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+
+            {/* Right: Account, Wishlist, Cart, Close X */}
+            <div className="flex items-center gap-3 md:gap-5 flex-shrink-0 text-black">
+              {/* Account */}
+              {user ? (
+                <Link
+                  href="/profile"
+                  onClick={() => setSearchOpen(false)}
+                  className="hover:opacity-70 relative flex items-center justify-center"
+                  aria-label="My Profile"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />
+                </Link>
+              ) : (
+                <Link
+                  href="/pages/login"
+                  onClick={() => setSearchOpen(false)}
+                  className="hover:opacity-70 flex items-center justify-center"
+                  aria-label="Account"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </Link>
+              )}
+
+              {/* Wishlist */}
+              <Link
+                href="/pages/wishlist"
+                onClick={() => setSearchOpen(false)}
+                className="hover:opacity-70 relative flex items-center justify-center"
+                aria-label="Wishlist"
               >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </button>
-          </form>
-        </div>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                {wishlist.length > 0 && (
+                  <span className="badge-count">{wishlist.length}</span>
+                )}
+              </Link>
+
+              {/* Cart */}
+              <button
+                className="hover:opacity-70 relative flex items-center justify-center"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setCartOpen(true);
+                }}
+                aria-label="Cart"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="badge-count">{cartCount}</span>
+                )}
+              </button>
+
+              {/* Close Button X */}
+              <button
+                type="button"
+                onClick={() => {
+                  clearSearch();
+                  setSearchOpen(false);
+                }}
+                className="hover:opacity-75 text-neutral-600 hover:text-black transition-colors ml-1 p-1"
+                aria-label="Close search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </header>
   );
