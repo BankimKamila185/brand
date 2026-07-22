@@ -77,7 +77,7 @@
   /* --- Layout --- */
   --max-w: 1440px;
   --container-px: clamp(20px, 4vw, 60px);
-  --header-h: 126px;   /* 80px top bar + 46px nav bar */
+  --header-h: 88px;
   --announce-h: 40px;
 
   /* --- Radius Scale --- */
@@ -2006,7 +2006,6 @@ html, body {
   align-items: center;
 }
 
-/* reuse existing .nav-menu / .nav-item / .nav-link / .dropdown-pane */
 .hdr-nav-bar .nav-link {
   padding: 14px 0;
   font-size: 12px;
@@ -2015,6 +2014,125 @@ html, body {
 .hdr-nav-bar .nav-link::after {
   bottom: 10px;
 }
+
+/* ── Search Popup Overlay Bar (Slide-down from top) ── */
+.srch-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 76px;
+  padding: 0 16px;
+}
+
+.srch-logo img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+.srch-form {
+  position: relative;
+  flex: 1;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.srch-input {
+  width: 100%;
+  height: 46px;
+  border: 1.5px solid var(--c-ink-3);
+  border-radius: 9999px;
+  padding: 0 52px 0 22px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--c-ink);
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.srch-input:focus {
+  border-color: var(--c-ink);
+  box-shadow: 0 0 0 1px var(--c-ink);
+}
+
+.srch-input::placeholder {
+  color: var(--c-ink-3);
+}
+
+.srch-submit-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-ink-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.srch-submit-btn:hover {
+  color: var(--c-ink);
+}
+
+.srch-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--c-ink);
+}
+
+.srch-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  color: var(--c-ink);
+  transition: opacity 0.15s;
+}
+
+.srch-icon-btn:hover {
+  opacity: 0.65;
+}
+
+.srch-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  color: var(--c-ink-2);
+  transition: color 0.15s;
+  margin-left: 4px;
+}
+
+.srch-close-btn:hover {
+  color: var(--c-ink);
+}
+
+@media (max-width: 768px) {
+  .srch-bar-inner {
+    height: 64px;
+    gap: 10px;
+    padding: 0 8px;
+  }
+  .srch-logo img {
+    height: 34px;
+  }
+  .srch-input {
+    height: 40px;
+    font-size: 13px;
+    padding-left: 14px;
+    padding-right: 40px;
+  }
+  .srch-icons {
+    gap: 6px;
+  }
+}
+
 
 /* legacy classes kept for any other code that may reference them */
 .header-inner {
