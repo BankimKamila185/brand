@@ -1,12 +1,14 @@
 "use strict";
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
-import { Heart, Eye, X } from "lucide-react";
+import { Heart, Eye, X, Check, ShoppingBag } from "lucide-react";
 
 const ProductCard = ({ product, onOpenDetails }) => {
+  const router = useRouter();
   const { addToCart, toggleWishlist, isInWishlist, setCartOpen } = useCart();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
@@ -15,20 +17,29 @@ const ProductCard = ({ product, onOpenDetails }) => {
     product.options?.[0]?.values ||
     Array.from(
       new Set(
-        product.variants.map((v) => v.option1 || v.title).filter((x) => !!x),
-      ),
+        product.variants?.map((v) => v.option1 || v.title).filter((x) => !!x) || []
+      )
     );
 
   const defaultSize = sizes[0] || "M";
   const [modalSize, setModalSize] = useState(defaultSize);
   const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
+  const [addedSuccess, setAddedSuccess] = useState(false);
 
-  const firstImg = product.images[0]?.src || "";
-  const secondImg = product.images[1]?.src || firstImg;
+  const imagesList = product.images?.length > 0 ? product.images : [{ src: "" }];
+  const firstImg = imagesList[0]?.src || "";
+  const secondImg = imagesList[1]?.src || firstImg;
+  const [selectedModalImg, setSelectedModalImg] = useState(firstImg);
+
+  // Keep selected modal image synced when firstImg changes
+  useEffect(() => {
+    setSelectedModalImg(firstImg);
+  }, [firstImg]);
 
   // Calculate discount percentage
-  const variant = product.variants[0];
-  const priceNum = parseFloat(variant.price);
+  const variant = product.variants?.[0] || {};
+  const priceNum = parseFloat(variant.price || 0);
   const comparePriceRaw = variant.compare_at_price || variant.comparePrice;
   const comparePriceNum = comparePriceRaw ? parseFloat(comparePriceRaw) : 0;
   const discountPercent =
@@ -38,27 +49,72 @@ const ProductCard = ({ product, onOpenDetails }) => {
 
   const isWishlisted = isInWishlist(product.id);
 
-  const handleSelectOptionsClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // Scroll lock and Escape key listener when quick view modal is active
+  useEffect(() => {
+    if (!isQuickViewOpen) return undefined;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsQuickViewOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isQuickViewOpen]);
+
+  const openQuickView = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setModalSize(defaultSize);
+    setQuantity(1);
+    setSelectedModalImg(firstImg);
+    setAddedSuccess(false);
     setIsQuickViewOpen(true);
   };
 
-  const handleModalAddToCart = (e) => {
+  const handleModalAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product, modalSize);
+
+    setIsAdding(true);
+    try {
+      await addToCart(product, modalSize, quantity);
+      setAddedSuccess(true);
+      setTimeout(() => {
+        setAddedSuccess(false);
+        setIsQuickViewOpen(false);
+        setCartOpen(true); // Auto-open slideout cart drawer
+      }, 500);
+    } catch (err) {
+      console.error("Error adding product to cart from modal:", err);
+    } finally {
+      setIsAdding(false);
     }
-    setIsQuickViewOpen(false);
   };
 
-  const handleModalBuyNow = (e) => {
+  const handleModalBuyNow = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, modalSize);
-    setIsQuickViewOpen(false);
-    setCartOpen(true);
+
+    setIsAdding(true);
+    try {
+      await addToCart(product, modalSize, quantity);
+      setIsQuickViewOpen(false);
+      router.push("/checkout");
+    } catch (err) {
+      console.error("Error in buy now from modal:", err);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   // Safe description parsing
@@ -75,7 +131,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
         <div className="product-card-media relative overflow-hidden rounded-sm bg-neutral-100">
           {/* Top Left Discount Badge */}
           {discountPercent > 0 && (
-            <div className="absolute top-2.5 left-2.5 z-10 bg-[#e84e4e] text-white font-extrabold text-[11px] px-2 py-0.5 rounded-sm tracking-tight shadow-sm">
+            <div className="absolute top-2.5 left-2.5 z-10 bg-[#e84e4e] text-white font-extrabold text-[11px] px-2 py-0.5 rounded-sm tracking-tight shadow-sm select-none">
               -{discountPercent}%
             </div>
           )}
@@ -117,11 +173,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
 
             <button
               className="hover-action-btn quickview-btn"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsQuickViewOpen(true);
-              }}
+              onClick={openQuickView}
               aria-label="Quick view"
             >
               <Eye size={18} />
@@ -132,7 +184,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
           <div className="product-card-bottom-action">
             <button
               className="select-options-btn"
-              onClick={handleSelectOptionsClick}
+              onClick={openQuickView}
             >
               Select Options
             </button>
@@ -192,118 +244,188 @@ const ProductCard = ({ product, onOpenDetails }) => {
             className="quickview-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               className="quickview-close-btn"
               onClick={() => setIsQuickViewOpen(false)}
               aria-label="Close modal"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
 
             <div className="quickview-modal-grid">
-              {/* Left Column: Image */}
-              <div className="quickview-image-container">
-                <img
-                  src={firstImg}
-                  alt={product.title}
-                  className="quickview-modal-img"
-                />
-              </div>
-
-              {/* Right Column: Details */}
-              <div className="quickview-details-container">
-                <h2 className="quickview-product-title">{product.title}</h2>
-
-                <div className="quickview-price-row">
-                  <span className="quickview-price-sale">
-                    ₹{priceNum.toFixed(2)}
-                  </span>
-                  {comparePriceNum > priceNum && (
-                    <>
-                      <span className="quickview-price-compare">
-                        ₹{comparePriceNum.toFixed(2)}
-                      </span>
-                      <span className="quickview-sale-badge">SALE</span>
-                    </>
-                  )}
+              {/* Left Column: Main Image & Gallery Thumbnails */}
+              <div className="quickview-image-container flex flex-col items-center justify-between p-4 bg-neutral-900 text-white relative">
+                <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-[320px]">
+                  <img
+                    src={selectedModalImg || firstImg}
+                    alt={product.title}
+                    className="max-h-[460px] w-auto object-contain transition-all duration-300"
+                  />
                 </div>
 
-                {/* Description snippet */}
-                <div className="quickview-desc-wrap">
-                  <p className="quickview-description">
-                    {descriptionText}
-                    <Link
-                      href={`/products/${product.handle}`}
-                      className="quickview-view-details-link"
-                    >
-                      View details
-                    </Link>
-                  </p>
-                </div>
-
-                {/* In Stock status */}
-                <div className="quickview-stock-status">
-                  <span className="stock-dot">●</span> In Stock
-                </div>
-
-                {/* Size Selector */}
-                {sizes.length > 0 && (
-                  <div className="quickview-size-section">
-                    <span className="quickview-size-label">
-                      Size:{" "}
-                      <span className="active-size-name">{modalSize}</span>
-                    </span>
-                    <div className="quickview-sizes-grid">
-                      {sizes.map((size) => (
-                        <button
-                          key={size}
-                          className={`quickview-size-btn ${modalSize === size ? "active" : ""}`}
-                          onClick={() => setModalSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
+                {/* Gallery Thumbnails Strip */}
+                {imagesList.length > 1 && (
+                  <div className="flex items-center gap-2 pt-3 overflow-x-auto max-w-full z-10">
+                    {imagesList.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedModalImg(img.src)}
+                        className={`w-12 h-14 rounded overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
+                          selectedModalImg === img.src
+                            ? "border-white scale-105"
+                            : "border-neutral-700 opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <img
+                          src={img.src}
+                          alt={`${product.title} view ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
                   </div>
                 )}
+              </div>
 
-                {/* Quantity and Actions */}
-                <div className="quickview-quantity-section">
-                  <span className="quickview-qty-label">Quantity</span>
-                  <div className="quickview-actions-row">
-                    <div className="quickview-qty-selector">
-                      <button
-                        className="qty-btn"
-                        onClick={() =>
-                          setQuantity((prev) => Math.max(1, prev - 1))
-                        }
+              {/* Right Column: Interactive Product Details & Actions */}
+              <div className="quickview-details-container p-6 md:p-8 flex flex-col justify-between">
+                <div className="flex flex-col gap-4">
+                  {/* Title */}
+                  <h2 className="quickview-product-title text-xl md:text-2xl font-bold text-neutral-900 leading-tight">
+                    {product.title}
+                  </h2>
+
+                  {/* Pricing */}
+                  <div className="quickview-price-row flex items-center gap-3">
+                    <span className="quickview-price-sale text-xl md:text-2xl font-extrabold text-[#e84e4e]">
+                      ₹{priceNum.toFixed(2)}
+                    </span>
+                    {comparePriceNum > priceNum && (
+                      <>
+                        <span className="quickview-price-compare line-through text-neutral-400 text-sm">
+                          ₹{comparePriceNum.toFixed(2)}
+                        </span>
+                        <span className="bg-[#e84e4e] text-white text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                          SALE
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Description Snippet & Link */}
+                  <div className="quickview-desc-wrap border-y border-neutral-200 py-3 text-xs md:text-sm text-neutral-600 leading-relaxed">
+                    <p className="m-0">
+                      {descriptionText}{" "}
+                      <Link
+                        href={`/products/${product.handle}`}
+                        onClick={() => setIsQuickViewOpen(false)}
+                        className="font-bold text-neutral-900 underline hover:text-black ml-1 whitespace-nowrap"
                       >
-                        -
-                      </button>
-                      <span className="qty-number">{quantity}</span>
-                      <button
-                        className="qty-btn"
-                        onClick={() => setQuantity((prev) => prev + 1)}
-                      >
-                        +
-                      </button>
+                        View details
+                      </Link>
+                    </p>
+                  </div>
+
+                  {/* Stock Status Indicator */}
+                  <div className="quickview-stock-status flex items-center gap-2 text-xs font-bold text-emerald-600">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>In Stock</span>
+                  </div>
+
+                  {/* Interactive Size Selector */}
+                  {sizes.length > 0 && (
+                    <div className="quickview-size-section flex flex-col gap-2 pt-1">
+                      <div className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
+                        <span>Size:</span>
+                        <span className="font-extrabold text-black uppercase">{modalSize}</span>
+                      </div>
+                      <div className="quickview-sizes-grid flex flex-wrap gap-2">
+                        {sizes.map((size) => (
+                          <button
+                            key={size}
+                            className={`w-11 h-11 rounded border text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                              modalSize === size
+                                ? "bg-black text-white border-black shadow-sm"
+                                : "bg-white text-neutral-800 border-neutral-300 hover:border-black"
+                            }`}
+                            onClick={() => setModalSize(size)}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
                     </div>
+                  )}
 
-                    <button
-                      className="quickview-add-to-cart-btn"
-                      onClick={handleModalAddToCart}
-                    >
-                      ADD TO CART
-                    </button>
+                  {/* Quantity Selector & Add To Cart Row */}
+                  <div className="quickview-quantity-section flex flex-col gap-2 pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Quantity
+                    </span>
+                    <div className="quickview-actions-row flex items-center gap-3">
+                      
+                      {/* Quantity Stepper (- 1 +) */}
+                      <div className="flex items-center border border-neutral-300 rounded h-11 overflow-hidden select-none bg-white">
+                        <button
+                          type="button"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-100 hover:text-black transition-colors cursor-pointer"
+                          onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                        >
+                          -
+                        </button>
+                        <span className="w-10 text-center font-bold text-xs text-neutral-900">
+                          {quantity}
+                        </span>
+                        <button
+                          type="button"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-100 hover:text-black transition-colors cursor-pointer"
+                          onClick={() => setQuantity((prev) => prev + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      <button
+                        type="button"
+                        disabled={isAdding}
+                        className={`flex-1 h-11 rounded border font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                          addedSuccess
+                            ? "bg-emerald-600 text-white border-emerald-600"
+                            : "bg-white border-black text-black hover:bg-neutral-900 hover:text-white"
+                        }`}
+                        onClick={handleModalAddToCart}
+                      >
+                        {addedSuccess ? (
+                          <>
+                            <Check className="w-4 h-4" /> Added to Cart!
+                          </>
+                        ) : isAdding ? (
+                          "Adding..."
+                        ) : (
+                          <>
+                            <ShoppingBag className="w-4 h-4" /> Add to Cart
+                          </>
+                        )}
+                      </button>
+
+                    </div>
                   </div>
                 </div>
 
-                <button
-                  className="quickview-buy-now-btn"
-                  onClick={handleModalBuyNow}
-                >
-                  BUY IT NOW
-                </button>
+                {/* Buy It Now Button */}
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    disabled={isAdding}
+                    className="w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-widest rounded hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer"
+                    onClick={handleModalBuyNow}
+                  >
+                    Buy It Now
+                  </button>
+                </div>
+
               </div>
             </div>
           </div>
