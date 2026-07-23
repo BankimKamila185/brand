@@ -8,7 +8,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import { productsApi } from "@/lib/api";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, SlidersHorizontal, Grid, X } from "lucide-react";
+import { ChevronDown, ChevronUp, SlidersHorizontal, X } from "lucide-react";
 
 const COLLECTION_LABELS = {
   all: "All Products",
@@ -57,7 +57,7 @@ export default function CollectionPage({ params }) {
   // Filter States
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState("");
-  const [gridCols, setGridCols] = useState(4); // Default 4-column layout as requested
+  const [gridCols, setGridCols] = useState(4); // Default 4 columns
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [priceMaxLimit, setPriceMaxLimit] = useState(5000);
   const [priceRange, setPriceRange] = useState(5000);
@@ -67,7 +67,7 @@ export default function CollectionPage({ params }) {
   const [outOfStockOnly, setOutOfStockOnly] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Accordion Section States
+  // Accordion States
   const [openSections, setOpenSections] = useState({
     size: true,
     price: true,
@@ -124,7 +124,7 @@ export default function CollectionPage({ params }) {
 
         setDbProducts(formatted);
 
-        // Find max price for slider
+        // Calculate max price
         let maxP = 3000;
         formatted.forEach((item) => {
           const p = parseFloat(item.variants[0]?.price || 0);
@@ -145,7 +145,7 @@ export default function CollectionPage({ params }) {
 
   const allProducts = dbProducts;
 
-  // Extract available sizes dynamically
+  // Sizes available
   const availableSizes = useMemo(() => {
     const set = new Set();
     allProducts.forEach((p) => {
@@ -155,7 +155,6 @@ export default function CollectionPage({ params }) {
     return Array.from(set).sort();
   }, [allProducts]);
 
-  // Counts for stock
   const inStockCount = useMemo(
     () => allProducts.filter((p) => p.variants.some((v) => v.available)).length,
     [allProducts]
@@ -188,7 +187,7 @@ export default function CollectionPage({ params }) {
     inStockOnly ||
     outOfStockOnly;
 
-  // Filtering Logic
+  // Filtered list
   const filteredProducts = useMemo(() => {
     let products = allProducts;
 
@@ -208,7 +207,6 @@ export default function CollectionPage({ params }) {
       }
     }
 
-    // Search filter
     if (searchQuery) {
       products = products.filter(
         (p) =>
@@ -217,7 +215,6 @@ export default function CollectionPage({ params }) {
       );
     }
 
-    // Size Filter
     if (selectedSizes.length > 0) {
       products = products.filter((p) => {
         const pSizes = p.options?.[0]?.values || p.variants?.map((v) => v.option1).filter(Boolean) || [];
@@ -225,30 +222,25 @@ export default function CollectionPage({ params }) {
       });
     }
 
-    // Price Filter
     products = products.filter((p) => {
       const price = parseFloat(p.variants[0]?.price || 0);
       return price >= minPriceInput && price <= maxPriceInput && price <= priceRange;
     });
 
-    // Stock Availability Filter
     if (inStockOnly && !outOfStockOnly) {
       products = products.filter((p) => p.variants.some((v) => v.available));
     } else if (outOfStockOnly && !inStockOnly) {
       products = products.filter((p) => p.variants.every((v) => !v.available));
     }
 
-    // Sort
     const sorted = [...products];
     if (sortBy === "price-asc")
       sorted.sort(
-        (a, b) =>
-          parseFloat(a.variants[0]?.price || 0) - parseFloat(b.variants[0]?.price || 0)
+        (a, b) => parseFloat(a.variants[0]?.price || 0) - parseFloat(b.variants[0]?.price || 0)
       );
     if (sortBy === "price-desc")
       sorted.sort(
-        (a, b) =>
-          parseFloat(b.variants[0]?.price || 0) - parseFloat(a.variants[0]?.price || 0)
+        (a, b) => parseFloat(b.variants[0]?.price || 0) - parseFloat(a.variants[0]?.price || 0)
       );
     if (sortBy === "newest")
       sorted.sort(
@@ -285,304 +277,236 @@ export default function CollectionPage({ params }) {
     isFallback,
   ]);
 
-  // Dynamic grid column class
-  const getGridClass = () => {
-    if (gridCols === 1) return "grid-cols-1";
-    if (gridCols === 2) return "grid-cols-1 sm:grid-cols-2";
-    if (gridCols === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-    if (gridCols === 5) return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5";
-    return "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"; // 4-col default
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-neutral-900">
       <AnnouncementBar />
       <Header onSearch={setSearchQuery} />
 
-      <main className="flex-grow pb-16">
-        {/* Sleek Dark Header Banner */}
-        <div className="bg-black text-white py-12 md:py-16 text-center select-none shadow-sm">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide uppercase">
-            {label}
-          </h1>
+      <main className="flex-grow">
+        {/* Sleek Black Collection Banner */}
+        <div className="collection-hero-banner">
+          <h1>{label}</h1>
         </div>
 
-        <div className="max-w-[1440px] mx-auto px-4 md:px-8 pt-8">
+        <div className="collection-main-wrapper">
           
-          {/* Main 2-Column Grid Layout: Left Sidebar + Right Catalog */}
-          <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+          {/* Main 2-Column Flex Layout: Left Sidebar + Right Catalog */}
+          <div className="collection-flex-layout">
             
             {/* ── LEFT SIDEBAR: FILTERS ── */}
-            <aside className="w-full md:w-64 flex-shrink-0 hidden md:block">
-              <div className="sticky top-24 flex flex-col gap-6 pr-2">
-                
-                {/* Filter Header */}
-                <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
-                  <h2 className="text-xl font-extrabold tracking-tight text-neutral-900">
-                    Filters
-                  </h2>
-                  {isFilterActive && (
-                    <button
-                      onClick={clearAllFilters}
-                      className="text-xs text-neutral-500 hover:text-black font-semibold underline transition-colors"
-                    >
-                      Clear all
-                    </button>
-                  )}
-                </div>
-
-                {/* 1. Size Accordion */}
-                <div className="border-b border-neutral-200 pb-5">
+            <aside className="collection-sidebar-panel">
+              
+              {/* Header */}
+              <div className="collection-sidebar-header">
+                <h2 className="collection-sidebar-title">Filters</h2>
+                {isFilterActive && (
                   <button
-                    onClick={() => toggleSection("size")}
-                    className="w-full flex items-center justify-between font-bold text-sm text-neutral-900 py-1"
+                    onClick={clearAllFilters}
+                    className="text-xs text-neutral-500 hover:text-black font-semibold underline"
                   >
-                    <span>Size</span>
-                    {openSections.size ? (
-                      <ChevronUp className="w-4 h-4 text-neutral-500" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-neutral-500" />
-                    )}
+                    Clear all
                   </button>
+                )}
+              </div>
 
-                  {openSections.size && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {availableSizes.length > 0
-                        ? availableSizes.map((size) => {
-                            const isSelected = selectedSizes.includes(size);
-                            return (
-                              <button
-                                key={size}
-                                onClick={() => toggleSizeFilter(size)}
-                                className={`px-3 py-1.5 text-xs font-semibold rounded border transition-all cursor-pointer ${
-                                  isSelected
-                                    ? "bg-black text-white border-black"
-                                    : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
-                                }`}
-                              >
-                                {size}
-                              </button>
-                            );
-                          })
-                        : ["S", "M", "L", "XL", "XXL"].map((size) => {
-                            const isSelected = selectedSizes.includes(size);
-                            return (
-                              <button
-                                key={size}
-                                onClick={() => toggleSizeFilter(size)}
-                                className={`px-3 py-1.5 text-xs font-semibold rounded border transition-all cursor-pointer ${
-                                  isSelected
-                                    ? "bg-black text-white border-black"
-                                    : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
-                                }`}
-                              >
-                                {size}
-                              </button>
-                            );
-                          })}
-                    </div>
+              {/* 1. Size Section */}
+              <div className="collection-filter-section">
+                <button
+                  onClick={() => toggleSection("size")}
+                  className="filter-section-trigger"
+                >
+                  <span>Size</span>
+                  {openSections.size ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-500" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-500" />
                   )}
-                </div>
+                </button>
 
-                {/* 2. Price Accordion */}
-                <div className="border-b border-neutral-200 pb-5">
-                  <button
-                    onClick={() => toggleSection("price")}
-                    className="w-full flex items-center justify-between font-bold text-sm text-neutral-900 py-1"
-                  >
-                    <span>Price</span>
-                    {openSections.price ? (
-                      <ChevronUp className="w-4 h-4 text-neutral-500" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-neutral-500" />
-                    )}
-                  </button>
+                {openSections.size && (
+                  <div className="filter-size-grid">
+                    {(availableSizes.length > 0 ? availableSizes : ["S", "M", "L", "XL", "XXL"]).map((size) => {
+                      const isSelected = selectedSizes.includes(size);
+                      return (
+                        <button
+                          key={size}
+                          onClick={() => toggleSizeFilter(size)}
+                          className={`filter-size-btn ${isSelected ? "active" : ""}`}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
-                  {openSections.price && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      {/* Price Range Slider */}
-                      <input
-                        type="range"
-                        min="0"
-                        max={priceMaxLimit}
-                        step="50"
-                        value={priceRange}
-                        onChange={(e) => setPriceRange(Number(e.target.value))}
-                        className="w-full accent-black cursor-pointer"
-                      />
+              {/* 2. Price Section */}
+              <div className="collection-filter-section">
+                <button
+                  onClick={() => toggleSection("price")}
+                  className="filter-section-trigger"
+                >
+                  <span>Price</span>
+                  {openSections.price ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-500" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-500" />
+                  )}
+                </button>
 
-                      {/* Numeric Inputs: Min to Max */}
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 relative flex items-center">
-                          <span className="absolute left-3 text-xs text-neutral-400 font-semibold">₹</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max={maxPriceInput}
-                            value={minPriceInput}
-                            onChange={(e) => setMinPriceInput(Number(e.target.value))}
-                            className="w-full pl-7 pr-2 py-2 text-xs font-medium border border-neutral-300 rounded outline-none focus:border-black"
-                          />
-                        </div>
+                {openSections.price && (
+                  <div className="filter-price-slider-wrap">
+                    <input
+                      type="range"
+                      min="0"
+                      max={priceMaxLimit}
+                      step="50"
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(Number(e.target.value))}
+                      className="w-full accent-black cursor-pointer"
+                    />
 
-                        <span className="text-xs text-neutral-400 font-medium">To</span>
+                    <div className="filter-price-inputs">
+                      <div className="filter-price-field">
+                        <span>₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max={maxPriceInput}
+                          value={minPriceInput}
+                          onChange={(e) => setMinPriceInput(Number(e.target.value))}
+                        />
+                      </div>
 
-                        <div className="flex-1 relative flex items-center">
-                          <span className="absolute left-3 text-xs text-neutral-400 font-semibold">₹</span>
-                          <input
-                            type="number"
-                            min={minPriceInput}
-                            max={priceMaxLimit}
-                            value={maxPriceInput}
-                            onChange={(e) => setMaxPriceInput(Number(e.target.value))}
-                            className="w-full pl-7 pr-2 py-2 text-xs font-medium border border-neutral-300 rounded outline-none focus:border-black"
-                          />
-                        </div>
+                      <span className="text-xs text-neutral-400 font-medium">To</span>
+
+                      <div className="filter-price-field">
+                        <span>₹</span>
+                        <input
+                          type="number"
+                          min={minPriceInput}
+                          max={priceMaxLimit}
+                          value={maxPriceInput}
+                          onChange={(e) => setMaxPriceInput(Number(e.target.value))}
+                        />
                       </div>
                     </div>
-                  )}
-                </div>
-
-                {/* 3. Availability Accordion */}
-                <div className="border-b border-neutral-200 pb-5">
-                  <button
-                    onClick={() => toggleSection("availability")}
-                    className="w-full flex items-center justify-between font-bold text-sm text-neutral-900 py-1"
-                  >
-                    <span>Availability</span>
-                    {openSections.availability ? (
-                      <ChevronUp className="w-4 h-4 text-neutral-500" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-neutral-500" />
-                    )}
-                  </button>
-
-                  {openSections.availability && (
-                    <div className="mt-3 flex flex-col gap-2.5">
-                      <label className="flex items-center gap-2.5 text-xs font-medium text-neutral-700 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={inStockOnly}
-                          onChange={(e) => setInStockOnly(e.target.checked)}
-                          className="w-4 h-4 rounded border-neutral-300 text-black focus:ring-black cursor-pointer"
-                        />
-                        <span>In stock ({inStockCount})</span>
-                      </label>
-
-                      <label className="flex items-center gap-2.5 text-xs font-medium text-neutral-700 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={outOfStockOnly}
-                          onChange={(e) => setOutOfStockOnly(e.target.checked)}
-                          className="w-4 h-4 rounded border-neutral-300 text-black focus:ring-black cursor-pointer"
-                        />
-                        <span>Out of stock ({outOfStockCount})</span>
-                      </label>
-                    </div>
-                  )}
-                </div>
-
+                  </div>
+                )}
               </div>
+
+              {/* 3. Availability Section */}
+              <div className="collection-filter-section">
+                <button
+                  onClick={() => toggleSection("availability")}
+                  className="filter-section-trigger"
+                >
+                  <span>Availability</span>
+                  {openSections.availability ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-500" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-500" />
+                  )}
+                </button>
+
+                {openSections.availability && (
+                  <div className="filter-stock-list">
+                    <label className="filter-stock-label">
+                      <input
+                        type="checkbox"
+                        checked={inStockOnly}
+                        onChange={(e) => setInStockOnly(e.target.checked)}
+                        className="filter-stock-checkbox"
+                      />
+                      <span>In stock ({inStockCount})</span>
+                    </label>
+
+                    <label className="filter-stock-label">
+                      <input
+                        type="checkbox"
+                        checked={outOfStockOnly}
+                        onChange={(e) => setOutOfStockOnly(e.target.checked)}
+                        className="filter-stock-checkbox"
+                      />
+                      <span>Out of stock ({outOfStockCount})</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
             </aside>
 
             {/* ── RIGHT MAIN AREA: CATALOG ── */}
-            <section className="flex-1 flex flex-col min-w-0">
+            <section className="collection-catalog-area">
               
-              {/* Top Controls Bar: Sort Dropdown Left | Grid Switcher Right */}
-              <div className="flex items-center justify-between pb-6 border-b border-neutral-200 mb-6 gap-4">
-                
-                {/* Left: Mobile Filter Button & Sort Dropdown */}
+              {/* Toolbar: Sort Left | Grid Buttons Right */}
+              <div className="collection-top-toolbar">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className="md:hidden inline-flex items-center gap-2 px-3.5 py-2 border border-neutral-300 rounded text-xs font-bold text-neutral-800 hover:border-black"
+                    className="md:hidden inline-flex items-center gap-2 px-3.5 py-2 border border-neutral-300 rounded text-xs font-bold text-neutral-800"
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5" />
                     Filters
                   </button>
 
-                  {/* Sort Select */}
-                  <div className="relative flex items-center">
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="appearance-none bg-white border border-neutral-300 rounded px-3.5 py-2 pr-8 text-xs font-semibold text-neutral-800 outline-none focus:border-black cursor-pointer shadow-none"
-                    >
-                      {SORT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 text-neutral-500 pointer-events-none" />
-                  </div>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="sort-select-custom"
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                {/* Right: Grid Column Switchers (1-col, 2-col, 3-col, 4-col, 5-col) */}
-                <div className="hidden sm:flex items-center gap-1 bg-neutral-100 p-1 rounded-md">
-                  
-                  {/* 1 Column (List) */}
+                {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
+                <div className="hidden sm:flex grid-switcher-bar">
                   <button
                     onClick={() => setGridCols(1)}
-                    title="1 Column"
-                    className={`px-2 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      gridCols === 1 ? "bg-black text-white" : "text-neutral-500 hover:text-black"
-                    }`}
+                    className={`grid-switcher-btn ${gridCols === 1 ? "active" : ""}`}
+                    title="1 Column List"
                   >
                     ≡
                   </button>
-
-                  {/* 2 Columns */}
                   <button
                     onClick={() => setGridCols(2)}
+                    className={`grid-switcher-btn ${gridCols === 2 ? "active" : ""}`}
                     title="2 Columns"
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      gridCols === 2 ? "bg-black text-white" : "text-neutral-500 hover:text-black"
-                    }`}
                   >
-                    ║
+                    ||
                   </button>
-
-                  {/* 3 Columns */}
                   <button
                     onClick={() => setGridCols(3)}
+                    className={`grid-switcher-btn ${gridCols === 3 ? "active" : ""}`}
                     title="3 Columns"
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      gridCols === 3 ? "bg-black text-white" : "text-neutral-500 hover:text-black"
-                    }`}
                   >
-                    ║║
+                    |||
                   </button>
-
-                  {/* 4 Columns (Active Default) */}
                   <button
                     onClick={() => setGridCols(4)}
+                    className={`grid-switcher-btn ${gridCols === 4 ? "active" : ""}`}
                     title="4 Columns"
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      gridCols === 4 ? "bg-black text-white" : "text-neutral-500 hover:text-black"
-                    }`}
                   >
-                    ║║║
+                    ||||
                   </button>
-
-                  {/* 5 Columns */}
                   <button
                     onClick={() => setGridCols(5)}
+                    className={`grid-switcher-btn ${gridCols === 5 ? "active" : ""}`}
                     title="5 Columns"
-                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      gridCols === 5 ? "bg-black text-white" : "text-neutral-500 hover:text-black"
-                    }`}
                   >
-                    ║║║║
+                    |||||
                   </button>
-
                 </div>
-
               </div>
 
               {/* Product Grid Area */}
               {loading ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-pulse">
+                <div className="dynamic-catalog-grid cols-4 animate-pulse">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="flex flex-col gap-3">
                       <div className="aspect-[3/4] bg-neutral-200 rounded" />
@@ -602,13 +526,13 @@ export default function CollectionPage({ params }) {
                   </p>
                   <button
                     onClick={clearAllFilters}
-                    className="bg-black text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-neutral-800"
+                    className="bg-black text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 cursor-pointer"
                   >
                     Reset All Filters
                   </button>
                 </div>
               ) : (
-                <div className={`grid ${getGridClass()} gap-x-5 gap-y-8`}>
+                <div className={`dynamic-catalog-grid cols-${gridCols}`}>
                   {filteredProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -641,16 +565,12 @@ export default function CollectionPage({ params }) {
               {/* Mobile Size Filter */}
               <div className="mb-6">
                 <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-700 mb-3">Size</h4>
-                <div className="flex flex-wrap gap-2">
-                  {availableSizes.map((size) => (
+                <div className="filter-size-grid">
+                  {(availableSizes.length > 0 ? availableSizes : ["S", "M", "L", "XL", "XXL"]).map((size) => (
                     <button
                       key={size}
                       onClick={() => toggleSizeFilter(size)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded border ${
-                        selectedSizes.includes(size)
-                          ? "bg-black text-white border-black"
-                          : "bg-white border-neutral-300 text-neutral-700"
-                      }`}
+                      className={`filter-size-btn ${selectedSizes.includes(size) ? "active" : ""}`}
                     >
                       {size}
                     </button>
@@ -668,7 +588,7 @@ export default function CollectionPage({ params }) {
                   step="50"
                   value={priceRange}
                   onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full accent-black"
+                  className="w-full accent-black cursor-pointer"
                 />
               </div>
 
@@ -676,12 +596,12 @@ export default function CollectionPage({ params }) {
               <div className="mb-6">
                 <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-700 mb-3">Availability</h4>
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-xs">
+                  <label className="filter-stock-label">
                     <input
                       type="checkbox"
                       checked={inStockOnly}
                       onChange={(e) => setInStockOnly(e.target.checked)}
-                      className="rounded"
+                      className="filter-stock-checkbox"
                     />
                     <span>In stock ({inStockCount})</span>
                   </label>
