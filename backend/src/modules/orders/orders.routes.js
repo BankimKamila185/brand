@@ -481,4 +481,52 @@ router.get(
   }),
 );
 
+// DELETE /api/orders/:id — cancel & delete pending order for current user
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const orderId = req.params["id"];
+    const userId = req.user.sub;
+
+    const order = await db.order.findFirst({
+      where: { id: orderId, userId },
+    });
+
+    if (!order) throw new AppError("Order not found", 404);
+
+    if (order.status !== "PENDING" && order.status !== "pending") {
+      throw new AppError("Only pending orders can be deleted", 400);
+    }
+
+    // Delete order items & order record
+    await db.orderItem.deleteMany({ where: { orderId } });
+    await db.payment.deleteMany({ where: { orderId } }).catch(() => {});
+    await db.order.delete({ where: { id: orderId } });
+
+    sendSuccess(res, { id: orderId }, "Order deleted successfully");
+  }),
+);
+
+// POST /api/orders/:id/cancel — update status to CANCELLED
+router.post(
+  "/:id/cancel",
+  asyncHandler(async (req, res) => {
+    const orderId = req.params["id"];
+    const userId = req.user.sub;
+
+    const order = await db.order.findFirst({
+      where: { id: orderId, userId },
+    });
+
+    if (!order) throw new AppError("Order not found", 404);
+
+    const updated = await db.order.update({
+      where: { id: orderId },
+      data: { status: "CANCELLED" },
+    });
+
+    sendSuccess(res, updated, "Order cancelled successfully");
+  }),
+);
+
 export default router;

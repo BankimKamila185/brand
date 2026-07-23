@@ -148,6 +148,8 @@ export const ordersApi = {
   create: (data) => api.post("/api/orders", data),
   list: (page = 1) => api.get(`/api/orders?page=${page}`),
   get: (id) => api.get(`/api/orders/${id}`),
+  cancel: (id) => api.post(`/api/orders/${id}/cancel`),
+  delete: (id) => api.delete(`/api/orders/${id}`),
 };
 
 export const paymentsApi = {

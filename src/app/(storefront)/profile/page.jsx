@@ -511,7 +511,33 @@ export default function ProfilePage() {
     }
   }, [isAuthenticated, fetchOrders, fetchAddresses]);
 
-  // ── Address handlers ──────────────────────────────────────────────────────
+  // ── Order Action Handlers ──────────────────────────────────────────────────
+  const [actionOrderLoading, setActionOrderLoading] = useState(null);
+
+  const handleContinueOrder = (order) => {
+    router.push(`/checkout?orderId=${order.id}`);
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this pending order?")) {
+      return;
+    }
+    setActionOrderLoading(orderId);
+    try {
+      await ordersApi.delete(orderId);
+      await fetchOrders(1);
+    } catch (err) {
+      console.error("Delete order error:", err);
+      try {
+        await ordersApi.cancel(orderId);
+        await fetchOrders(1);
+      } catch (cancelErr) {
+        alert("Failed to delete this order. Please try again.");
+      }
+    } finally {
+      setActionOrderLoading(null);
+    }
+  };
   const handleSaveAddress = async (formData) => {
     setAddrSaving(true);
     setAddrError("");
@@ -783,8 +809,32 @@ export default function ProfilePage() {
                             </div>
                             <span className="profile-order-date">{formatDate(order.createdAt)}</span>
                           </div>
-                          <div className="profile-order-right">
+                          <div className="profile-order-right flex items-center gap-3">
                             <StatusBadge status={order.status} />
+
+                            {String(order.status).toLowerCase() === "pending" && (
+                              <div className="hidden sm:flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  disabled={actionOrderLoading === order.id}
+                                  onClick={(e) => { e.stopPropagation(); handleContinueOrder(order); }}
+                                  className="px-3 py-1.5 bg-black text-white text-[11px] font-bold rounded hover:bg-neutral-800 transition-all flex items-center gap-1 cursor-pointer"
+                                >
+                                  Continue
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={actionOrderLoading === order.id}
+                                  onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
+                                  className="px-2.5 py-1.5 bg-white text-red-600 border border-red-200 text-[11px] font-bold rounded hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-1 cursor-pointer"
+                                  title="Delete Pending Order"
+                                >
+                                  <Trash2 className="w-3 h-3 text-red-500" />
+                                  {actionOrderLoading === order.id ? "Deleting..." : "Delete"}
+                                </button>
+                              </div>
+                            )}
+
                             <strong className="profile-order-total">
                               {formatCurrency(order.total)}
                             </strong>
@@ -916,11 +966,35 @@ export default function ProfilePage() {
                                 );
                               })()}
 
-                              {/* Status Helper Banner */}
+                              {/* Status Helper Banner & Pending Action Buttons */}
                               {String(order.status).toLowerCase() === "pending" && (
-                                <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs font-semibold flex items-center gap-2.5">
-                                  <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                                  <span>Payment verification is pending. Order will be confirmed once payment is verified.</span>
+                                <div className="mb-5 p-4 bg-amber-50/90 border border-amber-200 text-amber-950 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                                  <div className="flex items-center gap-3">
+                                    <Clock className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                                    <div>
+                                      <p className="text-xs font-extrabold text-amber-950 uppercase tracking-wide">Payment Verification Pending</p>
+                                      <p className="text-[11px] text-amber-800 font-medium">You can complete your payment now or delete this pending order.</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2.5 flex-wrap">
+                                    <button
+                                      type="button"
+                                      disabled={actionOrderLoading === order.id}
+                                      onClick={(e) => { e.stopPropagation(); handleContinueOrder(order); }}
+                                      className="px-4 py-2.5 bg-black text-white text-xs font-bold rounded-lg hover:bg-neutral-800 active:scale-[0.98] transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                                    >
+                                      <ShoppingBag className="w-3.5 h-3.5" /> Continue Order
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={actionOrderLoading === order.id}
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
+                                      className="px-3.5 py-2.5 bg-white text-red-600 border border-red-200 text-xs font-bold rounded-lg hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                      {actionOrderLoading === order.id ? "Deleting..." : "Delete"}
+                                    </button>
+                                  </div>
                                 </div>
                               )}
                               {String(order.status).toLowerCase() === "confirmed" && (
