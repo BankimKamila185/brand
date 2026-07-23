@@ -102,22 +102,24 @@ export default function WishlistPage() {
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
           ) : wishlistProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center py-16 px-4 max-w-md mx-auto">
-              <div className="w-16 h-16 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-6 shadow-sm">
+            <div className="flex flex-col items-center justify-center text-center py-20 px-4 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-6 shadow-sm mx-auto">
                 <Heart className="w-7 h-7 text-neutral-400 stroke-[1.5]" />
               </div>
-              <h2 className="text-xl font-black uppercase text-neutral-900 mb-3 tracking-wider">
+              <h2 className="text-xl font-black uppercase text-neutral-900 mb-3 tracking-wider mx-auto">
                 Your wishlist is empty
               </h2>
-              <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-sm">
+              <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
                 Save your favourite items while you browse our collections.
               </p>
-              <Link
-                href="/collections/all"
-                className="btn"
-              >
-                Start Shopping
-              </Link>
+              <div className="flex justify-center w-full mx-auto">
+                <Link
+                  href="/collections/all"
+                  className="btn"
+                >
+                  Start Shopping
+                </Link>
+              </div>
             </div>
           ) : (
             <>
