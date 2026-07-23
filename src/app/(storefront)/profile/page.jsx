@@ -107,28 +107,47 @@ function getInitials(name, email) {
 function getTrackingSteps(status) {
   const normalized = String(status).toLowerCase();
   
-  const steps = [
-    { label: "Confirmed", desc: "Order received", active: false, complete: false },
-    { label: "Processing", desc: "Packing items", active: false, complete: false },
-    { label: "Shipped", desc: "In transit", active: false, complete: false },
-    { label: "Delivered", desc: "Arrived", active: false, complete: false },
-  ];
-
   if (normalized === "cancelled") {
     return [
       { label: "Cancelled", desc: "Order cancelled", active: true, complete: false, isCancelled: true }
     ];
   }
 
-  if (normalized === "pending" || normalized === "confirmed") {
-    steps[0].active = true;
-  } else if (normalized === "processing") {
+  if (normalized === "refunded") {
+    return [
+      { label: "Refunded", desc: "Payment refunded", active: true, complete: false, isCancelled: true }
+    ];
+  }
+
+  if (normalized === "pending") {
+    return [
+      { label: "Order Placed", desc: "Payment pending", active: true, complete: false, isPending: true },
+      { label: "Confirmed", desc: "Order confirmation", active: false, complete: false },
+      { label: "Processing", desc: "Packing items", active: false, complete: false },
+      { label: "Shipped", desc: "In transit", active: false, complete: false },
+      { label: "Delivered", desc: "Arrived", active: false, complete: false },
+    ];
+  }
+
+  const steps = [
+    { label: "Confirmed", desc: "Order received", active: false, complete: true },
+    { label: "Processing", desc: "Packing items", active: false, complete: false },
+    { label: "Shipped", desc: "In transit", active: false, complete: false },
+    { label: "Delivered", desc: "Arrived", active: false, complete: false },
+  ];
+
+  if (normalized === "confirmed") {
     steps[0].complete = true;
     steps[1].active = true;
-  } else if (normalized === "shipped") {
+  } else if (normalized === "processing") {
     steps[0].complete = true;
     steps[1].complete = true;
     steps[2].active = true;
+  } else if (normalized === "shipped") {
+    steps[0].complete = true;
+    steps[1].complete = true;
+    steps[2].complete = true;
+    steps[3].active = true;
   } else if (normalized === "delivered") {
     steps[0].complete = true;
     steps[1].complete = true;
@@ -897,6 +916,20 @@ export default function ProfilePage() {
                                 );
                               })()}
 
+                              {/* Status Helper Banner */}
+                              {String(order.status).toLowerCase() === "pending" && (
+                                <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs font-semibold flex items-center gap-2.5">
+                                  <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                                  <span>Payment verification is pending. Order will be confirmed once payment is verified.</span>
+                                </div>
+                              )}
+                              {String(order.status).toLowerCase() === "confirmed" && (
+                                <div className="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-semibold flex items-center gap-2.5">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                                  <span>Order confirmed! We are preparing your items for packaging and shipment.</span>
+                                </div>
+                              )}
+
                               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-4 mt-2">
                                 {getTrackingSteps(order.status).map((step, idx, arr) => (
                                   <div key={step.label} className="flex-1 w-full relative">
@@ -904,23 +937,25 @@ export default function ProfilePage() {
                                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                                         step.isCancelled 
                                           ? "bg-red-500 text-white"
-                                          : step.complete
-                                            ? "bg-[#1a9e5d] text-white"
-                                            : step.active
-                                              ? "bg-[#0E0D0B] text-white ring-4 ring-neutral-100"
-                                              : "bg-neutral-100 text-neutral-400"
+                                          : step.isPending
+                                            ? "bg-amber-500 text-white ring-4 ring-amber-100"
+                                            : step.complete
+                                              ? "bg-[#16a34a] text-white"
+                                              : step.active
+                                                ? "bg-[#0E0D0B] text-white ring-4 ring-neutral-100"
+                                                : "bg-neutral-100 text-neutral-400"
                                       }`}>
-                                        {step.isCancelled ? "✕" : step.complete ? "✓" : idx + 1}
+                                        {step.isCancelled ? "✕" : step.isPending ? "!" : step.complete ? "✓" : idx + 1}
                                       </div>
                                       <div>
-                                        <p className={`text-sm font-bold ${step.active ? "text-neutral-900" : "text-neutral-500"}`}>{step.label}</p>
+                                        <p className={`text-sm font-bold ${step.active || step.complete ? "text-neutral-900" : "text-neutral-500"}`}>{step.label}</p>
                                         <p className="text-xs text-neutral-400">{step.desc}</p>
                                       </div>
                                     </div>
                                     {/* Line connector between steps */}
                                     {idx < arr.length - 1 && !step.isCancelled && (
                                       <div className={`hidden md:block absolute top-4 left-[calc(50%+16px)] right-[calc(-50%+16px)] h-0.5 transition-all duration-300 ${
-                                        step.complete ? "bg-[#1a9e5d]" : "bg-neutral-200"
+                                        step.complete ? "bg-[#16a34a]" : "bg-neutral-200"
                                       }`} style={{ top: '16px' }} />
                                     )}
                                   </div>
