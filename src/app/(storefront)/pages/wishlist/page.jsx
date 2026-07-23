@@ -78,23 +78,22 @@ export default function WishlistPage() {
       <AnnouncementBar />
       <Header />
       <main className="flex-grow">
-        {/* Hero */}
-        <div className="collection-hero">
-          <h1 className="collection-hero-title">My Wishlist</h1>
-          <p className="collection-hero-count">
-            {loading ? "..." : wishlistProducts.length} Saved Items
-          </p>
+        <div className="container-fluid pt-12 pb-4">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+              Wishlist
+            </h1>
+            <nav className="text-sm text-neutral-500 flex items-center justify-center gap-1.5" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-black transition-colors">
+                Home
+              </Link>
+              <span className="text-neutral-400">›</span>
+              <span className="text-neutral-900 font-medium">Wishlist</span>
+            </nav>
+          </div>
         </div>
 
-        <div className="container-fluid py-12">
-          <nav className="text-sm text-gray-500 flex gap-2 mb-8">
-            <Link href="/" className="hover:text-black">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-black font-semibold">Wishlist</span>
-          </nav>
-
+        <div className="container-fluid pb-12">
           {loading ? (
             <div className="text-center py-24">
               <div style={{ width: 36, height: 36, border: "3px solid #e0e0e0", borderTopColor: "#222", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
@@ -121,16 +120,7 @@ export default function WishlistPage() {
             <>
               <div className="product-grid">
                 {wishlistProducts.map((product) => (
-                  <div key={product.id} className="relative">
-                    <ProductCard product={product} />
-                    <button
-                      className="absolute top-3 right-3 z-20 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow text-red-500 text-lg"
-                      onClick={() => toggleWishlist(product.id)}
-                      title="Remove from wishlist"
-                    >
-                      ♥
-                    </button>
-                  </div>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
 
