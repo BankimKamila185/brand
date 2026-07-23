@@ -4222,10 +4222,10 @@ html, body {
 .quickview-add-to-cart-btn {
   flex: 1;
   height: 44px;
-  border: 1px solid var(--c-ink);
-  background: var(--c-surface);
-  color: var(--c-ink);
-  font-family: var(--font-display);
+  border: 1.5px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: var(--font-display), sans-serif;
   font-size: 12px;
   font-weight: 700;
   border-radius: var(--r-sm);
@@ -4236,7 +4236,8 @@ html, body {
 }
 
 .quickview-add-to-cart-btn:hover {
-  background: var(--c-bg-2);
+  background: #000000 !important;
+  color: #ffffff !important;
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
@@ -4244,10 +4245,10 @@ html, body {
 .quickview-buy-now-btn {
   width: 100%;
   height: 46px;
-  background: var(--c-dark);
-  color: var(--c-dark-text);
+  background: #000000 !important;
+  color: #ffffff !important;
   border: none;
-  font-family: var(--font-display);
+  font-family: var(--font-display), sans-serif;
   font-size: 12px;
   font-weight: 700;
   border-radius: var(--r-sm);
@@ -4259,7 +4260,8 @@ html, body {
 }
 
 .quickview-buy-now-btn:hover {
-  background: var(--c-dark-2);
+  background: #262626 !important;
+  color: #ffffff !important;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }

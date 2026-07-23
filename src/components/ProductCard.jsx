@@ -437,7 +437,12 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   <button
                     type="button"
                     disabled={isAdding}
-                    className="w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-widest rounded hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer"
+                    style={{
+                      backgroundColor: "#000000",
+                      color: "#ffffff",
+                      border: "none",
+                    }}
+                    className="quickview-buy-now-btn w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-widest rounded hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center"
                     onClick={handleModalBuyNow}
                   >
                     Buy It Now
