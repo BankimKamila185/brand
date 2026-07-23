@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, use } from "react";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -43,10 +43,11 @@ const SORT_OPTIONS = [
 ];
 
 export default function CollectionPage({ params }) {
-  const handle = params.handle;
+  const resolvedParams = use(params);
+  const handle = resolvedParams?.handle || "";
   const label =
     COLLECTION_LABELS[handle] ||
-    handle.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    (handle ? handle.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Collection");
 
   const [dbProducts, setDbProducts] = useState([]);
   const [isFallback, setIsFallback] = useState(false);
