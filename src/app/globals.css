@@ -1833,12 +1833,13 @@ html, body {
   z-index: var(--z-header);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--c-border);
+  border-bottom: none !important;
+  box-shadow: none;
 }
 
 /* ── Top Bar (Logo | Search | Icons) ── */
 .hdr-top-bar {
-  border-bottom: 1px solid var(--c-border);
+  border-bottom: none !important;
 }
 
 .hdr-top-inner {
