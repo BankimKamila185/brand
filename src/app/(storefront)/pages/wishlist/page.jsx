@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
+import { Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { productsApi } from "@/lib/api";
 
@@ -78,22 +79,22 @@ export default function WishlistPage() {
       <AnnouncementBar />
       <Header />
       <main className="flex-grow">
-        <div className="container-fluid pt-12 pb-4">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+        <div className="container-fluid pt-16 md:pt-20 pb-4">
+          <div className="text-center mb-8">
+            <h1 className="text-[32px] md:text-[38px] font-bold text-neutral-900 mb-3 tracking-tight">
               Wishlist
             </h1>
             <nav className="text-sm text-neutral-500 flex items-center justify-center gap-1.5" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-black transition-colors">
                 Home
               </Link>
-              <span className="text-neutral-400">›</span>
+              <span className="text-neutral-400 select-none">›</span>
               <span className="text-neutral-900 font-medium">Wishlist</span>
             </nav>
           </div>
         </div>
 
-        <div className="container-fluid pb-12">
+        <div className="container-fluid pb-20">
           {loading ? (
             <div className="text-center py-24">
               <div style={{ width: 36, height: 36, border: "3px solid #e0e0e0", borderTopColor: "#222", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
@@ -101,17 +102,19 @@ export default function WishlistPage() {
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
           ) : wishlistProducts.length === 0 ? (
-            <div className="text-center py-24">
-              <span className="text-8xl block mb-6">♡</span>
-              <h2 className="text-2xl font-black uppercase mb-3">
+            <div className="flex flex-col items-center justify-center text-center py-16 px-4 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-6 shadow-sm">
+                <Heart className="w-7 h-7 text-neutral-400 stroke-[1.5]" />
+              </div>
+              <h2 className="text-xl font-black uppercase text-neutral-900 mb-3 tracking-wider">
                 Your wishlist is empty
               </h2>
-              <p className="text-gray-500 mb-8">
+              <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-sm">
                 Save your favourite items while you browse our collections.
               </p>
               <Link
                 href="/collections/all"
-                className="bg-black text-white px-10 py-4 inline-block font-bold uppercase tracking-widest text-sm rounded"
+                className="btn"
               >
                 Start Shopping
               </Link>
@@ -124,9 +127,9 @@ export default function WishlistPage() {
                 ))}
               </div>
 
-              <div className="text-center mt-8">
+              <div className="text-center mt-12">
                 <button
-                  className="bg-black text-white px-10 py-4 font-bold uppercase tracking-widest text-sm rounded"
+                  className="btn"
                   onClick={() =>
                     wishlistProducts.forEach((p) =>
                       addToCart(p, p.options[0]?.values[0] || "M")
