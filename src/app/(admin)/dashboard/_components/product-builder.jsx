@@ -12,6 +12,55 @@ const slugify = (value) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+const CODE39_ENCODINGS = {
+  '0': '101001101101', '1': '110100101011', '2': '101100101011', '3': '110110010101',
+  '4': '101001101011', '5': '110100110101', '6': '101100110101', '7': '101001011011',
+  '8': '110100101101', '9': '101100101101', 'A': '110101001011', 'B': '101101001011',
+  'C': '110110100101', 'D': '101011001011', 'E': '110101100101', 'F': '101101100101',
+  'G': '101010011011', 'H': '110101001101', 'I': '101101001101', 'J': '101011001101',
+  'K': '110101010011', 'L': '101101010011', 'M': '110110101001', 'N': '101011010011',
+  'O': '110101101001', 'P': '101101101001', 'Q': '101010110011', 'R': '110101011001',
+  'S': '101101011001', 'T': '101011011001', 'U': '110010101011', 'V': '100110101011',
+  'W': '110011010101', 'X': '100101101011', 'Y': '110010110101', 'Z': '100110110101',
+  '-': '100101011011', '.': '110010101101', ' ': '100110101101', '*': '100101101101',
+  '$': '100100100101', '/': '100100101001', '+': '100101001001', '%': '101001001001'
+};
+
+function generateCode39Bars(text) {
+  const sanitized = ("*" + text.toUpperCase().replace(/[^A-Z0-9\-\.\ \$\/\+\%]/g, "") + "*").split("");
+  let bitString = "";
+  for (const char of sanitized) {
+    const pattern = CODE39_ENCODINGS[char];
+    if (pattern) {
+      bitString += pattern + "0";
+    }
+  }
+  return bitString;
+}
+
+function BarcodeSVG({ value }) {
+  if (!value) return null;
+  const bars = generateCode39Bars(value);
+  const barWidth = 1.0;
+  const height = 24;
+  const totalWidth = bars.length * barWidth;
+
+  return (
+    <svg width={totalWidth} height={height} className="mt-1 block">
+      {bars.split("").map((bit, idx) => (
+        <rect
+          key={idx}
+          x={idx * barWidth}
+          y={0}
+          width={barWidth}
+          height={height}
+          fill={bit === "1" ? "#000" : "transparent"}
+        />
+      ))}
+    </svg>
+  );
+}
+
 const fileToImage = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -22,6 +71,14 @@ const fileToImage = (file) =>
 
 export function ProductBuilder({ product, onCreated, onClose }) {
   const isEdit = !!product;
+
+  const generateRandomSKU = (sizeVal) => {
+    const prefix = "TEVAR";
+    const titleSlug = title ? slugify(title).slice(0, 8).toUpperCase() : "PROD";
+    const sizePart = sizeVal ? sizeVal.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() : "M";
+    const rand = Math.floor(100000 + Math.random() * 900000);
+    return `${prefix}-${titleSlug}-${sizePart}-${rand}`;
+  };
 
   const [title, setTitle] = useState("");
   const [handle, setHandle] = useState("");
@@ -34,6 +91,9 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [gallery, setGallery] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState([]);
+  const [isActive, setIsActive] = useState(true);
   const [warehouseId, setWarehouseId] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
@@ -47,6 +107,15 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setCategoryId(product.categoryId || product.category?.id || "");
       setProductType(product.productType || "");
       setDescription(product.description || "");
+      setIsActive(product.isActive !== false);
+
+      if (product.collections && product.collections.length > 0) {
+        setSelectedCollectionIds(
+          product.collections.map((c) => c.collection?.id || c.collectionId).filter(Boolean)
+        );
+      } else {
+        setSelectedCollectionIds([]);
+      }
       
       if (product.variants && product.variants.length > 0) {
         setVariants(
@@ -75,24 +144,28 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setCategoryId("");
       setProductType("");
       setDescription("");
+      setIsActive(true);
+      setSelectedCollectionIds([]);
       setVariants([blankVariant("S"), blankVariant("M"), blankVariant("L")]);
       setMainImage(null);
       setGallery([]);
     }
   }, [product, isEdit]);
 
-  // Load warehouses and categories
+  // Load warehouses, categories and collections
   useEffect(() => {
     const timer = window.setTimeout(async () => {
       try {
-        const [warehouseResult, categoryResult] = await Promise.all([
+        const [warehouseResult, categoryResult, collectionResult] = await Promise.all([
           adminApi.warehouses.list(),
           adminApi.categories.list(),
+          adminApi.collections.list(),
         ]);
         const nextWarehouses = warehouseResult.data || [];
         setWarehouses(nextWarehouses);
         setWarehouseId(nextWarehouses[0]?.id || "");
         setCategories(categoryResult.data || []);
+        setCollections(collectionResult.data || []);
       } catch {
         setMessage(
           "Unable to load catalog setup. Create a warehouse before assigning inventory."
@@ -153,6 +226,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       vendor,
       productType,
       categoryId: categoryId || undefined,
+      collectionIds: selectedCollectionIds,
+      isActive,
       tags: [],
       images: [mainImage, ...gallery],
       variants: variants.map((variant) => ({
@@ -287,6 +362,43 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                 placeholder="Describe the piece, fabric, fit, and care."
               />
             </label>
+            <label className="wide">
+              Collections
+              <div className="flex flex-wrap gap-4 mt-1.5 p-3.5 bg-neutral-50 border border-neutral-200 rounded-lg">
+                {collections.map((col) => {
+                  const isChecked = selectedCollectionIds.includes(col.id);
+                  return (
+                    <label key={col.id} className="flex items-center gap-2 text-sm font-semibold text-neutral-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          setSelectedCollectionIds((prev) =>
+                            isChecked ? prev.filter((id) => id !== col.id) : [...prev, col.id]
+                          );
+                        }}
+                        className="rounded border-neutral-300 text-[#df5c35] focus:ring-[#df5c35] h-4 w-4"
+                      />
+                      <span>{col.name}</span>
+                    </label>
+                  );
+                })}
+                {collections.length === 0 && (
+                  <span className="text-neutral-400 text-xs">No collections configured</span>
+                )}
+              </div>
+            </label>
+            <label className="wide flex flex-row items-center gap-2 cursor-pointer py-1.5 select-none">
+              <input
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+                className="rounded border-neutral-300 text-[#df5c35] focus:ring-[#df5c35] h-4 w-4"
+              />
+              <span className="text-sm font-bold text-neutral-800">
+                Visible in Shop (Active Status)
+              </span>
+            </label>
           </div>
         </section>
 
@@ -394,11 +506,31 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                   onChange={(e) => updateVariant(index, "size", e.target.value)}
                   required
                 />
-                <input
-                  value={variant.sku}
-                  onChange={(e) => updateVariant(index, "sku", e.target.value)}
-                  placeholder="Optional"
-                />
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1 items-center">
+                    <input
+                      value={variant.sku}
+                      onChange={(e) => updateVariant(index, "sku", e.target.value)}
+                      placeholder="Optional SKU"
+                      className="flex-grow"
+                    />
+                    <button
+                      type="button"
+                      title="Generate SKU & Barcode"
+                      onClick={() => updateVariant(index, "sku", generateRandomSKU(variant.size))}
+                      className="admin-refresh-button shrink-0"
+                      style={{ height: "38px", width: "38px", padding: 0, minWidth: 0, justifyContent: "center" }}
+                    >
+                      ⚡
+                    </button>
+                  </div>
+                  {variant.sku && (
+                    <div className="flex flex-col items-center mt-1 bg-white p-1 border border-neutral-200 rounded">
+                      <BarcodeSVG value={variant.sku} />
+                      <span className="text-[8px] text-neutral-500 font-mono mt-0.5">{variant.sku}</span>
+                    </div>
+                  )}
+                </div>
                 <input
                   type="number"
                   min="1"

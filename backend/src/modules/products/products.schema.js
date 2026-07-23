@@ -46,7 +46,14 @@ export const createProductSchema = z.object({
   tags: z.array(z.string()).default([]),
   categoryId: z.string().optional(),
   collectionIds: z.array(z.string()).default([]),
-  images: z.array(z.object({ src: z.string().min(1), altText: z.string().optional(), position: z.number().int().positive().optional() })).default([]),
+  isActive: z.boolean().optional(),
+  images: z.array(
+    z.object({
+      src: z.string().min(1),
+      altText: z.string().optional(),
+      position: z.number().int().positive().optional(),
+    })
+  ).default([]),
   variants: z
     .array(
       z.object({

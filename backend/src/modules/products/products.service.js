@@ -309,8 +309,20 @@ export const productsService = {
           vendor: data.vendor,
           productType: data.productType,
           categoryId: data.categoryId,
+          isActive: data.isActive !== undefined ? data.isActive : undefined,
         },
       });
+
+      // 1b. Update collections mapping
+      if (data.collectionIds) {
+        await tx.productCollection.deleteMany({ where: { productId: id } });
+        await tx.productCollection.createMany({
+          data: data.collectionIds.map((colId) => ({
+            productId: id,
+            collectionId: colId,
+          })),
+        });
+      }
 
       // 2. Update images
       if (uploadedImages) {
