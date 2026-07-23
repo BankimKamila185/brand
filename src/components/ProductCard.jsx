@@ -37,15 +37,24 @@ const ProductCard = ({ product, onOpenDetails }) => {
     setSelectedModalImg(firstImg);
   }, [firstImg]);
 
-  // Calculate discount percentage
-  const variant = product.variants?.[0] || {};
-  const priceNum = parseFloat(variant.price || 0);
-  const comparePriceRaw = variant.compare_at_price || variant.comparePrice;
+  // Dynamically find variant for currently selected size
+  const selectedVariant =
+    product.variants?.find(
+      (v) =>
+        v.option1 === modalSize ||
+        v.title === modalSize ||
+        v.option2 === modalSize
+    ) || product.variants?.[0] || {};
+
+  const priceNum = parseFloat(selectedVariant.price || 0);
+  const comparePriceRaw = selectedVariant.compare_at_price || selectedVariant.comparePrice;
   const comparePriceNum = comparePriceRaw ? parseFloat(comparePriceRaw) : 0;
   const discountPercent =
     comparePriceNum > priceNum
       ? Math.round(((comparePriceNum - priceNum) / comparePriceNum) * 100)
       : 0;
+
+  const isSelectedVariantInStock = selectedVariant.available !== false;
 
   const isWishlisted = isInWishlist(product.id);
 
@@ -328,9 +337,13 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   </div>
 
                   {/* Stock Status Indicator */}
-                  <div className="quickview-stock-status flex items-center gap-2 text-xs font-bold text-emerald-600">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>In Stock</span>
+                  <div className={`quickview-stock-status flex items-center gap-2 text-xs font-bold ${
+                    isSelectedVariantInStock ? "text-emerald-600" : "text-red-500"
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${
+                      isSelectedVariantInStock ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+                    }`} />
+                    <span>{isSelectedVariantInStock ? "In Stock" : "Out of Stock"}</span>
                   </div>
 
                   {/* Interactive Size Selector */}
@@ -341,19 +354,24 @@ const ProductCard = ({ product, onOpenDetails }) => {
                         <span className="font-extrabold text-black uppercase">{modalSize}</span>
                       </div>
                       <div className="quickview-sizes-grid flex flex-wrap gap-2">
-                        {sizes.map((size) => (
-                          <button
-                            key={size}
-                            className={`w-11 h-11 rounded border text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
-                              modalSize === size
-                                ? "bg-black text-white border-black shadow-sm"
-                                : "bg-white text-neutral-800 border-neutral-300 hover:border-black"
-                            }`}
-                            onClick={() => setModalSize(size)}
-                          >
-                            {size}
-                          </button>
-                        ))}
+                        {sizes.map((size) => {
+                          const isSelected = modalSize === size;
+                          return (
+                            <button
+                              key={size}
+                              type="button"
+                              style={{
+                                backgroundColor: isSelected ? "#000000" : "#ffffff",
+                                color: isSelected ? "#ffffff" : "#111111",
+                                borderColor: isSelected ? "#000000" : "#d4d4d4",
+                              }}
+                              className="w-11 h-11 rounded border text-xs font-bold transition-all cursor-pointer flex items-center justify-center shadow-none hover:border-black"
+                              onClick={() => setModalSize(size)}
+                            >
+                              {size}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
