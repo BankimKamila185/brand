@@ -339,28 +339,20 @@ export function ProductBuilder({ product, onCreated, onClose }) {
             </label>
             <label>
               Collections
-              <div className="collections-selector-container">
-                {collections.map((col) => {
-                  const isChecked = selectedCollectionIds.includes(col.id);
-                  return (
-                    <label key={col.id} className={`collection-chip ${isChecked ? "active" : ""}`}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {
-                          setSelectedCollectionIds((prev) =>
-                            isChecked ? prev.filter((id) => id !== col.id) : [...prev, col.id]
-                          );
-                        }}
-                      />
-                      <span>{col.name}</span>
-                    </label>
-                  );
-                })}
-                {collections.length === 0 && (
-                  <span className="no-collections-text">No collections configured</span>
-                )}
-              </div>
+              <select
+                value={selectedCollectionIds[0] || ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedCollectionIds(val ? [val] : []);
+                }}
+              >
+                <option value="">Choose a collection</option>
+                {collections.map((col) => (
+                  <option key={col.id} value={col.id}>
+                    {col.name}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               Product type
