@@ -422,59 +422,75 @@
 /* Barcode Printable Sheet & Sticker Tags */
 .barcode-sticker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
 }
 
 .barcode-sticker-tag {
   background: #ffffff;
-  border: 1px solid #18181b;
-  border-radius: 8px;
-  padding: 10px 12px;
+  border: 1.5px solid #18181b;
+  border-radius: 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
   page-break-inside: avoid;
   break-inside: avoid;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.barcode-sticker-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .barcode-tag-brand {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #52525b;
+  color: #71717a;
 }
 
 .barcode-tag-title {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   color: #18181b;
-  margin-top: 2px;
-  line-height: 1.2;
+  margin-top: 3px;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  text-transform: capitalize;
 }
 
 .barcode-tag-meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   font-size: 11px;
+  font-weight: 700;
   color: #27272a;
-  margin-top: 6px;
-  padding: 3px 0;
-  border-top: 1px dashed #d4d4d8;
-  border-bottom: 1px dashed #d4d4d8;
+  margin-top: 8px;
+  padding: 5px 10px;
+  background: #f4f4f5;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.barcode-tag-price {
+  color: #df5c35 !important;
+  font-weight: 900 !important;
 }
 
 .barcode-tag-svg {
-  margin-top: 7px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -482,12 +498,16 @@
 }
 
 .barcode-tag-code {
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #27272a;
-  margin-top: 4px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #18181b;
+  margin-top: 6px;
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 @media print {
@@ -509,6 +529,7 @@
     box-shadow: none !important;
     border: none !important;
     max-height: none !important;
+    border-radius: 0 !important;
   }
   .no-print {
     display: none !important;
@@ -516,13 +537,14 @@
   .barcode-sticker-grid {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 12px !important;
-    padding: 0 !important;
-    background: transparent !important;
+    gap: 14px !important;
+    padding: 10px !important;
+    background: #ffffff !important;
   }
   .barcode-sticker-tag {
-    border: 1px dashed #000000 !important;
+    border: 1.5px solid #000000 !important;
     box-shadow: none !important;
+    transform: none !important;
   }
 }
 
