@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Printer, X, Sparkles, RefreshCw, Tag, Layers, Plus, Minus } from "lucide-react";
+import { Printer, X, Tag, Layers, Plus, Minus, RefreshCw } from "lucide-react";
 
 // Code 39 Barcode Generator Table
 const CODE39_ENCODINGS = {
@@ -31,7 +31,7 @@ export function generateCode39Bars(text) {
   return bitString;
 }
 
-export function BarcodeSVG({ value, height = 34, barWidth = 1.15 }) {
+export function BarcodeSVG({ value, height = 36, barWidth = 1.25 }) {
   if (!value) return null;
   const bars = generateCode39Bars(value);
   if (!bars) return null;
@@ -74,7 +74,6 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     ? product.variants
     : [{ size: "M", price: product.price || 0, stock: 1, sku: "" }];
 
-  // Track state for variants with auto-generated SKUs
   const [variantsList, setVariantsList] = useState(() => {
     return rawVariants.map((v, idx) => ({
       size: v.size || v.option1 || v.title || `Size ${idx + 1}`,
@@ -84,7 +83,6 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     }));
   });
 
-  // Quantity per variant for label copies
   const [quantities, setQuantities] = useState(() => {
     const initial = {};
     rawVariants.forEach((_, idx) => {
@@ -130,102 +128,93 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 md:p-6 overflow-y-auto">
-      <div className="barcode-print-modal-content bg-white w-full max-w-5xl rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+    <div className="barcode-modal-overlay">
+      <div className="barcode-print-modal-content">
         
-        {/* Header (Hidden when printing) */}
-        <div className="no-print flex items-center justify-between px-6 py-5 border-b border-neutral-200 bg-neutral-900 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#df5c35] flex items-center justify-center text-white shadow-md">
-              <Printer className="w-5 h-5" />
+        {/* Modal Header */}
+        <div className="no-print barcode-modal-header">
+          <div className="barcode-modal-header-left">
+            <div className="barcode-modal-icon">
+              <Printer size={22} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold tracking-widest text-[#df5c35] uppercase bg-[#df5c35]/15 px-2 py-0.5 rounded-full border border-[#df5c35]/30">
-                  Barcode Studio
-                </span>
-                <h2 className="text-lg font-bold text-white capitalize">{productTitle}</h2>
-              </div>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Print retail barcode hangtags & sticker labels
-              </p>
+            <div className="barcode-modal-title-area">
+              <span className="barcode-modal-badge">Barcode Studio</span>
+              <h2>{productTitle}</h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="barcode-modal-header-actions">
             <button
               onClick={handlePrint}
               disabled={totalLabels === 0}
-              className="px-6 py-2.5 bg-[#df5c35] hover:bg-[#c94b26] active:scale-95 text-white font-extrabold text-sm rounded-xl flex items-center gap-2 shadow-lg transition-all disabled:opacity-50 cursor-pointer"
+              className="barcode-print-btn"
             >
-              <Printer className="w-4 h-4" /> Print {totalLabels} {totalLabels === 1 ? "Label" : "Labels"}
+              <Printer size={18} /> Print {totalLabels} {totalLabels === 1 ? "Label" : "Labels"}
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-neutral-400 hover:text-white rounded-full hover:bg-neutral-800 transition-colors cursor-pointer"
+              className="barcode-close-btn"
+              title="Close modal"
             >
-              <X className="w-5 h-5" />
+              <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* Toolbar & Quick Actions (Hidden when printing) */}
-        <div className="no-print p-5 bg-neutral-50 border-b border-neutral-200 flex flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-wrap text-xs font-bold text-neutral-700">
-              <span className="text-neutral-500 font-medium">Presets:</span>
+        {/* Modal Toolbar & Size Selectors */}
+        <div className="no-print barcode-modal-toolbar">
+          <div className="barcode-toolbar-presets">
+            <div className="barcode-preset-group">
+              <span className="barcode-preset-label">Presets:</span>
               <button
                 onClick={() => setAllQuantities("one")}
-                className="px-3 py-1.5 bg-white border border-neutral-200 rounded-lg hover:border-neutral-400 hover:bg-neutral-100 transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+                className="barcode-preset-btn"
               >
-                <Tag className="w-3.5 h-3.5 text-neutral-500" /> 1 Per Size
+                <Tag size={14} /> 1 Per Size
               </button>
               <button
                 onClick={() => setAllQuantities("stock")}
-                className="px-3 py-1.5 bg-white border border-neutral-200 rounded-lg hover:border-neutral-400 hover:bg-neutral-100 transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+                className="barcode-preset-btn"
               >
-                <Layers className="w-3.5 h-3.5 text-neutral-500" /> Match Inventory Stock
+                <Layers size={14} /> Match Stock
               </button>
               <button
                 onClick={regenerateSKUs}
-                className="px-3 py-1.5 bg-[#fff0ea] text-[#df5c35] border border-[#df5c35]/30 rounded-lg hover:bg-[#ffe3d6] transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+                className="barcode-preset-btn highlight"
               >
-                <RefreshCw className="w-3.5 h-3.5" /> Re-generate Product Codes
+                <RefreshCw size={14} /> Re-generate Barcodes
               </button>
             </div>
 
-            <div className="text-xs font-extrabold text-neutral-700 bg-white px-3.5 py-1.5 rounded-lg border border-neutral-200 shadow-2xs">
-              Selected Tags: <span className="text-[#df5c35] font-black text-sm">{totalLabels}</span>
+            <div className="barcode-count-tag">
+              Total Labels: <span>{totalLabels}</span>
             </div>
           </div>
 
           {/* Size Quantity Counters */}
-          <div className="flex flex-wrap gap-3 pt-2 border-t border-neutral-200/80">
+          <div className="barcode-size-counters">
             {variantsList.map((v, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between gap-3 bg-white px-3.5 py-2 rounded-xl border border-neutral-200 shadow-2xs hover:border-neutral-300 transition-all min-w-[140px]"
-              >
-                <div>
-                  <div className="font-extrabold text-neutral-900 text-xs">Size {v.size}</div>
-                  <div className="text-[11px] text-[#df5c35] font-bold">₹{Number(v.price).toLocaleString("en-IN")}</div>
+              <div key={idx} className="barcode-size-counter-card">
+                <div className="barcode-size-info">
+                  <span className="barcode-size-name">Size {v.size}</span>
+                  <span className="barcode-size-price">₹{Number(v.price).toLocaleString("en-IN")}</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-neutral-100 p-1 rounded-lg border border-neutral-200">
+                <div className="barcode-counter-control">
                   <button
                     type="button"
                     onClick={() => updateQuantity(idx, -1)}
-                    className="w-6 h-6 flex items-center justify-center text-neutral-700 font-bold hover:bg-white hover:text-black rounded transition-colors cursor-pointer"
+                    className="barcode-counter-btn"
                   >
-                    <Minus className="w-3 h-3" />
+                    <Minus size={14} />
                   </button>
-                  <span className="w-5 text-center font-black text-neutral-900 text-xs">{quantities[idx] || 0}</span>
+                  <span className="barcode-counter-num">{quantities[idx] || 0}</span>
                   <button
                     type="button"
                     onClick={() => updateQuantity(idx, 1)}
-                    className="w-6 h-6 flex items-center justify-center text-neutral-700 font-bold hover:bg-white hover:text-black rounded transition-colors cursor-pointer"
+                    className="barcode-counter-btn"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus size={14} />
                   </button>
                 </div>
               </div>
@@ -234,7 +223,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
         </div>
 
         {/* Live Barcode Printable Sheet Preview */}
-        <div className="p-6 md:p-8 overflow-y-auto flex-grow bg-neutral-100/60">
+        <div className="barcode-preview-container">
           <div className="barcode-sticker-grid">
             {variantsList.map((variant, vIdx) => {
               const count = quantities[vIdx] || 0;
@@ -242,9 +231,6 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               for (let i = 0; i < count; i++) {
                 tags.push(
                   <div key={`${vIdx}-${i}`} className="barcode-sticker-tag">
-                    {/* Visual Tag Hole */}
-                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-200 border border-neutral-300 mx-auto mb-1 no-print"></div>
-
                     <div className="barcode-tag-brand">• TEVAR •</div>
                     <div className="barcode-tag-title">{productTitle}</div>
                     
@@ -254,7 +240,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                     </div>
 
                     <div className="barcode-tag-svg">
-                      <BarcodeSVG value={variant.sku} height={36} barWidth={1.2} />
+                      <BarcodeSVG value={variant.sku} height={38} barWidth={1.25} />
                     </div>
                     
                     <div className="barcode-tag-code">{variant.sku}</div>
@@ -265,10 +251,10 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
             })}
 
             {totalLabels === 0 && (
-              <div className="col-span-full py-16 text-center text-neutral-400 no-print flex flex-col items-center justify-center gap-2">
-                <Tag className="w-10 h-10 text-neutral-300 stroke-1" />
-                <p className="font-semibold text-neutral-600">No label copies selected</p>
-                <p className="text-xs text-neutral-400">Increase size quantities above to generate printable barcode tags.</p>
+              <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", color: "#a1a1aa" }} className="no-print">
+                <Tag size={40} style={{ marginBottom: "12px", strokeWidth: 1 }} />
+                <p style={{ fontSize: "15px", fontWeight: 700, color: "#52525b" }}>No label copies selected</p>
+                <p style={{ fontSize: "13px", marginTop: "4px" }}>Select size quantities above to generate printable barcode tags.</p>
               </div>
             )}
           </div>

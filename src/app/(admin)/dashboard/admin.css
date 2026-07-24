@@ -419,23 +419,307 @@
   }
 }
 
-/* Barcode Printable Sheet & Sticker Tags */
+/* Barcode Print Studio Modal Styling */
+.barcode-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.barcode-print-modal-content {
+  background: #ffffff;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 88vh;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.barcode-modal-header {
+  background: #121212;
+  color: #ffffff;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #27272a;
+}
+
+.barcode-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.barcode-modal-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #df5c35;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barcode-modal-title-area h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+}
+
+.barcode-modal-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #df5c35;
+  background: rgba(223, 92, 53, 0.15);
+  border: 1px solid rgba(223, 92, 53, 0.3);
+  padding: 3px 8px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+}
+
+.barcode-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.barcode-print-btn {
+  background: #df5c35;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(223, 92, 53, 0.35);
+  transition: all 0.15s ease;
+}
+
+.barcode-print-btn:hover {
+  background: #c94b26;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(223, 92, 53, 0.45);
+}
+
+.barcode-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #a1a1aa;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.barcode-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.barcode-modal-toolbar {
+  background: #fafafa;
+  border-bottom: 1px solid #e4e4e7;
+  padding: 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.barcode-toolbar-presets {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.barcode-preset-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.barcode-preset-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #71717a;
+}
+
+.barcode-preset-btn {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 9px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #27272a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.barcode-preset-btn:hover {
+  border-color: #a1a1aa;
+  background: #f4f4f5;
+}
+
+.barcode-preset-btn.highlight {
+  background: #fff0ea;
+  border-color: rgba(223, 92, 53, 0.3);
+  color: #df5c35;
+}
+
+.barcode-preset-btn.highlight:hover {
+  background: #ffe3d6;
+}
+
+.barcode-count-tag {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 9px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #27272a;
+}
+
+.barcode-count-tag span {
+  color: #df5c35;
+  font-weight: 900;
+}
+
+.barcode-size-counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.barcode-size-counter-card {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.barcode-size-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.barcode-size-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #18181b;
+}
+
+.barcode-size-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: #df5c35;
+}
+
+.barcode-counter-control {
+  display: flex;
+  align-items: center;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.barcode-counter-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #18181b;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.barcode-counter-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.barcode-counter-num {
+  width: 28px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #18181b;
+}
+
+.barcode-preview-container {
+  padding: 28px;
+  background: #f5f5f3;
+  overflow-y: auto;
+  flex-grow: 1;
+  min-height: 320px;
+}
+
 .barcode-sticker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
 }
 
 .barcode-sticker-tag {
   background: #ffffff;
   border: 1.5px solid #18181b;
-  border-radius: 14px;
-  padding: 14px 16px;
+  border-radius: 16px;
+  padding: 18px 16px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 16px rgba(24, 24, 27, 0.05);
   box-sizing: border-box;
   page-break-inside: avoid;
   break-inside: avoid;
@@ -445,23 +729,23 @@
 
 .barcode-sticker-tag:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 24px rgba(24, 24, 27, 0.09);
 }
 
 .barcode-tag-brand {
   font-size: 9px;
   font-weight: 900;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: #71717a;
 }
 
 .barcode-tag-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #18181b;
-  margin-top: 3px;
-  line-height: 1.25;
+  margin-top: 4px;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -474,13 +758,13 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   color: #27272a;
-  margin-top: 8px;
-  padding: 5px 10px;
+  margin-top: 10px;
+  padding: 6px 12px;
   background: #f4f4f5;
-  border-radius: 6px;
+  border-radius: 8px;
   box-sizing: border-box;
 }
 
@@ -490,7 +774,7 @@
 }
 
 .barcode-tag-svg {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -499,15 +783,15 @@
 
 .barcode-tag-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: #18181b;
-  margin-top: 6px;
+  margin-top: 8px;
   background: #fafafa;
   border: 1px solid #e4e4e7;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
 }
 
 @media print {
@@ -537,8 +821,8 @@
   .barcode-sticker-grid {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 14px !important;
-    padding: 10px !important;
+    gap: 16px !important;
+    padding: 12px !important;
     background: #ffffff !important;
   }
   .barcode-sticker-tag {
