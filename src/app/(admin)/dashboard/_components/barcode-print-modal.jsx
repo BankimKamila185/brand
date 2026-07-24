@@ -82,10 +82,8 @@ export function BarcodeSVG({ value, height = 38, barWidth = 1.35 }) {
 // Generate TOS-[PRODUCT]-[SIZE]-[UNIQUE_ID] preventing duplicates
 export function generateTOSSKUCode(title, sizeVal, uniqueId = null) {
   const prefix = "TOS";
-  const cleanTitle = (title || "PRODUCT")
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toUpperCase()
-    .slice(0, 8);
+  const firstWord = (title || "PRODUCT").trim().split(/\s+/)[0];
+  const cleanTitle = firstWord.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
   const cleanSize = (sizeVal || "M")
     .replace(/[^a-zA-Z0-9]/g, "")
     .toUpperCase();

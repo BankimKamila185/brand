@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ImagePlus, Plus, Trash2, Warehouse, X, Save, Printer, Zap } from "lucide-react";
 import { adminApi } from "@/lib/api";
-import { BarcodePrintModal, BarcodeSVG, generateSKUCode } from "./barcode-print-modal";
+import { BarcodePrintModal, BarcodeSVG, generateTOSSKUCode } from "./barcode-print-modal";
 
 const blankVariant = (size = "M") => ({ size, price: "", stock: "0", sku: "" });
 const slugify = (value) =>
@@ -23,14 +23,6 @@ const fileToImage = (file) =>
 
 export function ProductBuilder({ product, onCreated, onClose }) {
   const isEdit = !!product;
-
-  const generateRandomSKU = (sizeVal) => {
-    const prefix = "TEVAR";
-    const titleSlug = title ? slugify(title).slice(0, 8).toUpperCase() : "PROD";
-    const sizePart = sizeVal ? sizeVal.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() : "M";
-    const rand = Math.floor(100000 + Math.random() * 900000);
-    return `${prefix}-${titleSlug}-${sizePart}-${rand}`;
-  };
 
   const [title, setTitle] = useState("");
   const [handle, setHandle] = useState("");
@@ -55,7 +47,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
     setVariants((prev) =>
       prev.map((v, idx) => ({
         ...v,
-        sku: generateSKUCode(title || "PRODUCT", v.size, idx),
+        sku: generateTOSSKUCode(title || "PRODUCT", v.size, 3432 + idx),
       }))
     );
   };
@@ -85,7 +77,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
             size: v.option1 || v.title,
             price: String(v.price),
             stock: String(v.inventory?.quantity || 0),
-            sku: v.sku || generateSKUCode(product.title, v.option1 || v.title, idx),
+            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(product.title, v.option1 || v.title, 3432 + idx),
           }))
         );
       } else {
@@ -501,7 +493,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                     <button
                       type="button"
                       title="Auto-generate Product Barcode Code"
-                      onClick={() => updateVariant(index, "sku", generateSKUCode(title || "PRODUCT", variant.size, index))}
+                      onClick={() => updateVariant(index, "sku", generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + index))}
                       className="admin-refresh-button shrink-0 text-[#df5c35]"
                       style={{ height: "38px", width: "38px", padding: 0, minWidth: 0, justifyContent: "center" }}
                     >
