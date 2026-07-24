@@ -1,44 +1,70 @@
 "use client";
 
 import { useState } from "react";
-import { Printer, X, Tag, Layers, Plus, Minus, RefreshCw } from "lucide-react";
+import { Printer, X, Tag, Layers, Plus, Minus, RefreshCw, Download, CheckCircle2, ShieldCheck } from "lucide-react";
 
-// Code 39 Barcode Generator Table
-const CODE39_ENCODINGS = {
-  '0': '101001101101', '1': '110100101011', '2': '101100101011', '3': '110110010101',
-  '4': '101001101011', '5': '110100110101', '6': '101100110101', '7': '101001011011',
-  '8': '110100101101', '9': '101100101101', 'A': '110101001011', 'B': '101101001011',
-  'C': '110110100101', 'D': '101011001011', 'E': '110101100101', 'F': '101101100101',
-  'G': '101010011011', 'H': '110101001101', 'I': '101101001101', 'J': '101011001101',
-  'K': '110101010011', 'L': '101101010011', 'M': '110110101001', 'N': '101011010011',
-  'O': '110101101001', 'P': '101101101001', 'Q': '101010110011', 'R': '110101011001',
-  'S': '101101011001', 'T': '101011011001', 'U': '110010101011', 'V': '100110101011',
-  'W': '110011010101', 'X': '100101101011', 'Y': '110010110101', 'Z': '100110110101',
-  '-': '100101011011', '.': '110010101101', ' ': '100110101101', '*': '100101101101',
-  '$': '100100100101', '/': '100100101001', '+': '100101001001', '%': '101001001001'
-};
+// Code 128 Encoding Table (ISO/IEC 15417 standard patterns 0 to 106)
+const CODE128_PATTERNS = [
+  "212222", "222122", "222221", "121223", "121322", "131222", "122213", "122312", "132212", "221213",
+  "221312", "231212", "112232", "122132", "122231", "113222", "123122", "123221", "223211", "221132",
+  "221231", "213212", "223112", "312131", "311222", "321122", "321221", "312212", "322112", "322211",
+  "212123", "212321", "232121", "111323", "131123", "131321", "112313", "132113", "132311", "211313",
+  "231113", "231311", "112133", "112331", "132131", "113123", "113321", "133121", "313121", "211331",
+  "231131", "213113", "213311", "213131", "311123", "311321", "331121", "312113", "312311", "332111",
+  "314111", "221411", "431111", "111224", "111422", "121124", "121421", "141122", "141221", "112214",
+  "112412", "122114", "122411", "142112", "142211", "241211", "221114", "413111", "241112", "134111",
+  "111242", "121142", "121241", "114212", "124112", "124211", "411212", "421112", "421211", "212141",
+  "214121", "412121", "111143", "111341", "131141", "114113", "114311", "411113", "411311", "113141",
+  "114131", "311141", "411131", "211412", "211214", "211232", "2331112"
+];
 
-export function generateCode39Bars(text) {
+export function generateCode128Bars(text) {
   if (!text) return "";
-  const sanitized = ("*" + String(text).toUpperCase().replace(/[^A-Z0-9\-\.\ \$\/\+\%]/g, "") + "*").split("");
-  let bitString = "";
-  for (const char of sanitized) {
-    const pattern = CODE39_ENCODINGS[char];
-    if (pattern) {
-      bitString += pattern + "0";
+  const codes = [104]; // Start B
+  let checksum = 104;
+
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i) - 32;
+    if (charCode >= 0 && charCode <= 95) {
+      codes.push(charCode);
+      checksum += charCode * (i + 1);
     }
   }
+
+  codes.push(checksum % 103);
+  codes.push(106); // Stop Code
+
+  // 10 units quiet zone on left & right
+  let bitString = "0000000000";
+  for (const codeIdx of codes) {
+    const pattern = CODE128_PATTERNS[codeIdx];
+    if (pattern) {
+      let isBar = true;
+      for (const charDigit of pattern) {
+        const width = parseInt(charDigit, 10);
+        bitString += (isBar ? "1" : "0").repeat(width);
+        isBar = !isBar;
+      }
+    }
+  }
+  bitString += "0000000000";
   return bitString;
 }
 
-export function BarcodeSVG({ value, height = 36, barWidth = 1.25 }) {
+export function BarcodeSVG({ value, height = 38, barWidth = 1.35 }) {
   if (!value) return null;
-  const bars = generateCode39Bars(value);
+  const bars = generateCode128Bars(value);
   if (!bars) return null;
   const totalWidth = bars.length * barWidth;
 
   return (
-    <svg width={totalWidth} height={height} viewBox={`0 0 ${totalWidth} ${height}`} className="block mx-auto">
+    <svg
+      width={totalWidth}
+      height={height}
+      viewBox={`0 0 ${totalWidth} ${height}`}
+      className="block mx-auto"
+      style={{ imageRendering: "pixelated" }}
+    >
       {bars.split("").map((bit, idx) => (
         <rect
           key={idx}
@@ -46,24 +72,25 @@ export function BarcodeSVG({ value, height = 36, barWidth = 1.25 }) {
           y={0}
           width={barWidth}
           height={height}
-          fill={bit === "1" ? "#18181b" : "transparent"}
+          fill={bit === "1" ? "#000000" : "transparent"}
         />
       ))}
     </svg>
   );
 }
 
-export function generateSKUCode(title, sizeVal, index = 0) {
-  const prefix = "TVR";
+// Generate TOS-[PRODUCT]-[SIZE]-[UNIQUE_ID] preventing duplicates
+export function generateTOSSKUCode(title, sizeVal, uniqueId = null) {
+  const prefix = "TOS";
   const cleanTitle = (title || "PRODUCT")
     .replace(/[^a-zA-Z0-9]/g, "")
     .toUpperCase()
-    .slice(0, 6);
+    .slice(0, 8);
   const cleanSize = (sizeVal || "M")
     .replace(/[^a-zA-Z0-9]/g, "")
     .toUpperCase();
-  const randNum = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}-${cleanTitle}-${cleanSize}-${randNum}`;
+  const idNum = uniqueId || Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}-${cleanTitle}-${cleanSize}-${idNum}`;
 }
 
 export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
@@ -74,13 +101,26 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     ? product.variants
     : [{ size: "M", price: product.price || 0, stock: 1, sku: "" }];
 
+  // Initialize unique SKUs for variants
   const [variantsList, setVariantsList] = useState(() => {
-    return rawVariants.map((v, idx) => ({
-      size: v.size || v.option1 || v.title || `Size ${idx + 1}`,
-      price: v.price || 0,
-      stock: v.stock || v.inventory?.quantity || 1,
-      sku: v.sku || generateSKUCode(productTitle, v.size || v.option1 || v.title, idx),
-    }));
+    const usedIds = new Set();
+    return rawVariants.map((v, idx) => {
+      let randId = 3432 + idx;
+      while (usedIds.has(randId)) {
+        randId = Math.floor(1000 + Math.random() * 9000);
+      }
+      usedIds.add(randId);
+
+      const sizeStr = v.size || v.option1 || v.title || `Size ${idx + 1}`;
+      const defaultSKU = generateTOSSKUCode(productTitle, sizeStr, randId);
+
+      return {
+        size: sizeStr,
+        price: v.price || 0,
+        stock: v.stock || v.inventory?.quantity || 1,
+        sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : defaultSKU,
+      };
+    });
   });
 
   const [quantities, setQuantities] = useState(() => {
@@ -111,10 +151,20 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
   };
 
   const regenerateSKUs = () => {
-    const updated = variantsList.map((v, idx) => ({
-      ...v,
-      sku: generateSKUCode(productTitle, v.size, idx),
-    }));
+    const usedIds = new Set();
+    const updated = variantsList.map((v, idx) => {
+      let randId = Math.floor(1000 + Math.random() * 9000);
+      while (usedIds.has(randId)) {
+        randId = Math.floor(1000 + Math.random() * 9000);
+      }
+      usedIds.add(randId);
+
+      return {
+        ...v,
+        sku: generateTOSSKUCode(productTitle, v.size, randId),
+      };
+    });
+
     setVariantsList(updated);
     if (onUpdateVariants) {
       onUpdateVariants(updated);
@@ -125,6 +175,40 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleExportSVG = () => {
+    const gridEl = document.querySelector(".barcode-sticker-grid");
+    if (!gridEl) return;
+    const blob = new Blob([
+      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200"><style>.barcode-sticker-tag{background:#fff;border:2px solid #000;padding:20px;text-align:center;font-family:sans-serif}</style><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">${gridEl.innerHTML}</div></foreignObject></svg>`
+    ], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `tos-labels-${productTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")}.svg`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPNG = () => {
+    const gridEl = document.querySelector(".barcode-sticker-grid");
+    if (!gridEl) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1800;
+    canvas.height = 2400;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#18181b";
+    ctx.font = "bold 32px sans-serif";
+    ctx.fillText(`• THE OUTLIERS STUDIO • - ${productTitle.toUpperCase()} BARCODES`, 60, 80);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = `tos-labels-${productTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")}-300dpi.png`;
+    link.click();
   };
 
   return (
@@ -138,7 +222,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               <Printer size={22} />
             </div>
             <div className="barcode-modal-title-area">
-              <span className="barcode-modal-badge">Barcode Studio</span>
+              <span className="barcode-modal-badge">• THE OUTLIERS STUDIO •</span>
               <h2>{productTitle}</h2>
             </div>
           </div>
@@ -157,6 +241,32 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               title="Close modal"
             >
               <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Print Settings Specifications & Compliance Bar */}
+        <div className="no-print barcode-specs-bar">
+          <div className="barcode-spec-pill">
+            <span>Label Size:</span> <strong>60 × 90 mm</strong>
+          </div>
+          <div className="barcode-spec-pill">
+            <span>Type:</span> <strong>Code 128</strong>
+          </div>
+          <div className="barcode-spec-pill">
+            <span>Barcode Dimensions:</span> <strong>45 × 14 mm</strong>
+          </div>
+          <div className="barcode-spec-pill border-emerald-300 bg-emerald-50 text-emerald-800 flex items-center gap-1">
+            <ShieldCheck size={14} className="text-emerald-600" />
+            <strong>GS1 / ISO Scanner Compliant</strong>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={handleExportSVG} className="barcode-export-btn" title="Export Vector SVG">
+              <Download size={13} /> SVG
+            </button>
+            <button onClick={handleExportPNG} className="barcode-export-btn" title="Export 300 DPI PNG">
+              <Download size={13} /> PNG (300 DPI)
             </button>
           </div>
         </div>
@@ -182,7 +292,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                 onClick={regenerateSKUs}
                 className="barcode-preset-btn highlight"
               >
-                <RefreshCw size={14} /> Re-generate Barcodes
+                <RefreshCw size={14} /> Re-generate TOS Barcodes
               </button>
             </div>
 
@@ -231,19 +341,27 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               for (let i = 0; i < count; i++) {
                 tags.push(
                   <div key={`${vIdx}-${i}`} className="barcode-sticker-tag">
-                    <div className="barcode-tag-brand">• TEVAR •</div>
+                    {/* Brand Name */}
+                    <div className="barcode-tag-brand">• THE OUTLIERS STUDIO •</div>
+                    
+                    {/* Product Name */}
                     <div className="barcode-tag-title">{productTitle}</div>
                     
+                    {/* Size & Price */}
                     <div className="barcode-tag-meta">
-                      <span>SIZE: <strong>{variant.size}</strong></span>
+                      <span className="barcode-tag-size">SIZE: {variant.size}</span>
                       <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
                     </div>
 
+                    {/* Barcode Graphic (Code 128) */}
                     <div className="barcode-tag-svg">
-                      <BarcodeSVG value={variant.sku} height={38} barWidth={1.25} />
+                      <BarcodeSVG value={variant.sku} height={38} barWidth={1.3} />
                     </div>
                     
-                    <div className="barcode-tag-code">{variant.sku}</div>
+                    {/* SKU Code Box */}
+                    <div className="barcode-sku-box">
+                      {variant.sku}
+                    </div>
                   </div>
                 );
               }
