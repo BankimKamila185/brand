@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ImagePlus, Plus, Trash2, Warehouse, X, Save } from "lucide-react";
+import { ImagePlus, Plus, Trash2, Warehouse, X, Save, Printer, Zap } from "lucide-react";
 import { adminApi } from "@/lib/api";
+import { BarcodePrintModal, BarcodeSVG, generateSKUCode } from "./barcode-print-modal";
 
 const blankVariant = (size = "M") => ({ size, price: "", stock: "0", sku: "" });
 const slugify = (value) =>
@@ -11,55 +12,6 @@ const slugify = (value) =>
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-
-const CODE39_ENCODINGS = {
-  '0': '101001101101', '1': '110100101011', '2': '101100101011', '3': '110110010101',
-  '4': '101001101011', '5': '110100110101', '6': '101100110101', '7': '101001011011',
-  '8': '110100101101', '9': '101100101101', 'A': '110101001011', 'B': '101101001011',
-  'C': '110110100101', 'D': '101011001011', 'E': '110101100101', 'F': '101101100101',
-  'G': '101010011011', 'H': '110101001101', 'I': '101101001101', 'J': '101011001101',
-  'K': '110101010011', 'L': '101101010011', 'M': '110110101001', 'N': '101011010011',
-  'O': '110101101001', 'P': '101101101001', 'Q': '101010110011', 'R': '110101011001',
-  'S': '101101011001', 'T': '101011011001', 'U': '110010101011', 'V': '100110101011',
-  'W': '110011010101', 'X': '100101101011', 'Y': '110010110101', 'Z': '100110110101',
-  '-': '100101011011', '.': '110010101101', ' ': '100110101101', '*': '100101101101',
-  '$': '100100100101', '/': '100100101001', '+': '100101001001', '%': '101001001001'
-};
-
-function generateCode39Bars(text) {
-  const sanitized = ("*" + text.toUpperCase().replace(/[^A-Z0-9\-\.\ \$\/\+\%]/g, "") + "*").split("");
-  let bitString = "";
-  for (const char of sanitized) {
-    const pattern = CODE39_ENCODINGS[char];
-    if (pattern) {
-      bitString += pattern + "0";
-    }
-  }
-  return bitString;
-}
-
-function BarcodeSVG({ value }) {
-  if (!value) return null;
-  const bars = generateCode39Bars(value);
-  const barWidth = 1.0;
-  const height = 24;
-  const totalWidth = bars.length * barWidth;
-
-  return (
-    <svg width={totalWidth} height={height} className="mt-1 block">
-      {bars.split("").map((bit, idx) => (
-        <rect
-          key={idx}
-          x={idx * barWidth}
-          y={0}
-          width={barWidth}
-          height={height}
-          fill={bit === "1" ? "#000" : "transparent"}
-        />
-      ))}
-    </svg>
-  );
-}
 
 const fileToImage = (file) =>
   new Promise((resolve, reject) => {
@@ -97,6 +49,16 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [warehouseId, setWarehouseId] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showBarcodeModal, setShowBarcodeModal] = useState(false);
+
+  const autoGenerateAllSKUs = () => {
+    setVariants((prev) =>
+      prev.map((v, idx) => ({
+        ...v,
+        sku: generateSKUCode(title || "PRODUCT", v.size, idx),
+      }))
+    );
+  };
 
   // Initialize form states
   useEffect(() => {
@@ -119,11 +81,11 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       
       if (product.variants && product.variants.length > 0) {
         setVariants(
-          product.variants.map((v) => ({
+          product.variants.map((v, idx) => ({
             size: v.option1 || v.title,
             price: String(v.price),
             stock: String(v.inventory?.quantity || 0),
-            sku: v.sku || "",
+            sku: v.sku || generateSKUCode(product.title, v.option1 || v.title, idx),
           }))
         );
       } else {
@@ -271,6 +233,14 @@ export function ProductBuilder({ product, onCreated, onClose }) {
           <p>Set category, imagery, size-level prices, and stock location.</p>
         </div>
         <div className="product-builder-header-actions flex gap-2">
+          <button
+            className="admin-refresh-button flex items-center gap-1.5"
+            type="button"
+            onClick={() => setShowBarcodeModal(true)}
+            title="Print Barcode Labels"
+          >
+            <Printer size={16} /> Barcode Labels
+          </button>
           {isEdit && (
             <button
               className="admin-refresh-button text-red-600 border-red-200 hover:bg-red-50"
@@ -407,8 +377,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
               ) : (
                 <>
                   <ImagePlus />
-                  <strong>Main image</strong>
-                  <span>Required</span>
+                  <strong>Main product image</strong>
+                  <span>Click to select file</span>
                 </>
               )}
               <input
@@ -417,27 +387,32 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                 onChange={(e) => void setPrimaryImage(e.target.files)}
               />
             </label>
-            <div className="image-preview-grid">
-              {gallery.map((image, index) => (
-                <div key={image.src} className="image-preview">
-                  <img src={image.src} alt={image.altText} />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setGallery((current) =>
-                        current.filter((_, i) => i !== index)
-                      )
-                    }
-                  >
-                    <Trash2 />
-                  </button>
-                </div>
-              ))}
+
+            <div>
+              <div className="image-preview-grid">
+                {gallery.map((image, index) => (
+                  <div key={index} className="image-preview">
+                    <img src={image.src} alt={image.altText || `Gallery image ${index + 1}`} />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGallery((current) =>
+                          current.filter((_, i) => i !== index)
+                        )
+                      }
+                      aria-label="Remove image"
+                    >
+                      <Trash2 />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
               {gallery.length < 8 && (
-                <label className="image-gallery-upload">
+                <label className="image-gallery-upload mt-3">
                   <ImagePlus />
-                  <span>Add image</span>
-                  <small>{gallery.length}/8</small>
+                  <span>Add gallery images</span>
+                  <small>Up to {8 - gallery.length} more images</small>
                   <input
                     type="file"
                     accept="image/*"
@@ -456,13 +431,31 @@ export function ProductBuilder({ product, onCreated, onClose }) {
               <h2>Size, price & quantity</h2>
               <p>Every size can have its own price and available quantity.</p>
             </div>
-            <button
-              type="button"
-              className="admin-refresh-button"
-              onClick={() => setVariants((current) => [...current, blankVariant("")])}
-            >
-              <Plus /> Add size
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                className="admin-refresh-button text-[#df5c35] border-[#df5c35]/30 hover:bg-[#fff0ea]"
+                onClick={autoGenerateAllSKUs}
+                title="Auto-generate SKUs for all sizes at once"
+              >
+                <Zap size={14} /> Auto-SKUs
+              </button>
+              <button
+                type="button"
+                className="admin-refresh-button"
+                onClick={() => setShowBarcodeModal(true)}
+                title="Generate & Print Barcodes"
+              >
+                <Printer size={14} /> Print Barcodes
+              </button>
+              <button
+                type="button"
+                className="admin-refresh-button"
+                onClick={() => setVariants((current) => [...current, blankVariant("")])}
+              >
+                <Plus size={14} /> Add size
+              </button>
+            </div>
           </div>
           <div className="warehouse-select">
             <Warehouse />
@@ -485,7 +478,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
           <div className="variant-table">
             <div>
               <span>Size</span>
-              <span>SKU</span>
+              <span>SKU / Code</span>
               <span>Price (₹)</span>
               <span>Quantity</span>
               <span />
@@ -502,14 +495,14 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                     <input
                       value={variant.sku}
                       onChange={(e) => updateVariant(index, "sku", e.target.value)}
-                      placeholder="Optional SKU"
-                      className="flex-grow"
+                      placeholder="Product Barcode Code"
+                      className="flex-grow font-mono text-xs"
                     />
                     <button
                       type="button"
-                      title="Generate SKU & Barcode"
-                      onClick={() => updateVariant(index, "sku", generateRandomSKU(variant.size))}
-                      className="admin-refresh-button shrink-0"
+                      title="Auto-generate Product Barcode Code"
+                      onClick={() => updateVariant(index, "sku", generateSKUCode(title || "PRODUCT", variant.size, index))}
+                      className="admin-refresh-button shrink-0 text-[#df5c35]"
                       style={{ height: "38px", width: "38px", padding: 0, minWidth: 0, justifyContent: "center" }}
                     >
                       ⚡
@@ -517,7 +510,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                   </div>
                   {variant.sku && (
                     <div className="flex flex-col items-center mt-1 bg-white p-1 border border-neutral-200 rounded">
-                      <BarcodeSVG value={variant.sku} />
+                      <BarcodeSVG value={variant.sku} height={24} barWidth={1.0} />
                       <span className="text-[8px] text-neutral-500 font-mono mt-0.5">{variant.sku}</span>
                     </div>
                   )}
@@ -552,6 +545,21 @@ export function ProductBuilder({ product, onCreated, onClose }) {
           </div>
         </section>
       </div>
+
+      {showBarcodeModal && (
+        <BarcodePrintModal
+          product={{ title: title || "Product", variants }}
+          onClose={() => setShowBarcodeModal(false)}
+          onUpdateVariants={(updatedVariants) => {
+            setVariants((prev) =>
+              prev.map((v, idx) => ({
+                ...v,
+                sku: updatedVariants[idx]?.sku || v.sku,
+              }))
+            );
+          }}
+        />
+      )}
     </form>
   );
 }

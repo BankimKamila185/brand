@@ -418,3 +418,111 @@
     z-index: 998;
   }
 }
+
+/* Barcode Printable Sheet & Sticker Tags */
+.barcode-sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.barcode-sticker-tag {
+  background: #ffffff;
+  border: 1px solid #18181b;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  box-sizing: border-box;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.barcode-tag-brand {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #52525b;
+}
+
+.barcode-tag-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #18181b;
+  margin-top: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.barcode-tag-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  color: #27272a;
+  margin-top: 6px;
+  padding: 3px 0;
+  border-top: 1px dashed #d4d4d8;
+  border-bottom: 1px dashed #d4d4d8;
+}
+
+.barcode-tag-svg {
+  margin-top: 7px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.barcode-tag-code {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #27272a;
+  margin-top: 4px;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .barcode-print-modal-content,
+  .barcode-print-modal-content * {
+    visibility: visible !important;
+  }
+  .barcode-print-modal-content {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-height: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .barcode-sticker-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  .barcode-sticker-tag {
+    border: 1px dashed #000000 !important;
+    box-shadow: none !important;
+  }
+}
+

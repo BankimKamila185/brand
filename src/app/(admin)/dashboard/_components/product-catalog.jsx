@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PackagePlus, Plus } from "lucide-react";
+import { PackagePlus, Plus, Printer, QrCode } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { ProductBuilder } from "./product-builder";
+import { BarcodePrintModal } from "./barcode-print-modal";
 
 export function ProductCatalog() {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ export function ProductCatalog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [adding, setAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [printProduct, setPrintProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -114,30 +116,45 @@ export function ProductCatalog() {
         {visible.map((product) => (
           <article
             key={product.id}
-            className="product-catalog-card cursor-pointer hover:border-black transition-all"
-            onClick={() => setEditingProduct(product)}
+            className="product-catalog-card relative group hover:border-black transition-all flex flex-col justify-between"
           >
-            <div className="product-catalog-image">
-              {product.images?.[0]?.src ? (
-                <img src={product.images[0].src} alt={product.title} />
-              ) : (
-                <PackagePlus />
-              )}
-              <span>{product.category?.name || "Uncategorized"}</span>
+            <div onClick={() => setEditingProduct(product)} className="cursor-pointer">
+              <div className="product-catalog-image">
+                {product.images?.[0]?.src ? (
+                  <img src={product.images[0].src} alt={product.title} />
+                ) : (
+                  <PackagePlus />
+                )}
+                <span>{product.category?.name || "Uncategorized"}</span>
+              </div>
+              <div className="p-3.5">
+                <h2>{product.title}</h2>
+                <p>
+                  {product.variants?.length || 0} sizes ·{" "}
+                  {product.variants?.reduce(
+                    (total, variant) => total + Number(variant.inventory?.quantity || 0),
+                    0
+                  ) || 0}{" "}
+                  units
+                </p>
+              </div>
             </div>
-            <div>
-              <h2>{product.title}</h2>
-              <p>
-                {product.variants?.length || 0} sizes ·{" "}
-                {product.variants?.reduce(
-                  (total, variant) => total + Number(variant.inventory?.quantity || 0),
-                  0
-                ) || 0}{" "}
-                units
-              </p>
-              <strong>
+
+            <div className="px-3.5 pb-3.5 pt-1 flex items-center justify-between border-t border-neutral-100">
+              <strong className="text-[#df5c35] font-extrabold text-base">
                 ₹{Number(product.variants?.[0]?.price || 0).toLocaleString("en-IN")}
               </strong>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPrintProduct(product);
+                }}
+                className="px-2.5 py-1.5 bg-neutral-100 hover:bg-[#fff0ea] hover:text-[#df5c35] text-neutral-700 text-xs font-bold rounded-lg border border-neutral-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Generate & Print Barcode Labels"
+              >
+                <Printer className="w-3.5 h-3.5" /> Barcode
+              </button>
             </div>
           </article>
         ))}
@@ -153,6 +170,13 @@ export function ProductCatalog() {
           </div>
         )}
       </section>
+
+      {printProduct && (
+        <BarcodePrintModal
+          product={printProduct}
+          onClose={() => setPrintProduct(null)}
+        />
+      )}
     </div>
   );
 }
