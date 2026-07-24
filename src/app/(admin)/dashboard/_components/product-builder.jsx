@@ -338,6 +338,31 @@ export function ProductBuilder({ product, onCreated, onClose }) {
               </select>
             </label>
             <label>
+              Collections
+              <div className="collections-selector-container">
+                {collections.map((col) => {
+                  const isChecked = selectedCollectionIds.includes(col.id);
+                  return (
+                    <label key={col.id} className={`collection-chip ${isChecked ? "active" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          setSelectedCollectionIds((prev) =>
+                            isChecked ? prev.filter((id) => id !== col.id) : [...prev, col.id]
+                          );
+                        }}
+                      />
+                      <span>{col.name}</span>
+                    </label>
+                  );
+                })}
+                {collections.length === 0 && (
+                  <span className="no-collections-text">No collections configured</span>
+                )}
+              </div>
+            </label>
+            <label>
               Product type
               <input
                 value={productType}
@@ -361,32 +386,6 @@ export function ProductBuilder({ product, onCreated, onClose }) {
                 rows="4"
                 placeholder="Describe the piece, fabric, fit, and care."
               />
-            </label>
-            <label className="wide">
-              Collections
-              <div className="flex flex-wrap gap-4 mt-1.5 p-3.5 bg-neutral-50 border border-neutral-200 rounded-lg">
-                {collections.map((col) => {
-                  const isChecked = selectedCollectionIds.includes(col.id);
-                  return (
-                    <label key={col.id} className="flex items-center gap-2 text-sm font-semibold text-neutral-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {
-                          setSelectedCollectionIds((prev) =>
-                            isChecked ? prev.filter((id) => id !== col.id) : [...prev, col.id]
-                          );
-                        }}
-                        className="rounded border-neutral-300 text-[#df5c35] focus:ring-[#df5c35] h-4 w-4"
-                      />
-                      <span>{col.name}</span>
-                    </label>
-                  );
-                })}
-                {collections.length === 0 && (
-                  <span className="text-neutral-400 text-xs">No collections configured</span>
-                )}
-              </div>
             </label>
             <label className="wide flex flex-row items-center gap-2 cursor-pointer py-1.5 select-none">
               <input
