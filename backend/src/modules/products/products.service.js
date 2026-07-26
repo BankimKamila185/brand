@@ -251,17 +251,20 @@ export const productsService = {
       validCollectionIds.push(...foundCols.map((c) => c.id));
     }
 
-    // Upload base64 images to Cloudflare R2 if configured
-    const uploadedImages = await Promise.all(
-      (data.images || []).map(async (image, i) => {
+    // Upload base64 images to Cloudflare R2 sequentially
+    const uploadedImages = [];
+    if (Array.isArray(data.images)) {
+      for (let i = 0; i < data.images.length; i++) {
+        const image = data.images[i];
+        if (!image || !image.src) continue;
         const url = await uploadBase64ToR2(image.src, "products");
-        return {
+        uploadedImages.push({
           src: url,
           altText: image.altText || data.title,
           position: image.position || i + 1,
-        };
-      })
-    );
+        });
+      }
+    }
 
     const product = await db.$transaction(async (tx) => {
       const created = await tx.product.create({
@@ -342,26 +345,20 @@ export const productsService = {
       validCollectionIds = foundCols.map((c) => c.id);
     }
 
-    // Upload base64 images to R2 and reuse existing URLs
+    // Upload base64 images to R2 sequentially
     let uploadedImages = null;
-    if (data.images) {
-      uploadedImages = await Promise.all(
-        data.images.map(async (image, i) => {
-          if (image.src.startsWith("data:")) {
-            const url = await uploadBase64ToR2(image.src, "products");
-            return {
-              src: url,
-              altText: image.altText || data.title || existing.title,
-              position: i + 1,
-            };
-          }
-          return {
-            src: image.src,
-            altText: image.altText || data.title || existing.title,
-            position: i + 1,
-          };
-        })
-      );
+    if (Array.isArray(data.images)) {
+      uploadedImages = [];
+      for (let i = 0; i < data.images.length; i++) {
+        const image = data.images[i];
+        if (!image || !image.src) continue;
+        const url = await uploadBase64ToR2(image.src, "products");
+        uploadedImages.push({
+          src: url,
+          altText: image.altText || data.title || existing.title,
+          position: i + 1,
+        });
+      }
     }
 
     await db.$transaction(async (tx) => {

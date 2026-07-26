@@ -68,25 +68,38 @@ export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
 
     const filename = `${folder}/${crypto.randomUUID()}.${extension}`;
 
-    const command = new PutObjectCommand({
-      Bucket: env.R2_BUCKET_NAME,
-      Key: filename,
-      Body: buffer,
-      ContentType: mimeType,
-    });
+    let attempts = 0;
+    while (attempts < 3) {
+      attempts++;
+      try {
+        const command = new PutObjectCommand({
+          Bucket: env.R2_BUCKET_NAME,
+          Key: filename,
+          Body: buffer,
+          ContentType: mimeType,
+        });
 
-    await r2Client.send(command);
+        await r2Client.send(command);
 
-    // Build public serving URL
-    const baseUrl = env.R2_PUBLIC_URL 
-      ? env.R2_PUBLIC_URL.replace(/\/$/, "")
-      : "https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev";
-    const publicUrl = `${baseUrl}/${filename}`;
+        const baseUrl = env.R2_PUBLIC_URL 
+          ? env.R2_PUBLIC_URL.replace(/\/$/, "")
+          : "https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev";
+        const publicUrl = `${baseUrl}/${filename}`;
 
-    logger.info(`✅ Image uploaded to Cloudflare R2: ${publicUrl}`);
-    return publicUrl;
+        logger.info(`✅ Image uploaded to Cloudflare R2: ${publicUrl}`);
+        return publicUrl;
+      } catch (err) {
+        logger.error(`⚠️ Cloudflare R2 Upload Attempt ${attempts} Failed:`, err.message || err);
+        if (attempts >= 3) {
+          logger.error("❌ Cloudflare R2 Upload Failed after 3 attempts, returning base64 as fallback.");
+          return base64Str;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+    }
+    return base64Str;
   } catch (error) {
-    logger.error("❌ Cloudflare R2 Upload Failed, falling back to original image:", error);
+    logger.error("❌ Cloudflare R2 Upload Processing Error:", error);
     return base64Str;
   }
 };
