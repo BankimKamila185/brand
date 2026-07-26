@@ -37,9 +37,17 @@ export const createProductSchema = z.object({
   title: z.string().min(2).max(255),
   handle: z
     .string()
-    .min(2)
+    .min(1)
     .max(255)
-    .regex(/^[a-z0-9-]+$/, "Handle must be lowercase with hyphens only"),
+    .transform((val) =>
+      val
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]+/g, "")
+        .replace(/^-+|-+$/g, "")
+    )
+    .refine((val) => val.length >= 2, { message: "Handle must be at least 2 valid characters" }),
   description: z.string().optional(),
   vendor: z.string().default("Tevar"),
   productType: z.string().default(""),

@@ -10,7 +10,19 @@ const router = Router();
 
 const collectionSchema = z.object({
   name: z.string().min(2).max(100),
-  handle: z.string().min(2).max(100).regex(/^[a-z0-9-]+$/),
+  handle: z
+    .string()
+    .min(1)
+    .max(100)
+    .transform((val) =>
+      val
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]+/g, "")
+        .replace(/^-+|-+$/g, "")
+    )
+    .refine((val) => val.length >= 2, { message: "Handle must be at least 2 valid characters" }),
   description: z.string().max(1000).nullable().optional(),
   imageUrl: z.string().url().nullable().optional(),
   sortOrder: z.number().int().min(0).optional(),

@@ -27,7 +27,7 @@ function NotFoundContent() {
     { title: "Bestsellers", desc: "Top trending apparel", link: "/collections/bestsellers", icon: ShoppingBag },
     { title: "Cargo Trousers", desc: "Baggy & tactical pants", link: "/collections/cargo-trousers-for-men", icon: Compass },
     { title: "Co-Ord Sets", desc: "Matching luxury outfits", link: "/collections/co-ord-sets", icon: ArrowRight },
-    { title: "Saved Wishlist", desc: "View your saved items", link: "/pages/wishlist", icon: Heart },
+    { title: "Saved Wishlist", desc: "View your saved items", link: "/wishlist", icon: Heart },
   ];
 
   return (

@@ -13,8 +13,30 @@ const definitions = {
   collections: { label: "Collections", list: adminApi.collections.list, create: adminApi.collections.create, update: adminApi.collections.update, remove: adminApi.collections.remove, fields: ["name", "handle"] },
 };
 
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]+/g, "")
+    .replace(/^-+|-+$/g, "");
+}
+
+function formatError(err) {
+  if (!err) return "";
+  if (err.errors && typeof err.errors === "object") {
+    const details = Object.entries(err.errors)
+      .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
+      .join("; ");
+    if (details) return `${err.message || "Validation failed"} (${details})`;
+  }
+  return err.message || "An error occurred";
+}
+
 function rowData(resource, form) {
   const value = Object.fromEntries(new FormData(form));
+  if (value.slug) value.slug = slugify(value.slug);
+  if (value.handle) value.handle = slugify(value.handle);
   if (resource === "products") return { title: value.title, handle: value.handle, variants: [{ title: "Default", price: Number(value.price), stock: 0 }] };
   if (resource === "coupons") return { code: value.code, discountType: "PERCENTAGE", value: Number(value.value) };
   return value;
@@ -25,21 +47,21 @@ export function AdminResourceTable({ resource }) {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const singular = resource === "categories" ? "category" : resource.slice(0, -1);
 
   const load = async () => {
     setLoading(true);
-    try { const result = await definition.list(); setRows(result.data || []); setError(""); } catch (err) { setError(err.message); } finally { setLoading(false); }
+    try { const result = await definition.list(); setRows(result.data || []); setError(""); } catch (err) { setError(formatError(err)); } finally { setLoading(false); }
   };
 
   useEffect(() => { void load(); }, [resource]);
 
   const columns = useMemo(() => [
     ...definition.fields.map((field) => ({ accessorKey: field, header: field.replace(/([A-Z])/g, " $1") })),
-    { id: "actions", header: "Actions", cell: ({ row }) => <div className="flex justify-end gap-2"><button className="admin-table-action" onClick={async () => { const key = resource === "products" ? "title" : resource === "coupons" ? "code" : "name"; const next = window.prompt(`Update ${key}`, row.original[key]); if (next) { await definition.update(row.original.id, { [key]: next }); void load(); } }} aria-label="Edit record"><Pencil className="size-4" /></button><button className="admin-table-action text-red-500 hover:border-red-200 hover:bg-red-50" onClick={async () => { if (window.confirm(`Delete this ${resource.slice(0, -1)}?`)) { await definition.remove(row.original.id); void load(); } }} aria-label="Delete record"><Trash2 className="size-4" /></button></div> },
-  ], [definition, resource]);
+    { id: "actions", header: "Actions", cell: ({ row }) => <div className="flex justify-end gap-2"><button className="admin-table-action" onClick={async () => { const key = resource === "products" ? "title" : resource === "coupons" ? "code" : "name"; const next = window.prompt(`Update ${key}`, row.original[key]); if (next) { try { await definition.update(row.original.id, { [key]: next }); void load(); } catch (err) { setError(formatError(err)); } } }} aria-label="Edit record"><Pencil className="size-4" /></button><button className="admin-table-action text-red-500 hover:border-red-200 hover:bg-red-50" onClick={async () => { if (window.confirm(`Delete this ${singular}?`)) { try { await definition.remove(row.original.id); void load(); } catch (err) { setError(formatError(err)); } } }} aria-label="Delete record"><Trash2 className="size-4" /></button></div> },
+  ], [definition, resource, singular]);
 
   const table = useReactTable({ data: rows, columns, getCoreRowModel: getCoreRowModel() });
-  const singular = resource.slice(0, -1);
 
   return (
     <div className="admin-resource-page">
@@ -47,7 +69,7 @@ export function AdminResourceTable({ resource }) {
 
       <section className="admin-create-card">
         <div><p className="admin-eyebrow">Quick create</p><h2>New {singular}</h2><p>Add the essential details now; you can refine them later.</p></div>
-        <form className="admin-create-form" onSubmit={async (event) => { event.preventDefault(); try { await definition.create(rowData(resource, event.currentTarget)); event.currentTarget.reset(); void load(); } catch (err) { setError(err.message); } }}>
+        <form className="admin-create-form" onSubmit={async (event) => { event.preventDefault(); try { await definition.create(rowData(resource, event.currentTarget)); event.currentTarget.reset(); void load(); } catch (err) { setError(formatError(err)); } }}>
           {definition.fields.map((field) => <label key={field}><span>{field.replace(/([A-Z])/g, " $1")}</span><input name={field} placeholder={`Enter ${field}`} required /></label>)}
           <button type="submit" className="admin-primary-button"><Plus className="size-4" /> Create {singular}</button>
         </form>
@@ -61,3 +83,4 @@ export function AdminResourceTable({ resource }) {
     </div>
   );
 }
+

@@ -33,6 +33,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [variants, setVariants] = useState([]);
   const [mainImage, setMainImage] = useState(null);
   const [gallery, setGallery] = useState([]);
+  const [mainImageUrl, setMainImageUrl] = useState("");
+  const [galleryUrl, setGalleryUrl] = useState("");
   const [warehouses, setWarehouses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -363,22 +365,45 @@ export function ProductBuilder({ product, onCreated, onClose }) {
             </div>
           </div>
           <div className="image-upload-sections">
-            <label className="image-main-upload">
-              {mainImage ? (
-                <img src={mainImage.src} alt="Main product" />
-              ) : (
-                <>
-                  <ImagePlus />
-                  <strong>Main product image</strong>
-                  <span>Click to select file</span>
-                </>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => void setPrimaryImage(e.target.files)}
-              />
-            </label>
+            <div className="flex flex-col gap-2">
+              <label className="image-main-upload cursor-pointer">
+                {mainImage ? (
+                  <img src={mainImage.src} alt="Main product" />
+                ) : (
+                  <>
+                    <ImagePlus />
+                    <strong>Main product image</strong>
+                    <span>Click to select file</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => void setPrimaryImage(e.target.files)}
+                />
+              </label>
+              <div className="flex items-center gap-2 mt-1">
+                <input
+                  type="url"
+                  placeholder="Or paste main image URL..."
+                  className="flex-1 text-xs p-2 rounded border border-neutral-300 outline-none"
+                  value={mainImageUrl}
+                  onChange={(e) => setMainImageUrl(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (mainImageUrl.trim()) {
+                      setMainImage({ src: mainImageUrl.trim(), altText: title || "Main image" });
+                      setMainImageUrl("");
+                    }
+                  }}
+                  className="text-[11px] font-bold uppercase px-3 py-2 bg-black text-white rounded hover:bg-neutral-800"
+                >
+                  Set URL
+                </button>
+              </div>
+            </div>
 
             <div>
               <div className="image-preview-grid">
@@ -401,17 +426,40 @@ export function ProductBuilder({ product, onCreated, onClose }) {
               </div>
 
               {gallery.length < 8 && (
-                <label className="image-gallery-upload mt-3">
-                  <ImagePlus />
-                  <span>Add gallery images</span>
-                  <small>Up to {8 - gallery.length} more images</small>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => void addGallery(e.target.files)}
-                  />
-                </label>
+                <div className="flex flex-col gap-2 mt-3">
+                  <label className="image-gallery-upload cursor-pointer">
+                    <ImagePlus />
+                    <span>Add gallery images</span>
+                    <small>Up to {8 - gallery.length} more images</small>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => void addGallery(e.target.files)}
+                    />
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      placeholder="Or paste gallery image URL..."
+                      className="flex-1 text-xs p-2 rounded border border-neutral-300 outline-none"
+                      value={galleryUrl}
+                      onChange={(e) => setGalleryUrl(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (galleryUrl.trim()) {
+                          setGallery((curr) => [...curr, { src: galleryUrl.trim(), altText: `Gallery ${curr.length + 1}` }]);
+                          setGalleryUrl("");
+                        }
+                      }}
+                      className="text-[11px] font-bold uppercase px-3 py-2 bg-black text-white rounded hover:bg-neutral-800"
+                    >
+                      Add URL
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

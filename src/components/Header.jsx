@@ -226,7 +226,7 @@ const Header = ({ onSearch }) => {
                   </div>
                 </Link>
               ) : (
-                <Link href="/pages/login" className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center" aria-label="Account">
+                <Link href="/login" className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center" aria-label="Account">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -235,7 +235,7 @@ const Header = ({ onSearch }) => {
               )}
 
               {/* Wishlist */}
-              <Link href="/pages/wishlist" className="action-btn wishlist-action text-black hover:opacity-70 flex items-center justify-center relative" aria-label="Wishlist">
+              <Link href="/wishlist" className="action-btn wishlist-action text-black hover:opacity-70 flex items-center justify-center relative" aria-label="Wishlist">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
@@ -325,7 +325,7 @@ const Header = ({ onSearch }) => {
                       </div>
                     </Link>
                   ) : (
-                    <Link href="/pages/login" onClick={closeSearch} className="srch-icon-btn" aria-label="Account">
+                    <Link href="/login" onClick={closeSearch} className="srch-icon-btn" aria-label="Account">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
@@ -333,7 +333,7 @@ const Header = ({ onSearch }) => {
                     </Link>
                   )}
 
-                  <Link href="/pages/wishlist" onClick={closeSearch} className="srch-icon-btn relative" aria-label="Wishlist">
+                  <Link href="/wishlist" onClick={closeSearch} className="srch-icon-btn relative" aria-label="Wishlist">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
@@ -445,7 +445,7 @@ const Header = ({ onSearch }) => {
               </li>
 
               <li style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <Link href="/pages/wishlist" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
+                <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
                   Wishlist
                 </Link>
               </li>
@@ -472,8 +472,8 @@ const Header = ({ onSearch }) => {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <Link href="/pages/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-black text-white font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Log In</Link>
-                <Link href="/pages/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-white border border-black text-black font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Register</Link>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-black text-white font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Log In</Link>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-white border border-black text-black font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Register</Link>
               </div>
             )}
           </div>

@@ -884,7 +884,7 @@ export default function ProductDetailPage({ params }) {
               {!isAuthenticated ? (
                 <div style={{ textAlign: "center", padding: "20px 0" }}>
                   <p style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Log in to share your experience.</p>
-                  <Link href="/pages/account" style={{ display: "inline-block", padding: "10px 24px", background: "#111", color: "#fff", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", borderRadius: 4 }}>
+                  <Link href="/login" style={{ display: "inline-block", padding: "10px 24px", background: "#111", color: "#fff", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", borderRadius: 4 }}>
                     Log In / Sign Up
                   </Link>
                 </div>

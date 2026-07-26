@@ -296,7 +296,7 @@ export default function CheckoutPage() {
   }
 
   if (!isAuthenticated) {
-    return <CheckoutFrame><main className="checkout-v3-main flex-1"><section className="checkout-v3-shell mx-auto max-w-xl px-4"><Link href="/" className="checkout-v3-back"><ArrowLeft size={15} /> Back to cart</Link><div className="checkout-v3-panel checkout-v3-gate text-center"><Lock className="mx-auto mb-5 h-9 w-9" /><p className="checkout-v3-eyebrow">One quick step first</p><h1>Where should we deliver?</h1><p className="checkout-v3-copy">Sign in to choose or save an address before moving to payment.</p><Link href="/pages/login" className="checkout-v3-action mt-7">Sign in to continue <ChevronRight size={15} /></Link></div></section></main></CheckoutFrame>;
+    return <CheckoutFrame><main className="checkout-v3-main flex-1"><section className="checkout-v3-shell mx-auto max-w-xl px-4"><Link href="/" className="checkout-v3-back"><ArrowLeft size={15} /> Back to cart</Link><div className="checkout-v3-panel checkout-v3-gate text-center"><Lock className="mx-auto mb-5 h-9 w-9" /><p className="checkout-v3-eyebrow">One quick step first</p><h1>Where should we deliver?</h1><p className="checkout-v3-copy">Sign in to choose or save an address before moving to payment.</p><Link href="/login" className="checkout-v3-action mt-7">Sign in to continue <ChevronRight size={15} /></Link></div></section></main></CheckoutFrame>;
   }
 
   return (
