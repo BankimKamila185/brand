@@ -149,11 +149,13 @@ model Collection {
 // ─── Product ─────────────────────────────────────────────────────────────────
 
 model Product {
-  id          String   @id @default(cuid())
-  title       String
-  handle      String   @unique
-  description String?  @db.Text
-  vendor      String   @default("Tevar")
+  id                  String   @id @default(cuid())
+  title               String
+  handle              String   @unique
+  description         String?  @db.Text
+  careInstructions    String?  @map("care_instructions") @db.Text
+  manufacturerDetails String?  @map("manufacturer_details") @db.Text
+  vendor              String   @default("Tevar")
   productType String   @default("") @map("product_type")
   tags        String[] @default([])
   isActive    Boolean  @default(true) @map("is_active")

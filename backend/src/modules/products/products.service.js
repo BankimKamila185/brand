@@ -63,6 +63,8 @@ const productListSelect = {
 const productDetailSelect = {
   ...productListSelect,
   description: true,
+  careInstructions: true,
+  manufacturerDetails: true,
   collections: {
     select: { collection: { select: { id: true, name: true, handle: true } } },
   },
@@ -272,6 +274,8 @@ export const productsService = {
           title: data.title,
           handle: data.handle,
           description: data.description || "",
+          careInstructions: data.careInstructions || null,
+          manufacturerDetails: data.manufacturerDetails || null,
           vendor: data.vendor || "Tevar",
           productType: data.productType || "",
           tags: data.tags || [],
@@ -368,6 +372,8 @@ export const productsService = {
         data: {
           title: data.title,
           description: data.description !== undefined ? data.description : undefined,
+          careInstructions: data.careInstructions !== undefined ? data.careInstructions : undefined,
+          manufacturerDetails: data.manufacturerDetails !== undefined ? data.manufacturerDetails : undefined,
           vendor: data.vendor !== undefined ? data.vendor : undefined,
           productType: data.productType !== undefined ? data.productType : undefined,
           categoryId: categoryId,

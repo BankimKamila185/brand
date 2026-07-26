@@ -27,6 +27,8 @@ const mapProduct = (bp) => ({
   title: bp.title,
   handle: bp.handle,
   body_html: bp.description || "",
+  care_instructions: bp.careInstructions || null,
+  manufacturer_details: bp.manufacturerDetails || null,
   vendor: bp.vendor || "House of Outliers",
   product_type: bp.productType || "Apparel",
   tags: bp.tags || [],
@@ -800,13 +802,19 @@ export default function ProductDetailPage({ params }) {
                     <p style={{ margin: 0 }}>No description available.</p>
                   )}
                 </AccordionItem>
-                <AccordionItem label="Fabric & Care">
-                  <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                    <li>Wash inside out with similar colors</li>
-                    <li>Do not tumble dry or dry clean</li>
-                    <li>Do not iron directly on print</li>
-                    <li>Line dry in shade</li>
-                  </ul>
+                <AccordionItem label="Care Instructions">
+                  {product.care_instructions ? (
+                    <div style={{ whiteSpace: "pre-line", fontSize: 13, color: "#444", lineHeight: 1.6 }}>
+                      {product.care_instructions}
+                    </div>
+                  ) : (
+                    <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+                      <li>Wash inside out with similar colors</li>
+                      <li>Do not tumble dry or dry clean</li>
+                      <li>Do not iron directly on print</li>
+                      <li>Line dry in shade</li>
+                    </ul>
+                  )}
                 </AccordionItem>
                 <AccordionItem label="Shipping & Returns">
                   <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
@@ -817,8 +825,16 @@ export default function ProductDetailPage({ params }) {
                   </ul>
                 </AccordionItem>
                 <AccordionItem label="Manufacturer Details">
-                  <p style={{ margin: 0 }}><strong>Company:</strong> House of Koala Fashion Private Limited</p>
-                  <p style={{ margin: "4px 0 0 0" }}><strong>Address:</strong> Ground Floor, Sector 4, HSR Layout, Bengaluru, Karnataka, 560102</p>
+                  {product.manufacturer_details ? (
+                    <div style={{ whiteSpace: "pre-line", fontSize: 13, color: "#444", lineHeight: 1.6 }}>
+                      {product.manufacturer_details}
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ margin: 0 }}><strong>Company:</strong> The Outliers Studio Fashion Private Limited</p>
+                      <p style={{ margin: "4px 0 0 0" }}><strong>Address:</strong> Ground Floor, Sector 4, HSR Layout, Bengaluru, Karnataka, 560102</p>
+                    </div>
+                  )}
                 </AccordionItem>
               </div>
 

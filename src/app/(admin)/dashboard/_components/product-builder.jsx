@@ -90,6 +90,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [categoryId, setCategoryId] = useState("");
   const [productType, setProductType] = useState("");
   const [description, setDescription] = useState("");
+  const [careInstructions, setCareInstructions] = useState("");
+  const [manufacturerDetails, setManufacturerDetails] = useState("");
   const [variants, setVariants] = useState([]);
   const [mainImage, setMainImage] = useState(null);
   const [gallery, setGallery] = useState([]);
@@ -123,6 +125,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setCategoryId(product.categoryId || product.category?.id || "");
       setProductType(product.productType || "");
       setDescription(product.description || "");
+      setCareInstructions(product.careInstructions || "");
+      setManufacturerDetails(product.manufacturerDetails || "");
       setIsActive(product.isActive !== false);
 
       if (product.collections && product.collections.length > 0) {
@@ -160,6 +164,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setCategoryId("");
       setProductType("");
       setDescription("");
+      setCareInstructions("");
+      setManufacturerDetails("");
       setIsActive(true);
       setSelectedCollectionIds([]);
       setVariants([blankVariant("S"), blankVariant("M"), blankVariant("L")]);
@@ -250,6 +256,8 @@ function formatError(err) {
     const payload = {
       title,
       description,
+      careInstructions,
+      manufacturerDetails,
       vendor,
       productType,
       categoryId: categoryId || undefined,
@@ -406,12 +414,30 @@ function formatError(err) {
               />
             </label>
             <label className="wide">
-              Description
+              Description / Product Details
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows="4"
-                placeholder="Describe the piece, fabric, fit, and care."
+                rows="3"
+                placeholder="Describe the piece, story, fabric, fit, and features."
+              />
+            </label>
+            <label className="wide">
+              Care Instructions
+              <textarea
+                value={careInstructions}
+                onChange={(e) => setCareInstructions(e.target.value)}
+                rows="3"
+                placeholder="e.g. Wash inside out with similar colors; Do not tumble dry; Do not iron on print."
+              />
+            </label>
+            <label className="wide">
+              Manufacturer Details
+              <textarea
+                value={manufacturerDetails}
+                onChange={(e) => setManufacturerDetails(e.target.value)}
+                rows="3"
+                placeholder="e.g. Manufactured & Marketed by: House of Outliers Fashion Pvt Ltd, Ground Floor, HSR Layout, Bengaluru, 560102"
               />
             </label>
             <label className="wide flex flex-row items-center gap-2 cursor-pointer py-1.5 select-none">

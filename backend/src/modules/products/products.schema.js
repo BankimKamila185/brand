@@ -49,6 +49,8 @@ export const createProductSchema = z.object({
     )
     .refine((val) => val.length >= 2, { message: "Handle must be at least 2 valid characters" }),
   description: z.string().optional(),
+  careInstructions: z.string().optional(),
+  manufacturerDetails: z.string().optional(),
   vendor: z.string().default("Tevar"),
   productType: z.string().default(""),
   tags: z.array(z.string()).default([]),
