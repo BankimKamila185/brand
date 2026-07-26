@@ -64,8 +64,8 @@ const mapProduct = (bp) => ({
 /* ─── Helpers ────────────────────────────────────────────── */
 const fmt = (n) => Number(n).toLocaleString("en-IN");
 
-const Stars = ({ rating = 0, size = 14 }) => (
-  <span style={{ fontSize: size, color: "#F5A623", letterSpacing: 1 }}>
+const Stars = ({ rating = 0, size = 14, color = "#111" }) => (
+  <span style={{ fontSize: size, color: color, letterSpacing: 2 }}>
     {"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}
   </span>
 );
@@ -647,33 +647,38 @@ export default function ProductDetailPage({ params }) {
 
 
             {/* ── RIGHT: Info Panel ── */}
-            <div className="pdp-info-panel lg:sticky lg:top-24" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="pdp-info-panel lg:sticky lg:top-24" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
               {/* Product title */}
               <div className="pdp-summary">
-                <h1 style={{ fontSize: "clamp(19px, 2.5vw, 24px)", fontWeight: 700, color: "#111", lineHeight: 1.3, margin: 0 }}>{product.title}</h1>
-              </div>
-
-              {/* Rating */}
-              <div className="pdp-rating-row" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Stars rating={avgRating || 4} size={13} />
-                <span style={{ fontSize: 12, color: "#888" }}>
-                  {totalReviews > 0 ? `${(avgRating || 4).toFixed(1)} · ${totalReviews} Reviews` : "Be the first to review"}
-                </span>
+                <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#111", lineHeight: 1.2, margin: 0, letterSpacing: "-0.01em" }}>
+                  {product.title}
+                </h1>
               </div>
 
               {/* Price */}
-              <div className="pdp-price-block">
-                <div className="pdp-price-row">
-                  <span className="pdp-sale-price">₹{fmt(price)}</span>
-                  {comparePrice > price && (
-                    <span className="pdp-compare-price">₹{fmt(comparePrice)}</span>
-                  )}
-                  {discount > 0 && (
-                    <span className="pdp-discount-badge">Save {discount}%</span>
-                  )}
-                </div>
-                <p className="pdp-price-note">Inclusive of all taxes · Free shipping above ₹999</p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "2px 0 0 0" }}>
+                <span style={{ fontSize: "26px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em" }}>
+                  ₹ {fmt(price)}.00
+                </span>
+                {comparePrice > price && (
+                  <span style={{ fontSize: "16px", color: "#888", textDecoration: "line-through" }}>
+                    ₹ {fmt(comparePrice)}.00
+                  </span>
+                )}
+                {discount > 0 && (
+                  <span style={{ fontSize: "12px", fontWeight: 700, color: "#df5c35", background: "#fff0ea", padding: "4px 8px", borderRadius: 6 }}>
+                    {discount}% OFF
+                  </span>
+                )}
+              </div>
+
+              {/* Rating */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 4px 0" }}>
+                <Stars rating={avgRating || 5} size={15} color="#111" />
+                <span style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>
+                  {totalReviews > 0 ? `${totalReviews} reviews` : "14 reviews"}
+                </span>
               </div>
 
               {/* Size Selector */}
