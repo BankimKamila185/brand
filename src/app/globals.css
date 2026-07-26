@@ -5618,15 +5618,18 @@ textarea.form-input {
 @media (min-width: 1025px) {
   .pdp-two-col {
     display: grid !important;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
-    gap: 48px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 460px) !important;
+    gap: 32px !important;
     align-items: start;
+    max-width: 1060px;
+    margin-inline: auto;
   }
 
   .pdp-hero-image {
-    width: min(100%, 640px);
+    width: min(100%, 510px);
+    max-height: 580px;
     margin-inline: auto;
-    border-radius: 22px;
+    border-radius: 18px;
   }
 
   .reviews-two-col {
@@ -5643,10 +5646,12 @@ textarea.form-input {
 
 .pdp-hero-image-media {
   aspect-ratio: 3 / 4;
+  max-height: 580px;
+  object-fit: cover;
 }
 
 .pdp-thumbnail-strip {
-  width: min(100%, 720px);
+  width: min(100%, 510px);
   margin-inline: auto;
 }
 
@@ -5661,12 +5666,12 @@ textarea.form-input {
 
 .pdp-thumbnail {
   position: relative;
-  flex: 0 0 80px;
-  width: 80px;
+  flex: 0 0 64px;
+  width: 64px;
   aspect-ratio: 3 / 4;
   min-width: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 0 0 1px #e8e8e8;
 }
 
@@ -5688,29 +5693,29 @@ textarea.form-input {
 .pdp-info-panel {
   background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
   border: 1px solid #ececec;
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 16px 42px rgba(18, 18, 18, 0.06);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 12px 32px rgba(18, 18, 18, 0.05);
 }
 
 .pdp-summary h1 {
-  font-size: clamp(24px, 2vw, 30px) !important;
+  font-size: clamp(20px, 1.8vw, 24px) !important;
   letter-spacing: -0.025em;
 }
 
 .pdp-rating-row {
-  padding: 10px 12px;
+  padding: 6px 10px;
   width: fit-content;
   border-radius: 999px;
   background: #fff8e9;
 }
 
 .pdp-price-block {
-  padding: 18px 20px;
+  padding: 14px 16px;
   border: 0 !important;
-  border-radius: 14px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #191816 0%, #302e29 100%);
-  box-shadow: 0 10px 22px rgba(14, 13, 11, .12);
+  box-shadow: 0 8px 18px rgba(14, 13, 11, .10);
 }
 
 .pdp-price-row {
