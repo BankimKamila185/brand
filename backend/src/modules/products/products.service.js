@@ -309,6 +309,23 @@ export const productsService = {
     });
     if (!existing) throw new AppError("Product not found", 404);
 
+    // Verify category exists if provided
+    let categoryId = undefined;
+    if (data.categoryId) {
+      const category = await db.category.findUnique({ where: { id: data.categoryId } });
+      if (category) categoryId = category.id;
+    }
+
+    // Verify collections exist if provided
+    let validCollectionIds = null;
+    if (data.collectionIds) {
+      const foundCols = await db.collection.findMany({
+        where: { id: { in: data.collectionIds.filter(Boolean) } },
+        select: { id: true },
+      });
+      validCollectionIds = foundCols.map((c) => c.id);
+    }
+
     // Upload base64 images to R2 and reuse existing URLs
     let uploadedImages = null;
     if (data.images) {
@@ -337,19 +354,19 @@ export const productsService = {
         where: { id },
         data: {
           title: data.title,
-          description: data.description,
-          vendor: data.vendor,
-          productType: data.productType,
-          categoryId: data.categoryId,
+          description: data.description !== undefined ? data.description : undefined,
+          vendor: data.vendor !== undefined ? data.vendor : undefined,
+          productType: data.productType !== undefined ? data.productType : undefined,
+          categoryId: categoryId,
           isActive: data.isActive !== undefined ? data.isActive : undefined,
         },
       });
 
       // 1b. Update collections mapping
-      if (data.collectionIds) {
+      if (validCollectionIds !== null) {
         await tx.productCollection.deleteMany({ where: { productId: id } });
         await tx.productCollection.createMany({
-          data: data.collectionIds.map((colId) => ({
+          data: validCollectionIds.map((colId) => ({
             productId: id,
             collectionId: colId,
           })),
@@ -383,6 +400,7 @@ export const productsService = {
         });
 
         for (const v of data.variants) {
+          const formattedSku = v.sku && typeof v.sku === "string" && v.sku.trim() ? v.sku.trim() : null;
           const existingVariant = await tx.productVariant.findFirst({
             where: { productId: id, option1: v.option1 },
           });
@@ -393,8 +411,8 @@ export const productsService = {
               where: { id: existingVariant.id },
               data: {
                 price: v.price,
-                comparePrice: v.comparePrice,
-                sku: v.sku,
+                comparePrice: v.comparePrice || null,
+                sku: formattedSku,
                 isActive: true,
               },
             });
@@ -430,11 +448,11 @@ export const productsService = {
             const newVar = await tx.productVariant.create({
               data: {
                 productId: id,
-                title: v.title,
-                option1: v.option1,
+                title: v.title || v.option1 || "Default",
+                option1: v.option1 || v.title || "Default",
                 price: v.price,
-                comparePrice: v.comparePrice,
-                sku: v.sku,
+                comparePrice: v.comparePrice || null,
+                sku: formattedSku,
                 isActive: true,
                 inventory: {
                   create: { quantity: v.stock || 0 },
