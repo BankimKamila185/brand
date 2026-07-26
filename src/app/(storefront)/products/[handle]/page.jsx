@@ -12,6 +12,15 @@ import { useAuth } from "@/context/AuthContext";
 import { productsApi, reviewsApi } from "@/lib/api";
 import localProducts from "@/data/products.json";
 
+function normalizeR2Url(src) {
+  if (!src || typeof src !== "string") return "";
+  if (src.includes(".r2.cloudflarestorage.com/")) {
+    const filename = src.split(".r2.cloudflarestorage.com/")[1];
+    return `https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev/${filename}`;
+  }
+  return src;
+}
+
 /* ─── Data Mapper ─────────────────────────────────────────── */
 const mapProduct = (bp) => ({
   id: bp.id,
@@ -37,7 +46,7 @@ const mapProduct = (bp) => ({
   images:
     bp.images?.map((img) => ({
       id: img.id,
-      src: img.src,
+      src: normalizeR2Url(img.src),
       alt_text: img.altText || "",
       position: img.position || 1,
     })) || [],

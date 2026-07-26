@@ -14,6 +14,19 @@ const r2Client = new S3Client({
 });
 
 /**
+ * Normalizes any Cloudflare R2 URL to the public serving domain.
+ * If the URL uses private S3 endpoint .r2.cloudflarestorage.com, it rewrites to pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev
+ */
+export const normalizeR2Url = (url) => {
+  if (!url || typeof url !== "string") return url;
+  if (url.includes(".r2.cloudflarestorage.com/")) {
+    const filename = url.split(".r2.cloudflarestorage.com/")[1];
+    return `https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev/${filename}`;
+  }
+  return url;
+};
+
+/**
  * Uploads a base64 encoded image string directly to Cloudflare R2 bucket.
  * If the string does not represent a base64 encoded URI, it is returned untouched.
  * @param {string} base64Str - The raw base64 data string (e.g. data:image/png;base64,...)
@@ -22,8 +35,8 @@ const r2Client = new S3Client({
  */
 export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
   if (!base64Str || !base64Str.startsWith("data:")) {
-    // If it's already an HTTP URL or doesn't follow base64 pattern, bypass R2
-    return base64Str;
+    // If it's already an HTTP URL or doesn't follow base64 pattern, bypass R2 after normalizing
+    return normalizeR2Url(base64Str);
   }
 
   // If R2 credentials are not set up, skip and return as-is (e.g., fall back to database storage during local testing)
@@ -35,7 +48,7 @@ export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
   try {
     const matches = base64Str.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
-      throw new Error("Invalid base64 string format");
+      return base64Str;
     }
 
     const mimeType = matches[1];

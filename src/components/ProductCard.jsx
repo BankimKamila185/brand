@@ -7,6 +7,15 @@ import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { Heart, Eye, X, Check, ShoppingBag } from "lucide-react";
 
+function normalizeR2Url(src) {
+  if (!src || typeof src !== "string") return "";
+  if (src.includes(".r2.cloudflarestorage.com/")) {
+    const filename = src.split(".r2.cloudflarestorage.com/")[1];
+    return `https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev/${filename}`;
+  }
+  return src;
+}
+
 const ProductCard = ({ product, onOpenDetails }) => {
   const router = useRouter();
   const { addToCart, toggleWishlist, isInWishlist, setCartOpen } = useCart();
@@ -27,7 +36,8 @@ const ProductCard = ({ product, onOpenDetails }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
 
-  const imagesList = product.images?.length > 0 ? product.images : [{ src: "" }];
+  const rawImages = product.images?.length > 0 ? product.images : [{ src: "" }];
+  const imagesList = rawImages.map((img) => ({ ...img, src: normalizeR2Url(img.src) }));
   const firstImg = imagesList[0]?.src || "";
   const secondImg = imagesList[1]?.src || firstImg;
   const [selectedModalImg, setSelectedModalImg] = useState(firstImg);

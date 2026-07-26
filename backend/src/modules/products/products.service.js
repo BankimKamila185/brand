@@ -1,7 +1,23 @@
 import { db } from "../../config/database";
 import { AppError } from "../../middleware/errorHandler";
 import { buildPaginationMeta } from "../../utils/response";
-import { uploadBase64ToR2 } from "../../config/r2";
+import { uploadBase64ToR2, normalizeR2Url } from "../../config/r2";
+
+function sanitizeProduct(product) {
+  if (!product) return product;
+  if (Array.isArray(product.images)) {
+    product.images = product.images.map((img) => ({
+      ...img,
+      src: normalizeR2Url(img.src),
+    }));
+  }
+  return product;
+}
+
+function sanitizeProducts(products) {
+  if (!Array.isArray(products)) return products;
+  return products.map(sanitizeProduct);
+}
 
 // Shared select for product list (lightweight)
 const productListSelect = {
@@ -156,7 +172,7 @@ export const productsService = {
       }),
     ]);
 
-    return { products, meta: buildPaginationMeta(total, page, limit) };
+    return { products: sanitizeProducts(products), meta: buildPaginationMeta(total, page, limit) };
   },
 
   async findByHandle(handle) {
@@ -166,7 +182,7 @@ export const productsService = {
     });
 
     if (!product) throw new AppError("Product not found", 404);
-    return product;
+    return sanitizeProduct(product);
   },
 
   async findById(id) {
@@ -175,7 +191,7 @@ export const productsService = {
       select: productDetailSelect,
     });
     if (!product) throw new AppError("Product not found", 404);
-    return product;
+    return sanitizeProduct(product);
   },
 
   async search(query, limit = 10) {
@@ -208,7 +224,7 @@ export const productsService = {
       take: limit,
       orderBy: { publishedAt: "desc" },
     });
-    return products;
+    return sanitizeProducts(products);
   },
 
   async create(data) {
@@ -299,7 +315,7 @@ export const productsService = {
       return created;
     });
 
-    return product;
+    return sanitizeProduct(product);
   },
 
   async update(id, data) {
@@ -477,10 +493,11 @@ export const productsService = {
     });
 
     // Return full updated product structure
-    return db.product.findUnique({
+    const updated = await db.product.findUnique({
       where: { id },
       select: productDetailSelect,
     });
+    return sanitizeProduct(updated);
   },
 
   async softDelete(id) {
@@ -496,7 +513,7 @@ export const productsService = {
     });
     if (!product) return [];
 
-    return db.product.findMany({
+    const related = await db.product.findMany({
       where: {
         isActive: true,
         id: { not: productId },
@@ -509,5 +526,6 @@ export const productsService = {
       take: limit,
       orderBy: { publishedAt: "desc" },
     });
+    return sanitizeProducts(related);
   },
 };
