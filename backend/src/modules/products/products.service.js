@@ -65,6 +65,17 @@ const productDetailSelect = {
   description: true,
   careInstructions: true,
   manufacturerDetails: true,
+  images: {
+    select: {
+      id: true,
+      src: true,
+      altText: true,
+      width: true,
+      height: true,
+      position: true,
+    },
+    orderBy: { position: "asc" },
+  },
   collections: {
     select: { collection: { select: { id: true, name: true, handle: true } } },
   },
