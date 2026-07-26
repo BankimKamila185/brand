@@ -196,6 +196,7 @@ export const productsService = {
       product = await db.product.findFirst({
         where: {
           OR: [
+            { id: handle },
             { handle: cleanHandle },
             { handle: { equals: cleanHandle, mode: "insensitive" } },
           ],
@@ -204,7 +205,12 @@ export const productsService = {
       });
     } catch {
       product = await db.product.findFirst({
-        where: { handle: cleanHandle },
+        where: {
+          OR: [
+            { id: handle },
+            { handle: cleanHandle },
+          ],
+        },
         select: productDetailSelect,
       });
     }
