@@ -241,15 +241,6 @@ const ProductCard = ({ product, onOpenDetails }) => {
             </span>
           </div>
 
-          {/* EMI Badge */}
-          {priceNum >= 800 && (
-            <div className="flex items-center gap-1 text-[10px] text-neutral-600 font-medium pt-0.5">
-              <span>or ₹{Math.round(priceNum / 3)}/Month</span>
-              <span className="bg-black text-white px-1.5 py-0.2 rounded text-[9px] font-bold tracking-tight">
-                Buy on EMI &gt;
-              </span>
-            </div>
-          )}
         </div>
       </Link>
 
