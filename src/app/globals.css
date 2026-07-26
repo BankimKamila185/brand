@@ -41,16 +41,9 @@
 /* ── 01. Design Tokens ──────────────────────────────────── */
 :root {
   /* --- Typography --- */
-  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Sour Gummy', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sour-gummy: 'Sour Gummy', sans-serif;
-
-.sour-gummy,
-.font-sour-gummy {
-  font-family: 'Sour Gummy', sans-serif;
-  font-optical-sizing: auto;
-  font-variation-settings: "wdth" 100;
-}
 
   /* --- Core Palette --- */
   --c-bg: #F8F7F5;
@@ -62,6 +55,18 @@
   --c-ink-3: #9B9895;
   --c-border: rgba(14, 13, 11, .10);
   --c-border-strong: rgba(14, 13, 11, .20);
+}
+
+.sour-gummy,
+.font-sour-gummy,
+h1, h2, h3,
+.section-title,
+.product-card-title,
+.pdp-summary h1 {
+  font-family: 'Sour Gummy', var(--font-sour-gummy), sans-serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 100;
+}
 
   /* --- Accent (Electric Amber) --- */
   --c-accent: #F5A623;
