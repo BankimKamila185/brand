@@ -218,6 +218,23 @@ export const productsService = {
     if (existing)
       throw new AppError("A product with this handle already exists", 409);
 
+    // Verify category exists if provided
+    let categoryId = undefined;
+    if (data.categoryId) {
+      const category = await db.category.findUnique({ where: { id: data.categoryId } });
+      if (category) categoryId = category.id;
+    }
+
+    // Verify collections exist if provided
+    const validCollectionIds = [];
+    if (data.collectionIds && data.collectionIds.length > 0) {
+      const foundCols = await db.collection.findMany({
+        where: { id: { in: data.collectionIds.filter(Boolean) } },
+        select: { id: true },
+      });
+      validCollectionIds.push(...foundCols.map((c) => c.id));
+    }
+
     // Upload base64 images to Cloudflare R2 if configured
     const uploadedImages = await Promise.all(
       (data.images || []).map(async (image, i) => {
@@ -235,28 +252,43 @@ export const productsService = {
         data: {
           title: data.title,
           handle: data.handle,
-          description: data.description,
-          vendor: data.vendor,
-          productType: data.productType,
-          tags: data.tags,
-          categoryId: data.categoryId,
+          description: data.description || "",
+          vendor: data.vendor || "Tevar",
+          productType: data.productType || "",
+          tags: data.tags || [],
+          categoryId: categoryId,
           collections: {
-            create: data.collectionIds.map((id) => ({ collectionId: id })),
+            create: validCollectionIds.map((id) => ({ collectionId: id })),
           },
           variants: {
-            create: data.variants.map((v, i) => ({
-              sku: v.sku,
-              title: v.title,
-              option1: v.option1,
-              option2: v.option2,
-              option3: v.option3,
-              price: v.price,
-              comparePrice: v.comparePrice,
-              weight: v.weight,
-              position: i + 1,
-              inventory: { create: { quantity: v.warehouseStocks?.length ? v.warehouseStocks.reduce((total, stock) => total + stock.quantity, 0) : v.stock } },
-              warehouseStocks: v.warehouseStocks?.length ? { create: v.warehouseStocks } : undefined,
-            })),
+            create: (data.variants || []).map((v, i) => {
+              const formattedSku = v.sku && typeof v.sku === "string" && v.sku.trim() ? v.sku.trim() : null;
+              return {
+                sku: formattedSku,
+                title: v.title || v.option1 || "Default",
+                option1: v.option1 || v.title || "Default",
+                option2: v.option2 || null,
+                option3: v.option3 || null,
+                price: v.price,
+                comparePrice: v.comparePrice || null,
+                weight: v.weight || 0,
+                position: i + 1,
+                inventory: {
+                  create: {
+                    quantity: v.warehouseStocks?.length
+                      ? v.warehouseStocks.reduce((total, stock) => total + stock.quantity, 0)
+                      : v.stock || 0,
+                  },
+                },
+                warehouseStocks: v.warehouseStocks?.length
+                  ? {
+                      create: v.warehouseStocks
+                        .filter((ws) => ws.warehouseId)
+                        .map((ws) => ({ warehouseId: ws.warehouseId, quantity: ws.quantity })),
+                    }
+                  : undefined,
+              };
+            }),
           },
           images: {
             create: uploadedImages,

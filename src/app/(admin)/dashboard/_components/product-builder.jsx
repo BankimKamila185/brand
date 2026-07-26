@@ -167,6 +167,17 @@ export function ProductBuilder({ product, onCreated, onClose }) {
     }
   };
 
+function formatError(err) {
+  if (!err) return "";
+  if (err.errors && typeof err.errors === "object") {
+    const details = Object.entries(err.errors)
+      .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
+      .join("; ");
+    if (details) return `${err.message || "Error"} (${details})`;
+  }
+  return err.message || "An error occurred";
+}
+
   const submit = async (event) => {
     event.preventDefault();
     if (!mainImage) return setMessage("Please add a main product image.");
@@ -189,7 +200,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       variants: variants.map((variant) => ({
         title: variant.size,
         option1: variant.size,
-        sku: variant.sku || undefined,
+        sku: (variant.sku && variant.sku.trim()) || undefined,
         price: Number(variant.price),
         stock: Number(variant.stock),
         warehouseStocks: [
@@ -212,7 +223,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       }
       onCreated?.();
     } catch (error) {
-      setMessage(error.message || `Could not ${isEdit ? "update" : "create"} product.`);
+      setMessage(formatError(error) || `Could not ${isEdit ? "update" : "create"} product.`);
     } finally {
       setSaving(false);
     }

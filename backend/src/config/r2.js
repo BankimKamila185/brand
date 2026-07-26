@@ -72,7 +72,7 @@ export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
     logger.info(`✅ Image uploaded to Cloudflare R2: ${publicUrl}`);
     return publicUrl;
   } catch (error) {
-    logger.error("❌ Cloudflare R2 Upload Failed:", error);
-    throw error;
+    logger.error("❌ Cloudflare R2 Upload Failed, falling back to original image:", error);
+    return base64Str;
   }
 };
