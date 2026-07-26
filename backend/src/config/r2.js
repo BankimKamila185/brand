@@ -53,6 +53,12 @@ export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
 
     const mimeType = matches[1];
     const buffer = Buffer.from(matches[2], "base64");
+
+    // Reject tiny/corrupted buffers (< 500 bytes) to prevent saving empty 760-byte images
+    if (buffer.length < 500) {
+      logger.warn(`⚠️ Base64 buffer too small (${buffer.length} bytes), skipping Cloudflare R2 upload.`);
+      return base64Str;
+    }
     
     // Extract file extension from MIME type
     let extension = "png";

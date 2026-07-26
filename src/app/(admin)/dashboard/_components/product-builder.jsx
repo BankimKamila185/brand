@@ -15,32 +15,59 @@ const slugify = (value) =>
 
 const fileToImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.82) =>
   new Promise((resolve) => {
-    const img = new Image();
+    if (!file) return resolve({ src: "", altText: "" });
+    if (typeof file === "string") return resolve({ src: file, altText: "" });
+    if (file.src) return resolve(file);
+
+    const fileName = file.name || "Product Image";
     const reader = new FileReader();
+
     reader.onload = (e) => {
+      const rawBase64 = e.target.result;
+      if (!rawBase64) return resolve({ src: "", altText: fileName });
+
+      // For standard size images (< 2MB), bypass canvas compression to avoid empty 760-byte canvas bugs
+      if (file.size && file.size < 2 * 1024 * 1024) {
+        return resolve({ src: rawBase64, altText: fileName });
+      }
+
+      const img = new Image();
       img.onload = () => {
-        let { width, height } = img;
-        if (width > maxWidth || height > maxHeight) {
-          if (width > height) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          } else {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
+        try {
+          let { width, height } = img;
+          if (!width || !height) {
+            return resolve({ src: rawBase64, altText: fileName });
           }
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+          // Verify canvas produced valid data (> 2000 characters)
+          if (dataUrl && dataUrl.length > 2000) {
+            return resolve({ src: dataUrl, altText: fileName });
+          }
+          resolve({ src: rawBase64, altText: fileName });
+        } catch {
+          resolve({ src: rawBase64, altText: fileName });
         }
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve({ src: dataUrl, altText: file.name });
       };
-      img.onerror = () => resolve({ src: e.target.result, altText: file.name });
-      img.src = e.target.result;
+      img.onerror = () => resolve({ src: rawBase64, altText: fileName });
+      img.src = rawBase64;
     };
-    reader.onerror = () => resolve({ src: "", altText: file.name });
+
+    reader.onerror = () => resolve({ src: "", altText: fileName });
     reader.readAsDataURL(file);
   });
 
