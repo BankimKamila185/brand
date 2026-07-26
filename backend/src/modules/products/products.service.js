@@ -179,15 +179,24 @@ export const productsService = {
 
   async findByHandle(handle) {
     const cleanHandle = String(handle || "").toLowerCase().trim();
-    const product = await db.product.findFirst({
-      where: {
-        OR: [
-          { handle: cleanHandle },
-          { handle: { equals: cleanHandle, mode: "insensitive" } },
-        ],
-      },
-      select: productDetailSelect,
-    });
+    let product = null;
+
+    try {
+      product = await db.product.findFirst({
+        where: {
+          OR: [
+            { handle: cleanHandle },
+            { handle: { equals: cleanHandle, mode: "insensitive" } },
+          ],
+        },
+        select: productDetailSelect,
+      });
+    } catch {
+      product = await db.product.findFirst({
+        where: { handle: cleanHandle },
+        select: productDetailSelect,
+      });
+    }
 
     if (!product) throw new AppError("Product not found", 404);
     return sanitizeProduct(product);

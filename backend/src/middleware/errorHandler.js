@@ -65,8 +65,9 @@ export const errorHandler = (err, req, res, _next) => {
   }
 
   // Our operational errors
-  if (err instanceof AppError) {
-    res.status(err.statusCode).json({ success: false, message: err.message });
+  if (err instanceof AppError || (err.statusCode && typeof err.statusCode === "number")) {
+    const status = err.statusCode || 400;
+    res.status(status).json({ success: false, message: err.message });
     return;
   }
 
