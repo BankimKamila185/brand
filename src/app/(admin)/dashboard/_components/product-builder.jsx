@@ -44,6 +44,16 @@ const fileToImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.82) =>
     reader.readAsDataURL(file);
   });
 
+function normalizeImageUrl(src) {
+  if (!src || typeof src !== "string") return "";
+  if (src.includes(".r2.cloudflarestorage.com/")) {
+    const parts = src.split(".r2.cloudflarestorage.com/");
+    const filename = parts[1] || "";
+    return `https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev/${filename}`;
+  }
+  return src;
+}
+
 export function ProductBuilder({ product, onCreated, onClose }) {
   const isEdit = !!product;
 
@@ -402,7 +412,7 @@ function formatError(err) {
             <div className="flex flex-col gap-2">
               <label className="image-main-upload cursor-pointer">
                 {mainImage ? (
-                  <img src={mainImage.src} alt="Main product" />
+                  <img src={normalizeImageUrl(mainImage.src)} alt="Main product" />
                 ) : (
                   <>
                     <ImagePlus />
@@ -443,7 +453,7 @@ function formatError(err) {
               <div className="image-preview-grid">
                 {gallery.map((image, index) => (
                   <div key={index} className="image-preview">
-                    <img src={image.src} alt={image.altText || `Gallery image ${index + 1}`} />
+                    <img src={normalizeImageUrl(image.src)} alt={image.altText || `Gallery image ${index + 1}`} />
                     <button
                       type="button"
                       onClick={() =>

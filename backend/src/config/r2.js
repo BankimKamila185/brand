@@ -65,9 +65,10 @@ export const uploadBase64ToR2 = async (base64Str, folder = "products") => {
     await r2Client.send(command);
 
     // Build public serving URL
-    const publicUrl = env.R2_PUBLIC_URL 
-      ? `${env.R2_PUBLIC_URL.replace(/\/$/, "")}/${filename}`
-      : `https://${env.R2_BUCKET_NAME}.r2.cloudflarestorage.com/${filename}`;
+    const baseUrl = env.R2_PUBLIC_URL 
+      ? env.R2_PUBLIC_URL.replace(/\/$/, "")
+      : "https://pub-41f23aca788f4f3d8eb5a286adbb6f8d.r2.dev";
+    const publicUrl = `${baseUrl}/${filename}`;
 
     logger.info(`✅ Image uploaded to Cloudflare R2: ${publicUrl}`);
     return publicUrl;
