@@ -118,44 +118,57 @@ export function ProductBuilder({ product, onCreated, onClose }) {
 
   // Initialize form states
   useEffect(() => {
-    if (isEdit && product) {
-      setTitle(product.title || "");
-      setHandle(product.handle || "");
-      setVendor(product.vendor || "The Outliers Studio");
-      setCategoryId(product.categoryId || product.category?.id || "");
-      setProductType(product.productType || "");
-      setDescription(product.description || "");
-      setCareInstructions(product.careInstructions || "");
-      setManufacturerDetails(product.manufacturerDetails || "");
-      setIsActive(product.isActive !== false);
+    let active = true;
+    const populate = (data) => {
+      if (!data) return;
+      setTitle(data.title || "");
+      setHandle(data.handle || "");
+      setVendor(data.vendor || "The Outliers Studio");
+      setCategoryId(data.categoryId || data.category?.id || "");
+      setProductType(data.productType || "");
+      setDescription(data.description || "");
+      setCareInstructions(data.careInstructions || "");
+      setManufacturerDetails(data.manufacturerDetails || "");
+      setIsActive(data.isActive !== false);
 
-      if (product.collections && product.collections.length > 0) {
+      if (data.collections && data.collections.length > 0) {
         setSelectedCollectionIds(
-          product.collections.map((c) => c.collection?.id || c.collectionId).filter(Boolean)
+          data.collections.map((c) => c.collection?.id || c.collectionId).filter(Boolean)
         );
       } else {
         setSelectedCollectionIds([]);
       }
       
-      if (product.variants && product.variants.length > 0) {
+      if (data.variants && data.variants.length > 0) {
         setVariants(
-          product.variants.map((v, idx) => ({
+          data.variants.map((v, idx) => ({
             size: v.option1 || v.title,
             price: String(v.price),
             stock: String(v.inventory?.quantity || 0),
-            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(product.title, v.option1 || v.title, 3432 + idx),
+            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(data.title, v.option1 || v.title, 3432 + idx),
           }))
         );
       } else {
         setVariants([blankVariant("S"), blankVariant("M"), blankVariant("L")]);
       }
 
-      if (product.images && product.images.length > 0) {
-        setMainImage(product.images[0]);
-        setGallery(product.images.slice(1));
+      if (data.images && data.images.length > 0) {
+        setMainImage(data.images[0]);
+        setGallery(data.images.slice(1));
       } else {
         setMainImage(null);
         setGallery([]);
+      }
+    };
+
+    if (isEdit && product) {
+      populate(product);
+      if (product.id) {
+        adminApi.products.getById(product.id).then((res) => {
+          if (active && res?.data) {
+            populate(res.data);
+          }
+        }).catch(() => {});
       }
     } else {
       setTitle("");
@@ -172,6 +185,8 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setMainImage(null);
       setGallery([]);
     }
+
+    return () => { active = false; };
   }, [product, isEdit]);
 
   // Load warehouses, categories and collections

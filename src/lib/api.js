@@ -186,6 +186,7 @@ export const adminApi = {
   dashboard: () => api.get("/api/orders/admin?limit=100"),
   products: {
     list: () => api.get("/api/products?limit=100"),
+    getById: (id) => api.get(`/api/products/${id}`),
     create: (data) => api.post("/api/products", data),
     update: (id, data) => api.patch(`/api/products/${id}`, data),
     remove: (id) => api.delete(`/api/products/${id}`),
