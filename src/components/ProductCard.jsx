@@ -210,13 +210,13 @@ const ProductCard = ({ product, onOpenDetails }) => {
           </div>
         </div>
 
-        <div className="product-card-info pt-3 px-1 flex flex-col gap-1">
+        <div className="product-card-info pt-2 px-0 flex flex-col gap-0.5">
           <h3 className="product-card-title text-sm font-semibold text-neutral-800 line-clamp-2 leading-snug group-hover:text-black transition-colors">
             {product.title}
           </h3>
 
           {/* Price Row */}
-          <div className="product-card-price-row flex items-center gap-2 pt-0.5">
+          <div className="product-card-price-row flex items-center gap-2">
             {comparePriceNum > priceNum ? (
               <>
                 <span className="price-sale font-bold text-[#e84e4e] text-sm">
@@ -234,7 +234,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
           </div>
 
           {/* Ratings & Reviews */}
-          <div className="flex items-center gap-1.5 text-xs text-neutral-600 pt-0.5">
+          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
             <span className="text-[#111] text-[13px] tracking-tight">★★★★★</span>
             <span className="text-[11px] text-neutral-500 font-medium">
               {product.reviewsCount || Math.floor((product.id ? String(product.id).charCodeAt(0) : 7) % 15 + 5)} reviews
