@@ -33,7 +33,7 @@
    ============================================================ */
 
 /* ── 00. Fonts + Tailwind ───────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300;400;500;600;700&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300;400;500;600;700&family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import "tailwindcss";
 @source "../../";
@@ -41,8 +41,9 @@
 /* ── 01. Design Tokens ──────────────────────────────────── */
 :root {
   /* --- Typography --- */
-  --font-display: 'Sour Gummy', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Cause', 'Sour Gummy', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-cause: 'Cause', cursive;
   --font-sour-gummy: 'Sour Gummy', sans-serif;
 
   /* --- Core Palette --- */
@@ -126,15 +127,25 @@
   --z-toast: 400;
 }
 
+.cause,
+.font-cause {
+  font-family: 'Cause', cursive;
+  font-optical-sizing: auto;
+}
+
 .sour-gummy,
-.font-sour-gummy,
+.font-sour-gummy {
+  font-family: 'Sour Gummy', sans-serif;
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 100;
+}
+
 h1, h2, h3,
 .section-title,
 .product-card-title,
 .pdp-summary h1 {
-  font-family: 'Sour Gummy', var(--font-sour-gummy), sans-serif;
+  font-family: 'Cause', 'Sour Gummy', cursive, sans-serif;
   font-optical-sizing: auto;
-  font-variation-settings: "wdth" 100;
 }
 
 /* ── Checkout ───────────────────────────────────────────── */
