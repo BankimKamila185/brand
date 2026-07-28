@@ -2,29 +2,30 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CircleHelp, LogOut, Menu, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { authApi } from "@/lib/api";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 
-export function AdminShell({ user: propUser, children }) {
+export function AdminShell({ user, children }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const { user: authUser, logout } = useAuth();
-  const user = propUser || authUser;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
 
   const handleSignOut = async () => {
     try {
-      await logout();
+      await authApi.logout();
     } catch (_err) {
       // Ignore network errors on logout
     }
-    router.push("/admin/login");
+    try {
+      localStorage.removeItem("token");
+      sessionStorage.clear();
+    } catch (_) {}
+    window.location.href = "/admin/login";
   };
 
   return (
