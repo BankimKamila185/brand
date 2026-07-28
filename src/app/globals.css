@@ -41,10 +41,10 @@
 /* ── 01. Design Tokens ──────────────────────────────────── */
 :root {
   /* --- Typography --- */
-  --font-display: 'Cause', 'Sour Gummy', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-cause: 'Cause', cursive;
-  --font-sour-gummy: 'Sour Gummy', sans-serif;
+  --font-cause: 'Space Grotesk', sans-serif;
+  --font-sour-gummy: 'Space Grotesk', sans-serif;
 
   /* --- Core Palette --- */
   --c-bg: #F8F7F5;

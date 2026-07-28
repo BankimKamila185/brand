@@ -1,19 +1,28 @@
-/* Clean Simple Admin Typography System */
+/* Main Website Matched Typography System */
 .admin-shell,
-.admin-shell *,
+.outliers-login,
+.admin-shell button,
+.admin-shell input,
+.admin-shell select,
+.admin-shell textarea,
+.outliers-login input,
+.outliers-login button {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
 .admin-shell h1,
 .admin-shell h2,
 .admin-shell h3,
 .admin-shell h4,
 .admin-shell h5,
 .admin-shell h6,
-.admin-shell button,
-.admin-shell input,
-.admin-shell select,
-.admin-shell textarea,
+.outliers-login h1,
+.outliers-login h2,
+.outliers-login h3,
+.outliers-login-message p,
 .admin-shell .font-display,
 .admin-shell [class*="font-display"] {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: 'Space Grotesk', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .admin-mono,
