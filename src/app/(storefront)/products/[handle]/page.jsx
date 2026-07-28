@@ -108,9 +108,66 @@ function AccordionItem({ label, children }) {
 /* ─── Skeleton ───────────────────────────────────────────── */
 function Skeleton() {
   return (
-    <div style={{ background: "#f9f9f9", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: 36, height: 36, border: "3px solid #e0e0e0", borderTopColor: "#222", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div style={{ flex: 1, background: "#fff" }}>
+      {/* Breadcrumb Skeleton */}
+      <div style={{ borderBottom: "1px solid #f0f0f0", padding: "12px 0" }}>
+        <div className="container" style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div className="skeleton-box" style={{ width: 48, height: 14 }} />
+          <div style={{ fontSize: 12, color: "#ccc" }}>/</div>
+          <div className="skeleton-box" style={{ width: 64, height: 14 }} />
+          <div style={{ fontSize: 12, color: "#ccc" }}>/</div>
+          <div className="skeleton-box" style={{ width: 120, height: 14 }} />
+        </div>
+      </div>
+
+      {/* PDP Main Layout Grid Skeleton */}
+      <section className="container" style={{ paddingTop: 24, paddingBottom: 60 }}>
+        <div className="pdp-two-col" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }}>
+
+          {/* Left Gallery Skeleton */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="pdp-hero-image skeleton-box" style={{ width: "min(100%, 510px)", aspectRatio: "3 / 4", maxHeight: 580, borderRadius: 18 }} />
+            <div className="pdp-thumbnail-strip" style={{ display: "flex", gap: 10 }}>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="skeleton-box" style={{ width: 64, aspectRatio: "3 / 4", borderRadius: 10 }} />
+              ))}
+            </div>
+          </div>
+
+          {/* Right Info Panel Skeleton */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="skeleton-box" style={{ width: "75%", height: 30, borderRadius: 6 }} />
+            <div className="skeleton-box" style={{ width: "45%", height: 26, borderRadius: 6, marginTop: 4 }} />
+            <div className="skeleton-box" style={{ width: 140, height: 18, borderRadius: 12, marginTop: 2 }} />
+
+            {/* Size Selector */}
+            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="skeleton-box" style={{ width: 90, height: 14 }} />
+              <div style={{ display: "flex", gap: 8 }}>
+                {["S", "M", "L", "XL", "XXL"].map((s) => (
+                  <div key={s} className="skeleton-box" style={{ width: 44, height: 44, borderRadius: 8 }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ marginTop: 14, display: "flex", gap: 12 }}>
+              <div className="skeleton-box" style={{ width: 110, height: 48, borderRadius: 8 }} />
+              <div className="skeleton-box" style={{ flex: 1, height: 48, borderRadius: 8 }} />
+            </div>
+
+            <div className="skeleton-box" style={{ width: "100%", height: 48, borderRadius: 8 }} />
+
+            {/* Accordions */}
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="skeleton-box" style={{ width: "100%", height: 44, borderRadius: 6 }} />
+              <div className="skeleton-box" style={{ width: "100%", height: 44, borderRadius: 6 }} />
+              <div className="skeleton-box" style={{ width: "100%", height: 44, borderRadius: 6 }} />
+            </div>
+          </div>
+
+        </div>
+      </section>
     </div>
   );
 }

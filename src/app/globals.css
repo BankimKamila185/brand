@@ -127,6 +127,28 @@
   --z-toast: 400;
 }
 
+/* ── Skeleton Shimmer Animation ─────────────────────────── */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-box {
+  background: linear-gradient(
+    90deg,
+    #f0efec 25%,
+    #e4e2dd 37%,
+    #f0efec 63%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite !important;
+  border-radius: 8px;
+}
+
 .cause,
 .font-cause {
   font-family: 'Cause', cursive;

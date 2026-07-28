@@ -113,51 +113,69 @@ export function ProductCatalog() {
       </div>
 
       <section className="product-catalog-grid">
-        {visible.map((product) => (
-          <article
-            key={product.id}
-            className="product-catalog-card relative group hover:border-black transition-all flex flex-col justify-between"
-          >
-            <div onClick={() => setEditingProduct(product)} className="cursor-pointer">
-              <div className="product-catalog-image">
-                {product.images?.[0]?.src ? (
-                  <img src={product.images[0].src} alt={product.title} />
-                ) : (
-                  <PackagePlus />
-                )}
-                <span>{product.category?.name || "Uncategorized"}</span>
+        {loading ? (
+          [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+            <article key={n} className="product-catalog-card flex flex-col justify-between" style={{ minHeight: 280 }}>
+              <div>
+                <div className="product-catalog-image skeleton-box" style={{ height: 220, borderRadius: "18px 18px 0 0" }} />
+                <div className="p-3.5 flex flex-col gap-2">
+                  <div className="skeleton-box" style={{ width: "70%", height: 16 }} />
+                  <div className="skeleton-box" style={{ width: "40%", height: 12 }} />
+                </div>
               </div>
-              <div className="p-3.5">
-                <h2>{product.title}</h2>
-                <p>
-                  {product.variants?.length || 0} sizes ·{" "}
-                  {product.variants?.reduce(
-                    (total, variant) => total + Number(variant.inventory?.quantity || 0),
-                    0
-                  ) || 0}{" "}
-                  units
-                </p>
+              <div className="px-3.5 pb-3.5 pt-2 flex items-center justify-between border-t border-neutral-100">
+                <div className="skeleton-box" style={{ width: 60, height: 18 }} />
+                <div className="skeleton-box" style={{ width: 70, height: 28, borderRadius: 8 }} />
               </div>
-            </div>
+            </article>
+          ))
+        ) : (
+          visible.map((product) => (
+            <article
+              key={product.id}
+              className="product-catalog-card relative group hover:border-black transition-all flex flex-col justify-between"
+            >
+              <div onClick={() => setEditingProduct(product)} className="cursor-pointer">
+                <div className="product-catalog-image">
+                  {product.images?.[0]?.src ? (
+                    <img src={product.images[0].src} alt={product.title} />
+                  ) : (
+                    <PackagePlus />
+                  )}
+                  <span>{product.category?.name || "Uncategorized"}</span>
+                </div>
+                <div className="p-3.5">
+                  <h2>{product.title}</h2>
+                  <p>
+                    {product.variants?.length || 0} sizes ·{" "}
+                    {product.variants?.reduce(
+                      (total, variant) => total + Number(variant.inventory?.quantity || 0),
+                      0
+                    ) || 0}{" "}
+                    units
+                  </p>
+                </div>
+              </div>
 
-            <div className="px-3.5 pb-3.5 pt-1 flex items-center justify-between border-t border-neutral-100">
-              <strong className="text-[#df5c35] font-extrabold text-base">
-                ₹{Number(product.variants?.[0]?.price || 0).toLocaleString("en-IN")}
-              </strong>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPrintProduct(product);
-                }}
-                className="px-2.5 py-1.5 bg-neutral-100 hover:bg-[#fff0ea] hover:text-[#df5c35] text-neutral-700 text-xs font-bold rounded-lg border border-neutral-200 flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="Generate & Print Barcode Labels"
-              >
-                <Printer className="w-3.5 h-3.5" /> Barcode
-              </button>
-            </div>
-          </article>
-        ))}
+              <div className="px-3.5 pb-3.5 pt-1 flex items-center justify-between border-t border-neutral-100">
+                <strong className="text-[#df5c35] font-extrabold text-base">
+                  ₹{Number(product.variants?.[0]?.price || 0).toLocaleString("en-IN")}
+                </strong>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPrintProduct(product);
+                  }}
+                  className="px-2.5 py-1.5 bg-neutral-100 hover:bg-[#fff0ea] hover:text-[#df5c35] text-neutral-700 text-xs font-bold rounded-lg border border-neutral-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Generate & Print Barcode Labels"
+                >
+                  <Printer className="w-3.5 h-3.5" /> Barcode
+                </button>
+              </div>
+            </article>
+          ))
+        )}
 
         {!loading && !visible.length && (
           <div className="product-catalog-empty">
