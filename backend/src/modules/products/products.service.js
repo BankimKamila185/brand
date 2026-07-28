@@ -114,18 +114,18 @@ const productDetailSelect = {
 };
 
 export const productsService = {
-  async list(query) {
+  async list(query = {}) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const limit = Math.max(1, Number(query.limit) || 20);
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = query.sortOrder || "desc";
     const {
-      page,
-      limit,
       category,
       collection,
       productType,
       tags,
       minPrice,
       maxPrice,
-      sortBy,
-      sortOrder,
       search,
       available,
     } = query;
