@@ -227,14 +227,16 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
           <div className="barcode-modal-header-actions">
             <button
-              onClick={handlePrint}
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handlePrint(); }}
               disabled={totalLabels === 0}
               className="barcode-print-btn"
             >
               <Printer size={18} /> Print {totalLabels} {totalLabels === 1 ? "Label" : "Labels"}
             </button>
             <button
-              onClick={onClose}
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
               className="barcode-close-btn"
               title="Close modal"
             >
@@ -260,10 +262,20 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <button onClick={handleExportSVG} className="barcode-export-btn" title="Export Vector SVG">
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExportSVG(); }}
+              className="barcode-export-btn"
+              title="Export Vector SVG"
+            >
               <Download size={13} /> SVG
             </button>
-            <button onClick={handleExportPNG} className="barcode-export-btn" title="Export 300 DPI PNG">
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExportPNG(); }}
+              className="barcode-export-btn"
+              title="Export 300 DPI PNG"
+            >
               <Download size={13} /> PNG (300 DPI)
             </button>
           </div>
@@ -275,19 +287,22 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
             <div className="barcode-preset-group">
               <span className="barcode-preset-label">Presets:</span>
               <button
-                onClick={() => setAllQuantities("one")}
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAllQuantities("one"); }}
                 className="barcode-preset-btn"
               >
                 <Tag size={14} /> 1 Per Size
               </button>
               <button
-                onClick={() => setAllQuantities("stock")}
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAllQuantities("stock"); }}
                 className="barcode-preset-btn"
               >
                 <Layers size={14} /> Match Stock
               </button>
               <button
-                onClick={regenerateSKUs}
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); regenerateSKUs(); }}
                 className="barcode-preset-btn highlight"
               >
                 <RefreshCw size={14} /> Re-generate TOS Barcodes
@@ -311,7 +326,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                 <div className="barcode-counter-control">
                   <button
                     type="button"
-                    onClick={() => updateQuantity(idx, -1)}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(idx, -1); }}
                     className="barcode-counter-btn"
                   >
                     <Minus size={14} />
@@ -319,7 +334,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                   <span className="barcode-counter-num">{quantities[idx] || 0}</span>
                   <button
                     type="button"
-                    onClick={() => updateQuantity(idx, 1)}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(idx, 1); }}
                     className="barcode-counter-btn"
                   >
                     <Plus size={14} />
