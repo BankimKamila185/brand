@@ -134,7 +134,7 @@ export default function WishlistPage() {
                   className="btn"
                   onClick={() =>
                     wishlistProducts.forEach((p) =>
-                      addToCart(p, p.options[0]?.values[0] || "M")
+                      addToCart(p, p.options?.[0]?.values?.[0] || p.variants?.[0]?.option1 || "M")
                     )
                   }
                 >

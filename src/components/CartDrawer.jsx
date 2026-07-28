@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
+import { couponsApi } from "../lib/api";
 import { FileText, Truck, Tag } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
@@ -27,26 +28,38 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
   const [cartNote, setCartNote] = useState("");
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault();
     const normalized = couponCode.trim().toUpperCase();
+    if (!normalized) return;
 
-    if (normalized === "OUTLIERS10") {
-      if (cartTotal >= 2499) {
-        setActiveDiscount(10);
-        setCouponMessage("Coupon OUTLIERS10 applied: 10% discount!");
+    try {
+      const res = await couponsApi.validate(normalized, cartTotal);
+      if (res.success && res.data) {
+        const discountPct = res.data.discountPercent || res.data.value || 10;
+        setActiveDiscount(discountPct);
+        setCouponMessage(`Coupon ${normalized} applied: ${discountPct}% discount!`);
       } else {
-        setCouponMessage("OUTLIERS10 requires order above ₹2499!");
+        setCouponMessage("Invalid coupon code!");
       }
-    } else if (normalized === "OUTLIERS21") {
-      if (cartTotal >= 5999) {
-        setActiveDiscount(21);
-        setCouponMessage("Coupon OUTLIERS21 applied: 21% discount!");
+    } catch (err) {
+      if (normalized === "OUTLIERS10") {
+        if (cartTotal >= 2499) {
+          setActiveDiscount(10);
+          setCouponMessage("Coupon OUTLIERS10 applied: 10% discount!");
+        } else {
+          setCouponMessage("OUTLIERS10 requires order above ₹2499!");
+        }
+      } else if (normalized === "OUTLIERS21") {
+        if (cartTotal >= 5999) {
+          setActiveDiscount(21);
+          setCouponMessage("Coupon OUTLIERS21 applied: 21% discount!");
+        } else {
+          setCouponMessage("OUTLIERS21 requires order above ₹5999!");
+        }
       } else {
-        setCouponMessage("OUTLIERS21 requires order above ₹5999!");
+        setCouponMessage(err?.message || "Invalid coupon code!");
       }
-    } else if (normalized) {
-      setCouponMessage("Invalid coupon code!");
     }
   };
 
@@ -269,9 +282,9 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             </button>
 
             <button
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={() => {
                 setCartOpen(false);
+                router.push("/checkout");
               }}
               className="drawer-view-cart-link"
             >
