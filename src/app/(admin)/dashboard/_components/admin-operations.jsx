@@ -190,7 +190,19 @@ export function AdminOperations({ type }) {
                     <tr key={item.id}>
                       <td>{item.product?.title || "Product unavailable"}</td>
                       <td className="admin-review-copy">
-                        {item.title || item.body || "Untitled review"}
+                        <div>{item.title || item.body || "Untitled review"}</div>
+                        {item.images && item.images.length > 0 && (
+                          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                            {item.images.map((imgSrc, imgIdx) => (
+                              <img
+                                key={imgIdx}
+                                src={imgSrc}
+                                alt="Review attachment"
+                                style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 4, border: "1px solid #e2e8f0" }}
+                              />
+                            ))}
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span className="admin-rating">★ {item.rating}/5</span>

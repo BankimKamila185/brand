@@ -17,6 +17,7 @@ const createReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   title: z.string().max(150).optional(),
   body: z.string().max(2000).optional(),
+  images: z.array(z.string()).max(5).optional(),
 });
 
 const moderateReviewSchema = z.object({ approved: z.boolean() });
@@ -41,6 +42,7 @@ router.get(
           rating: true,
           title: true,
           body: true,
+          images: true,
           createdAt: true,
           user: { select: { name: true, avatar: true } },
         },
@@ -73,7 +75,7 @@ router.post(
   authenticate,
   validate(createReviewSchema),
   asyncHandler(async (req, res) => {
-    const { productId, rating, title, body } = req.body;
+    const { productId, rating, title, body, images } = req.body;
     const userId = req.user.sub;
 
     const product = await db.product.findUnique({
@@ -102,6 +104,7 @@ router.post(
         rating,
         title: title || null,
         body: body || null,
+        images: Array.isArray(images) ? images : [],
         approved: !hasPurchased ? false : true, // Auto-approve verified buyers
       },
       select: {
@@ -109,6 +112,7 @@ router.post(
         rating: true,
         title: true,
         body: true,
+        images: true,
         createdAt: true,
         approved: true,
       },
@@ -135,6 +139,7 @@ router.get(
         rating: true,
         title: true,
         body: true,
+        images: true,
         approved: true,
         createdAt: true,
         user: { select: { name: true, email: true } },

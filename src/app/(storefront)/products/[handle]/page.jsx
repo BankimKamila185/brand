@@ -287,8 +287,34 @@ export default function ProductDetailPage({ params }) {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewBody, setReviewBody] = useState("");
+  const [reviewImages, setReviewImages] = useState([]);
+  const [reviewModalImg, setReviewModalImg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [reviewMsg, setReviewMsg] = useState({ type: "", text: "" });
+
+  const handleReviewImageUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const remainingSlots = 4 - reviewImages.length;
+    if (remainingSlots <= 0) return;
+
+    const selectedFiles = files.slice(0, remainingSlots);
+    selectedFiles.forEach((file) => {
+      if (!file.type.startsWith("image/")) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const src = event.target?.result;
+        if (src) {
+          setReviewImages((prev) => [...prev, src].slice(0, 4));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeReviewImage = (indexToRemove) => {
+    setReviewImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
 
   /* fetch product */
   useEffect(() => {
@@ -482,11 +508,18 @@ export default function ProductDetailPage({ params }) {
     setSubmitting(true);
     setReviewMsg({ type: "", text: "" });
     try {
-      await reviewsApi.create({ productId: product.id, rating: reviewRating, title: reviewTitle, body: reviewBody });
+      await reviewsApi.create({
+        productId: product.id,
+        rating: reviewRating,
+        title: reviewTitle,
+        body: reviewBody,
+        images: reviewImages,
+      });
       setReviewMsg({ type: "success", text: "Review submitted! Thank you." });
       setReviewTitle("");
       setReviewBody("");
       setReviewRating(5);
+      setReviewImages([]);
     } catch (err) {
       setReviewMsg({ type: "error", text: err.message || "Failed to submit." });
     } finally {
@@ -959,6 +992,19 @@ export default function ProductDetailPage({ params }) {
                       </div>
                       {r.title && <h4 style={{ margin: "0 0 6px 0", fontSize: 14, fontWeight: 700, color: "#222" }}>{r.title}</h4>}
                       <p style={{ margin: 0, fontSize: 13, color: "#666", lineHeight: 1.65 }}>{r.body}</p>
+                      {r.images && r.images.length > 0 && (
+                        <div style={{ display: "flex", gap: 10, marginTop: 12, overflowX: "auto" }}>
+                          {r.images.map((imgSrc, imgIdx) => (
+                            <img
+                              key={imgIdx}
+                              src={imgSrc}
+                              alt="Customer review photo"
+                              onClick={() => setReviewModalImg(imgSrc)}
+                              style={{ width: 68, height: 68, objectFit: "cover", borderRadius: 6, border: "1px solid #e0e0e0", cursor: "pointer", transition: "transform 0.15s ease" }}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1014,6 +1060,32 @@ export default function ProductDetailPage({ params }) {
                       onBlur={(e) => e.currentTarget.style.borderColor = "#e8e8e8"}
                     />
                   </div>
+                  <div>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>
+                      Upload Photos (Optional - Max 4)
+                    </label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+                      {reviewImages.map((imgSrc, idx) => (
+                        <div key={idx} style={{ position: "relative", width: 64, height: 64, borderRadius: 6, overflow: "hidden", border: "1px solid #e8e8e8" }}>
+                          <img src={imgSrc} alt={`Review upload ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <button
+                            type="button"
+                            onClick={() => removeReviewImage(idx)}
+                            style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.65)", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {reviewImages.length < 4 && (
+                        <label style={{ width: 64, height: 64, borderRadius: 6, border: "1.5px dashed #ccc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#fafafa", color: "#666", fontSize: 11, transition: "all 0.15s" }}>
+                          <span style={{ fontSize: 18, lineHeight: 1 }}>📷</span>
+                          <span style={{ fontSize: 10, marginTop: 4, fontWeight: 600 }}>Add Photo</span>
+                          <input type="file" accept="image/*" multiple onChange={handleReviewImageUpload} style={{ display: "none" }} />
+                        </label>
+                      )}
+                    </div>
+                  </div>
                   <button
                     type="submit"
                     disabled={submitting}
@@ -1025,6 +1097,23 @@ export default function ProductDetailPage({ params }) {
               )}
             </div>
           </div>
+
+          {reviewModalImg && (
+            <div
+              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+              onClick={() => setReviewModalImg(null)}
+            >
+              <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "90vh" }}>
+                <img src={reviewModalImg} alt="Review full resolution" style={{ maxWidth: "100%", maxHeight: "85vh", borderRadius: 8, objectFit: "contain" }} />
+                <button
+                  onClick={() => setReviewModalImg(null)}
+                  style={{ position: "absolute", top: -14, right: -14, background: "#111", color: "#fff", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </main>
 
