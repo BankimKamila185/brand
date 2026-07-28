@@ -2,18 +2,30 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CircleHelp, LogOut, Menu, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { useAuth } from "@/context/AuthContext";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 
-export function AdminShell({ user, children }) {
+export function AdminShell({ user: propUser, children }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user: authUser, logout } = useAuth();
+  const user = propUser || authUser;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (_err) {
+      // Ignore network errors on logout
+    }
+    router.push("/admin/login");
+  };
 
   return (
     <div className="admin-shell min-h-screen bg-[#f5f5f3] text-zinc-950 md:grid md:grid-cols-[18rem_1fr]">
@@ -98,13 +110,14 @@ export function AdminShell({ user, children }) {
             <p className="truncate text-sm font-semibold">{user?.name || "User"}</p>
             <p className="truncate text-xs text-white/40">{user?.email || "No email"}</p>
           </div>
-          <Link
-            href="/admin/login"
+          <button
+            onClick={handleSignOut}
             aria-label="Sign out"
-            className="rounded-lg p-2 text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+            type="button"
+            className="rounded-lg p-2 text-white/45 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
           >
             <LogOut className="size-4" />
-          </Link>
+          </button>
         </div>
       </aside>
 

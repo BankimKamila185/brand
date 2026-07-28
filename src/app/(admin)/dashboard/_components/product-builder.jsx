@@ -280,10 +280,10 @@ function formatError(err) {
       isActive,
       tags: [],
       images: [mainImage, ...gallery],
-      variants: variants.map((variant) => ({
+      variants: variants.map((variant, idx) => ({
         title: variant.size,
         option1: variant.size,
-        sku: (variant.sku && variant.sku.trim()) || undefined,
+        sku: (variant.sku && variant.sku.trim()) || generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + idx),
         price: Number(variant.price),
         stock: Number(variant.stock),
         warehouseStocks: [
