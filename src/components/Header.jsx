@@ -414,32 +414,71 @@ const Header = ({ onSearch }) => {
                 .drawer-sub-link:hover { color: #000; }
               `}} />
 
-              {/* Backdrop — starts below header */}
+              {/* Backdrop covering full screen */}
               <div
-                style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 99998,
+                  background: "rgba(0,0,0,0.5)",
+                  backdropFilter: "blur(4px)",
+                  WebkitBackdropFilter: "blur(4px)",
+                  animation: "backdropFadeIn 0.25s ease forwards"
+                }}
                 className="md:hidden"
                 onClick={() => setMobileMenuOpen(false)}
               />
 
-              {/* Drawer panel — attached top: 100% directly below main header */}
+              {/* Full-Height Drawer panel */}
               <div
                 className="md:hidden"
                 style={{
-                  position: "absolute",
-                  top: "100%",
+                  position: "fixed",
+                  top: 0,
+                  bottom: 0,
                   left: 0,
-                  width: "82vw",
+                  width: "84vw",
                   maxWidth: "340px",
-                  height: "calc(100vh - 100%)",
                   background: "#fff",
-                  zIndex: 9999,
+                  zIndex: 99999,
                   display: "flex",
                   flexDirection: "column",
                   animation: "drawerSlideIn 0.32s cubic-bezier(0.16,1,0.3,1) forwards",
-                  boxShadow: "4px 0 40px rgba(0,0,0,0.15)"
+                  boxShadow: "8px 0 40px rgba(0,0,0,0.2)"
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* ── DRAWER HEADER ── */}
+                <div
+                  style={{
+                    height: "64px",
+                    padding: "0 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    borderBottom: "1px solid #f0f0f0",
+                    flexShrink: 0
+                  }}
+                >
+                  <Logo height={24} />
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      background: "#f5f5f5",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "none",
+                      cursor: "pointer"
+                    }}
+                    aria-label="Close menu"
+                  >
+                    <X size={18} color="#111" />
+                  </button>
+                </div>
 
             {/* ── SCROLLABLE BODY ── */}
             <div className="flex-1 overflow-y-auto flex flex-col">
