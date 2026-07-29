@@ -144,8 +144,8 @@ const Header = ({ onSearch }) => {
         <div className="container-fluid">
           <div className="header-inner">
 
-            {/* ── LEFT: Hamburger (mobile) + Desktop Nav ── */}
-            <div className="header-left-zone">
+            {/* ── LEFT: Hamburger (mobile) + Mobile Search + Desktop Nav ── */}
+            <div className="header-left-zone flex items-center gap-1">
               {/* Mobile hamburger */}
               <button
                 className="hdr-hamburger md:hidden"
@@ -160,12 +160,24 @@ const Header = ({ onSearch }) => {
                 {mobileMenuOpen ? (
                   <X className="w-6 h-6" />
                 ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="3" y1="6" x2="21" y2="6" />
                     <line x1="3" y1="12" x2="21" y2="12" />
                     <line x1="3" y1="18" x2="21" y2="18" />
                   </svg>
                 )}
+              </button>
+
+              {/* Mobile Search trigger */}
+              <button
+                className="action-btn text-black hover:opacity-70 flex items-center justify-center md:hidden"
+                onClick={openSearch}
+                aria-label="Search"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
               </button>
 
               {/* Desktop Navigation */}
@@ -223,15 +235,15 @@ const Header = ({ onSearch }) => {
             {/* ── CENTER: Logo (always centered) ── */}
             <div className="logo-container">
               <Link href="/" className="inline-block">
-                <Logo className="h-11 sm:h-12 md:h-[78px]" />
+                <Logo className="h-8 sm:h-10 md:h-[78px]" />
               </Link>
             </div>
 
             {/* ── RIGHT: Action Icons ── */}
             <div className="header-actions">
-              {/* Search trigger */}
+              {/* Search trigger (desktop only) */}
               <button
-                className="action-btn text-black hover:opacity-70 flex items-center justify-center"
+                className="action-btn text-black hover:opacity-70 hidden md:flex items-center justify-center"
                 onClick={openSearch}
                 aria-label="Search"
               >
@@ -245,16 +257,16 @@ const Header = ({ onSearch }) => {
               {user ? (
                 <Link href="/profile" className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center relative" aria-label="My Profile" title={`Signed in as ${user.name || user.email}`}>
                   <div className="relative">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                       <circle cx="12" cy="7" r="4" />
                     </svg>
-                    <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-white" />
                   </div>
                 </Link>
               ) : (
                 <Link href="/login" className="action-btn account-action text-black hover:opacity-70 flex items-center justify-center" aria-label="Account">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
@@ -263,7 +275,7 @@ const Header = ({ onSearch }) => {
 
               {/* Wishlist */}
               <Link href="/wishlist" className="action-btn wishlist-action text-black hover:opacity-70 flex items-center justify-center relative" aria-label="Wishlist">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
                 {wishlist.length > 0 && <span className="badge-count">{wishlist.length}</span>}
@@ -271,7 +283,7 @@ const Header = ({ onSearch }) => {
 
               {/* Cart */}
               <button className="action-btn text-black hover:opacity-70 flex items-center justify-center relative" onClick={() => setCartOpen(true)} aria-label="Cart">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 0 1-8 0" />

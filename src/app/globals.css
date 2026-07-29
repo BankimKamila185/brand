@@ -2225,10 +2225,60 @@ html, body {
 .desktop-nav { display: block; }
 
 @media (max-width: 768px) {
-  .header-inner { height: 78px; }
-  .logo-container img { height: 54px; }
+  .header-inner { height: 60px; }
+  .logo-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    max-width: calc(100vw - 160px);
+    pointer-events: auto;
+  }
+  .logo-container img, .logo-container svg {
+    height: 32px;
+    max-height: 32px;
+    max-width: 120px;
+    object-fit: contain;
+  }
   .mobile-menu-btn { display: flex; }
   .desktop-nav { display: none; }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .mobile-search {
+    display: flex;
+  }
+
+  .account-action,
+  .wishlist-action {
+    display: flex !important;
+  }
+
+  .header-actions .action-btn,
+  .header-left-zone .action-btn,
+  .hdr-hamburger {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-actions .action-btn svg,
+  .header-left-zone .action-btn svg,
+  .hdr-hamburger svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .badge-count {
+    top: 0px;
+    right: -2px;
+  }
 }
 
 @media (min-width: 769px) {
