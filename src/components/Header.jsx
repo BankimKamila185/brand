@@ -646,8 +646,8 @@ const Header = ({ onSearch }) => {
                       </>
                     ) : (
                       <>
-                        <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>Guest User</p>
-                        <p style={{ fontSize: "11px", color: "#666" }}>Sign in to view orders →</p>
+                        <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>Your Account</p>
+                        <p style={{ fontSize: "11px", color: "#666" }}>Sign in to access your account →</p>
                       </>
                     )}
                   </div>
