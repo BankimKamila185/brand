@@ -824,12 +824,25 @@ export default function ProfilePage() {
                             <StatusBadge status={order.status} />
 
                             {String(order.status).toLowerCase() === "pending" && (
-                              <div className="hidden sm:flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <button
                                   type="button"
                                   disabled={actionOrderLoading === order.id}
                                   onClick={(e) => { e.stopPropagation(); handleContinueOrder(order); }}
-                                  className="px-3 py-1.5 bg-black text-white text-[11px] font-bold rounded hover:bg-neutral-800 transition-all flex items-center gap-1 cursor-pointer"
+                                  style={{
+                                    backgroundColor: "#0e0d0b",
+                                    color: "#ffffff",
+                                    padding: "6px 14px",
+                                    borderRadius: "6px",
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "5px",
+                                    cursor: "pointer",
+                                    border: "none"
+                                  }}
+                                  className="hover:opacity-90 active:scale-95 transition-all shadow-sm"
                                 >
                                   Continue
                                 </button>
@@ -837,7 +850,20 @@ export default function ProfilePage() {
                                   type="button"
                                   disabled={actionOrderLoading === order.id}
                                   onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                  className="px-2.5 py-1.5 bg-white text-red-600 border border-red-200 text-[11px] font-bold rounded hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-1 cursor-pointer"
+                                  style={{
+                                    backgroundColor: "#ffffff",
+                                    color: "#dc2626",
+                                    border: "1px solid #fca5a5",
+                                    padding: "6px 10px",
+                                    borderRadius: "6px",
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    cursor: "pointer"
+                                  }}
+                                  className="hover:bg-red-50 transition-all"
                                   title="Delete Pending Order"
                                 >
                                   <Trash2 className="w-3 h-3 text-red-500" />
@@ -846,7 +872,7 @@ export default function ProfilePage() {
                               </div>
                             )}
 
-                            <strong className="profile-order-total">
+                            <strong className="profile-order-total ml-1">
                               {formatCurrency(order.total)}
                             </strong>
                             <ChevronRight
@@ -943,15 +969,15 @@ export default function ProfilePage() {
                             )}
 
                             {/* Shipment Tracker Timeline */}
-                            <div className="profile-order-tracking mt-6 pt-6 border-t border-neutral-100">
-                              <p className="profile-order-shipping-label flex items-center gap-1.5 text-xs font-bold text-neutral-800 uppercase tracking-wider mb-4">
+                            <div className="profile-order-tracking" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid #f0f0f0" }}>
+                              <p className="profile-order-shipping-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 800, color: "#111", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "20px" }}>
                                 <Truck size={14} /> Shipment Tracker
                               </p>
                               
                               {order.trackingNumber && (() => {
                                 const tr = parseTracking(order.trackingNumber);
                                 return (
-                                  <div className="mb-5 flex flex-wrap items-center gap-3">
+                                  <div style={{ marginBottom: "24px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
                                     <div className="text-sm bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-200 flex flex-wrap items-center gap-x-4 gap-y-2">
                                       {tr.courier && (
                                         <span className="flex items-center gap-1.5 text-neutral-600 font-medium">
@@ -979,30 +1005,77 @@ export default function ProfilePage() {
 
                               {/* Status Helper Banner & Pending Action Buttons */}
                               {String(order.status).toLowerCase() === "pending" && (
-                                <div className="mb-5 p-4 bg-amber-50/90 border border-amber-200 text-amber-950 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-                                  <div className="flex items-center gap-3">
-                                    <Clock className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                                <div
+                                  style={{
+                                    backgroundColor: "#fffbeb",
+                                    border: "1px solid #fde68a",
+                                    color: "#451a03",
+                                    padding: "16px 20px",
+                                    borderRadius: "12px",
+                                    marginBottom: "28px",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: "16px"
+                                  }}
+                                  className="shadow-sm"
+                                >
+                                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                    <Clock style={{ width: "20px", height: "20px", color: "#d97706", flexShrink: 0 }} />
                                     <div>
-                                      <p className="text-xs font-extrabold text-amber-950 uppercase tracking-wide">Payment Verification Pending</p>
-                                      <p className="text-[11px] text-amber-800 font-medium">You can complete your payment now or delete this pending order.</p>
+                                      <p style={{ fontSize: "12px", fontWeight: 800, color: "#451a03", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "2px" }}>
+                                        Payment Verification Pending
+                                      </p>
+                                      <p style={{ fontSize: "12px", color: "#92400e", fontWeight: 500 }}>
+                                        You can complete your payment now or delete this pending order.
+                                      </p>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2.5 flex-wrap">
+                                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
                                     <button
                                       type="button"
                                       disabled={actionOrderLoading === order.id}
                                       onClick={(e) => { e.stopPropagation(); handleContinueOrder(order); }}
-                                      className="px-4 py-2.5 bg-black text-white text-xs font-bold rounded-lg hover:bg-neutral-800 active:scale-[0.98] transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                                      style={{
+                                        backgroundColor: "#0e0d0b",
+                                        color: "#ffffff",
+                                        padding: "9px 16px",
+                                        borderRadius: "8px",
+                                        fontSize: "12px",
+                                        fontWeight: 700,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                                        cursor: "pointer",
+                                        border: "none"
+                                      }}
+                                      className="hover:opacity-90 active:scale-[0.98] transition-all"
                                     >
-                                      <ShoppingBag className="w-3.5 h-3.5" /> Continue Order
+                                      <ShoppingBag style={{ width: "14px", height: "14px", color: "#ffffff" }} /> Continue Order
                                     </button>
                                     <button
                                       type="button"
                                       disabled={actionOrderLoading === order.id}
                                       onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}
-                                      className="px-3.5 py-2.5 bg-white text-red-600 border border-red-200 text-xs font-bold rounded-lg hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-1.5 cursor-pointer"
+                                      style={{
+                                        backgroundColor: "#ffffff",
+                                        color: "#dc2626",
+                                        border: "1px solid #fca5a5",
+                                        padding: "9px 14px",
+                                        borderRadius: "8px",
+                                        fontSize: "12px",
+                                        fontWeight: 700,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        cursor: "pointer"
+                                      }}
+                                      className="hover:bg-red-50 transition-all"
                                     >
-                                      <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                      <Trash2 style={{ width: "14px", height: "14px", color: "#ef4444" }} />
                                       {actionOrderLoading === order.id ? "Deleting..." : "Delete"}
                                     </button>
                                   </div>
