@@ -395,53 +395,51 @@ const Header = ({ onSearch }) => {
               </div>
             </div>
           </div>
-        </>
-      )}
 
-      {/* ════════════════════════════════════
-          MOBILE DRAWER — slides in from LEFT
-         ════════════════════════════════════ */}
-      {mobileMenuOpen && (
-        <>
-          <style dangerouslySetInnerHTML={{
-            __html: `
-            @keyframes drawerSlideIn {
-              from { transform: translateX(-100%); }
-              to   { transform: translateX(0); }
-            }
-            @keyframes backdropFadeIn {
-              from { opacity: 0; }
-              to   { opacity: 1; }
-            }
-            .drawer-sub-link:hover { color: #000; }
-          `}} />
+          {/* ════════════════════════════════════
+              MOBILE DRAWER — slides in from LEFT
+             ════════════════════════════════════ */}
+          {mobileMenuOpen && (
+            <>
+              <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes drawerSlideIn {
+                  from { transform: translateX(-100%); }
+                  to   { transform: translateX(0); }
+                }
+                @keyframes backdropFadeIn {
+                  from { opacity: 0; }
+                  to   { opacity: 1; }
+                }
+                .drawer-sub-link:hover { color: #000; }
+              `}} />
 
-          {/* Backdrop — starts exactly below header */}
-          <div
-            style={{ position: "fixed", top: `${drawerTop}px`, left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+              {/* Backdrop — starts below header */}
+              <div
+                style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              />
 
-          {/* Drawer panel — starts exactly below main header */}
-          <div
-            className="md:hidden"
-            style={{
-              position: "fixed",
-              top: `${drawerTop}px`,
-              left: 0,
-              width: "82vw",
-              maxWidth: "340px",
-              height: `calc(100% - ${drawerTop}px)`,
-              background: "#fff",
-              zIndex: 9999,
-              display: "flex",
-              flexDirection: "column",
-              animation: "drawerSlideIn 0.32s cubic-bezier(0.16,1,0.3,1) forwards",
-              boxShadow: "4px 0 40px rgba(0,0,0,0.15)"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+              {/* Drawer panel — attached top: 100% directly below main header */}
+              <div
+                className="md:hidden"
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  width: "82vw",
+                  maxWidth: "340px",
+                  height: "calc(100vh - 100%)",
+                  background: "#fff",
+                  zIndex: 9999,
+                  display: "flex",
+                  flexDirection: "column",
+                  animation: "drawerSlideIn 0.32s cubic-bezier(0.16,1,0.3,1) forwards",
+                  boxShadow: "4px 0 40px rgba(0,0,0,0.15)"
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
 
             {/* ── SCROLLABLE BODY ── */}
             <div className="flex-1 overflow-y-auto flex flex-col">
@@ -634,6 +632,7 @@ const Header = ({ onSearch }) => {
           </div>
         </>
       )}
+      </header>
     </>
   );
 };
