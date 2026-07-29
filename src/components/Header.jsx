@@ -144,8 +144,8 @@ const Header = ({ onSearch }) => {
         <div className="container-fluid">
           <div className="header-inner">
 
-            {/* ── LEFT: Hamburger (mobile) + Mobile Search + Desktop Nav ── */}
-            <div className="header-left-zone flex items-center gap-1">
+            {/* ── LEFT: Hamburger (mobile) + Desktop Nav ── */}
+            <div className="header-left-zone">
               {/* Mobile hamburger */}
               <button
                 className="hdr-hamburger md:hidden"
@@ -166,18 +166,6 @@ const Header = ({ onSearch }) => {
                     <line x1="3" y1="18" x2="21" y2="18" />
                   </svg>
                 )}
-              </button>
-
-              {/* Mobile Search trigger */}
-              <button
-                className="action-btn text-black hover:opacity-70 flex items-center justify-center md:hidden"
-                onClick={openSearch}
-                aria-label="Search"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
               </button>
 
               {/* Desktop Navigation */}
@@ -241,13 +229,13 @@ const Header = ({ onSearch }) => {
 
             {/* ── RIGHT: Action Icons ── */}
             <div className="header-actions">
-              {/* Search trigger (desktop only) */}
+              {/* Search trigger */}
               <button
-                className="action-btn text-black hover:opacity-70 hidden md:flex items-center justify-center"
+                className="action-btn text-black hover:opacity-70 flex items-center justify-center"
                 onClick={openSearch}
                 aria-label="Search"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
