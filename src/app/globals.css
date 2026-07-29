@@ -7285,6 +7285,27 @@ textarea.form-input {
     flex-direction: column;
     align-items: flex-start;
   }
+  .profile-recent-order-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .profile-recent-order-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .profile-recent-order-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 1px solid #f4f4f5;
+    padding-top: 8px;
+  }
 }
 
 @media (max-width: 480px) {

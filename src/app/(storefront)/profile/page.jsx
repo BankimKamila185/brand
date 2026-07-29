@@ -663,7 +663,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Mobile Horizontal Pill Navigation Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-neutral-200 scrollbar-none">
+            <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-3 scrollbar-none border-b border-neutral-100 mb-5 -mx-4 px-4">
               {TABS.map(({ id, label, icon: Icon }) => {
                 const isActive = activeTab === id;
                 return (
@@ -811,13 +811,17 @@ export default function ProfilePage() {
                     </div>
                     {orders.slice(0, 3).map((order) => (
                       <div key={order.id} className="profile-recent-order-row">
-                        <div className="profile-recent-order-id">
-                          <Package size={14} />
-                          <span>#{order.orderNumber || order.id?.slice(-8)?.toUpperCase()}</span>
+                        <div className="profile-recent-order-info">
+                          <div className="profile-recent-order-id">
+                            <Package size={14} />
+                            <span>#{order.orderNumber || order.id?.slice(-8)?.toUpperCase()}</span>
+                          </div>
+                          <span className="profile-recent-order-date">{formatDate(order.createdAt)}</span>
                         </div>
-                        <span className="profile-recent-order-date">{formatDate(order.createdAt)}</span>
-                        <StatusBadge status={order.status} />
-                        <strong className="profile-recent-order-total">{formatCurrency(order.total)}</strong>
+                        <div className="profile-recent-order-meta">
+                          <StatusBadge status={order.status} />
+                          <strong className="profile-recent-order-total">{formatCurrency(order.total)}</strong>
+                        </div>
                       </div>
                     ))}
                   </div>
