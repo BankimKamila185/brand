@@ -2285,6 +2285,24 @@ html, body {
 }
 
 @media (min-width: 769px) {
+  .header-inner {
+    height: 108px !important;
+  }
+  .logo-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: var(--z-above);
+    pointer-events: auto;
+  }
+  .logo-container img,
+  .logo-container svg {
+    height: 84px !important;
+    max-height: 84px !important;
+    max-width: 320px !important;
+    object-fit: contain;
+  }
   .mobile-menu-btn { display: none; }
   .desktop-nav { display: block; }
 }
@@ -2522,21 +2540,22 @@ html, body {
 
 .badge-count {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: var(--c-accent);
-  color: var(--c-dark);
+  top: -4px;
+  right: -6px;
+  background: #e53e3e;
+  color: #ffffff;
   font-family: var(--font-display);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  border-radius: var(--r-pill);
-  min-width: 17px;
-  height: 17px;
+  border-radius: 999px;
+  min-width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  border: 2px solid var(--c-bg);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 /* ── 10. Hero Carousel ───────────────────────────────────── */
