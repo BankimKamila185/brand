@@ -79,44 +79,44 @@ export default function WishlistPage() {
       <AnnouncementBar />
       <Header />
       <main className="flex-grow">
-        <div className="container-fluid pt-16 md:pt-20 pb-4">
-          <div className="text-center mb-8">
-            <h1 className="text-[32px] md:text-[38px] font-bold text-neutral-900 mb-3 tracking-tight">
+
+        {/* ── Page Title + Breadcrumb ── */}
+        <div className="container-fluid" style={{ paddingTop: "64px", paddingBottom: "32px" }}>
+          <div style={{ textAlign: "center" }}>
+            <h1 style={{ fontSize: "34px", fontWeight: 700, color: "#111", marginBottom: "12px", letterSpacing: "-0.02em" }}>
               Wishlist
             </h1>
-            <nav className="text-sm text-neutral-500 flex items-center justify-center gap-1.5" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-black transition-colors">
+            <nav style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontSize: "13px", color: "#999" }} aria-label="Breadcrumb">
+              <Link href="/" style={{ color: "#999", textDecoration: "none" }} className="hover:text-black transition-colors">
                 Home
               </Link>
-              <span className="text-neutral-400 select-none">›</span>
-              <span className="text-neutral-900 font-medium">Wishlist</span>
+              <span style={{ color: "#ccc" }}>›</span>
+              <span style={{ color: "#111", fontWeight: 500 }}>Wishlist</span>
             </nav>
           </div>
         </div>
 
-        <div className="container-fluid pb-20">
+        {/* ── Content ── */}
+        <div className="container-fluid" style={{ paddingBottom: "112px" }}>
           {loading ? (
-            <div className="text-center py-24">
+            <div style={{ textAlign: "center", paddingTop: "80px", paddingBottom: "80px" }}>
               <div style={{ width: 36, height: 36, border: "3px solid #e0e0e0", borderTopColor: "#222", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 16px" }} />
               <p className="text-gray-500">Loading wishlist items...</p>
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
           ) : wishlistProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center py-20 px-4 max-w-md mx-auto">
-              <div className="w-16 h-16 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-6 shadow-sm mx-auto">
-                <Heart className="w-7 h-7 text-neutral-400 stroke-[1.5]" />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", paddingTop: "56px", paddingBottom: "56px", maxWidth: "380px", margin: "0 auto" }}>
+              <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#fafafa", border: "1px solid #f0f0f0", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "28px", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                <Heart className="w-8 h-8 text-neutral-400 stroke-[1.5]" />
               </div>
-              <h2 className="text-xl font-black uppercase text-neutral-900 mb-3 tracking-wider mx-auto">
+              <h2 style={{ fontSize: "16px", fontWeight: 800, textTransform: "uppercase", color: "#111", marginBottom: "14px", letterSpacing: "0.08em" }}>
                 Your wishlist is empty
               </h2>
-              <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+              <p style={{ color: "#999", fontSize: "14px", lineHeight: 1.7, marginBottom: "36px" }}>
                 Save your favourite items while you browse our collections.
               </p>
-              <div className="flex justify-center w-full mx-auto">
-                <Link
-                  href="/collections/all"
-                  className="btn"
-                >
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <Link href="/collections/all" className="btn">
                   Start Shopping
                 </Link>
               </div>
@@ -129,7 +129,7 @@ export default function WishlistPage() {
                 ))}
               </div>
 
-              <div className="text-center mt-12">
+              <div style={{ textAlign: "center", marginTop: "56px" }}>
                 <button
                   className="btn"
                   onClick={() =>

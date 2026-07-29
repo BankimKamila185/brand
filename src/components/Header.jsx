@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { categoriesApi, collectionsApi } from "../lib/api";
 import Logo from "./Logo";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, X, User, Heart, ShoppingBag, Search, Grid, Tag, Sparkles, LogOut } from "lucide-react";
 
 const DEFAULT_CATEGORIES = [
   { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
@@ -196,7 +196,7 @@ const Header = ({ onSearch }) => {
             {/* ── CENTER: Logo (always centered) ── */}
             <div className="logo-container">
               <Link href="/" className="inline-block">
-                <Logo height={78} />
+                <Logo className="h-9 md:h-[72px]" />
               </Link>
             </div>
 
@@ -271,7 +271,7 @@ const Header = ({ onSearch }) => {
 
           {/* Slide-down search bar */}
           <div
-            className="fixed top-0 left-0 right-0 z-[9999] bg-white shadow-lg"
+            className="fixed top-0 left-0 right-0 z-[9999] bg-white shadow-lg border-b border-neutral-200"
             style={{ animation: "searchSlideDown 0.28s cubic-bezier(0.16,1,0.3,1) forwards" }}
           >
             <style dangerouslySetInnerHTML={{__html: `
@@ -289,13 +289,18 @@ const Header = ({ onSearch }) => {
             <div className="container-fluid">
               <div className="srch-bar-inner">
 
-                {/* Logo */}
-                <Link href="/" onClick={closeSearch} className="srch-logo flex-shrink-0">
-                  <Logo height={44} />
-                </Link>
+                {/* Mobile Top Row / Desktop Left */}
+                <div className="srch-top-row flex items-center justify-between w-full md:w-auto">
+                  <Link href="/" onClick={closeSearch} className="srch-logo flex-shrink-0">
+                    <Logo className="h-8 md:h-11" />
+                  </Link>
+                  <button onClick={closeSearch} className="srch-close-btn md:hidden p-1 text-neutral-700 hover:text-black" aria-label="Close search">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 {/* Wide search form */}
-                <form className="srch-form" onSubmit={handleSearchSubmit}>
+                <form className="srch-form w-full md:flex-1 md:max-w-2xl md:mx-auto" onSubmit={handleSearchSubmit}>
                   <input
                     type="text"
                     placeholder="Search products…"
@@ -312,8 +317,8 @@ const Header = ({ onSearch }) => {
                   </button>
                 </form>
 
-                {/* Right icons */}
-                <div className="srch-icons flex-shrink-0">
+                {/* Desktop right icons */}
+                <div className="srch-icons hidden md:flex flex-shrink-0">
                   {user ? (
                     <Link href="/profile" onClick={closeSearch} className="srch-icon-btn" aria-label="Profile">
                       <div className="relative">
@@ -366,121 +371,243 @@ const Header = ({ onSearch }) => {
       )}
 
       {/* ════════════════════════════════════
-          MOBILE DRAWER
+          MOBILE DRAWER — slides in from LEFT
          ════════════════════════════════════ */}
       {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-[998] md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {mobileMenuOpen && (
-        <div
-          className="fixed top-0 left-0 w-[85vw] max-w-[340px] h-full bg-white z-[999] shadow-2xl flex flex-col overflow-hidden md:hidden"
-          onClick={(e) => e.stopPropagation()}
-          style={{ animation: "drawerSlideIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards" }}
-        >
+        <>
           <style dangerouslySetInnerHTML={{__html: `
             @keyframes drawerSlideIn {
               from { transform: translateX(-100%); }
               to   { transform: translateX(0); }
             }
+            @keyframes backdropFadeIn {
+              from { opacity: 0; }
+              to   { opacity: 1; }
+            }
+            .drawer-sub-link:hover { color: #000; }
           `}} />
 
-          {/* Drawer top */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 flex-shrink-0">
-            <Logo height={40} />
-            <button onClick={() => setMobileMenuOpen(false)} aria-label="Close" className="p-2 text-neutral-600 hover:text-black">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          {/* Backdrop — starts below announcement + header */}
+          <div
+            style={{ position: "fixed", top: "118px", left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
 
-          {/* Drawer nav */}
-          <nav className="flex-grow overflow-y-auto px-6 py-2">
-            <ul className="flex flex-col">
+          {/* Drawer panel — starts below announcement bar + header (118px) */}
+          <div
+            className="md:hidden"
+            style={{
+              position: "fixed",
+              top: "118px",
+              left: 0,
+              width: "82vw",
+              maxWidth: "340px",
+              height: "calc(100% - 118px)",
+              background: "#fff",
+              zIndex: 9999,
+              display: "flex",
+              flexDirection: "column",
+              animation: "drawerSlideIn 0.32s cubic-bezier(0.16,1,0.3,1) forwards",
+              boxShadow: "4px 0 40px rgba(0,0,0,0.15)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
 
-              <li style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <button onClick={() => setShopExpanded(!shopExpanded)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
-                  <span>Shop</span>
-                  <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${shopExpanded ? "rotate-90" : ""}`} />
-                </button>
-                {shopExpanded && (
-                  <ul className="pl-4 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
-                    <li><Link href="/collections/all" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">Shop All</Link></li>
-                    <li><Link href="/collections/bestsellers" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">Bestsellers</Link></li>
-                    <li><Link href="/collections/whats-new" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">What&apos;s New</Link></li>
-                    <li><Link href="/collections/winterwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">Winterwear</Link></li>
-                    <li><Link href="/collections/outerwear" onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">Outerwear</Link></li>
-                  </ul>
-                )}
-              </li>
+            {/* ── SCROLLABLE BODY ── */}
+            <div className="flex-1 overflow-y-auto flex flex-col">
 
-              <li style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <button onClick={() => setCategoriesExpanded(!categoriesExpanded)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
-                  <span>Categories</span>
-                  <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${categoriesExpanded ? "rotate-90" : ""}`} />
-                </button>
-                {categoriesExpanded && (
-                  <ul className="pl-4 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
-                    {categoriesList.map((cat) => (
-                      <li key={cat.path}><Link href={cat.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">{cat.name}</Link></li>
-                    ))}
-                  </ul>
-                )}
-              </li>
+              {/* Nav list */}
+              <nav className="flex-1">
+                <ul className="flex flex-col divide-y divide-neutral-100">
 
-              <li style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <button onClick={() => setCollectionsExpanded(!collectionsExpanded)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
-                  <span>Collections</span>
-                  <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${collectionsExpanded ? "rotate-90" : ""}`} />
-                </button>
-                {collectionsExpanded && (
-                  <ul className="pl-4 pb-4 flex flex-col gap-3 text-sm font-medium text-neutral-600">
-                    {collectionsList.map((col) => (
-                      <li key={col.path}><Link href={col.path} onClick={() => setMobileMenuOpen(false)} className="hover:text-black block py-1.5">{col.name}</Link></li>
-                    ))}
-                  </ul>
-                )}
-              </li>
+                  {/* Shop */}
+                  <li>
+                    <button
+                      onClick={() => setShopExpanded(!shopExpanded)}
+                      className="w-full flex items-center justify-between text-neutral-900 text-left transition-colors active:bg-neutral-50"
+                      style={{ fontSize: "17px", fontWeight: 400, letterSpacing: "0.01em", paddingTop: "18px", paddingBottom: "18px", paddingLeft: "22px", paddingRight: "20px" }}
+                    >
+                      <span>Shop</span>
+                      <ChevronRight
+                        className="text-neutral-400 transition-transform duration-200"
+                        style={{ width: "16px", height: "16px", strokeWidth: 1.5, flexShrink: 0, transform: shopExpanded ? "rotate(90deg)" : "rotate(0deg)" }}
+                      />
+                    </button>
+                    {shopExpanded && (
+                      <ul style={{ background: "#fafafa", borderTop: "1px solid #f0f0f0", paddingLeft: "22px", paddingRight: "20px", paddingBottom: "8px" }}>
+                        {[
+                          { label: "Shop All", href: "/collections/all" },
+                          { label: "Bestsellers", href: "/collections/bestsellers" },
+                          { label: "What's New", href: "/collections/whats-new" },
+                          { label: "Winterwear", href: "/collections/winterwear" },
+                          { label: "Outerwear", href: "/collections/outerwear" },
+                        ].map((item) => (
+                          <li key={item.href} style={{ borderBottom: "1px solid #f0f0f0" }} className="last:border-0">
+                            <Link
+                              href={item.href}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className="drawer-sub-link block text-neutral-500 transition-colors"
+                              style={{ fontSize: "14px", paddingTop: "12px", paddingBottom: "12px" }}
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
 
-              <li style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <Link href="/wishlist" onClick={() => setMobileMenuOpen(false)} className="w-full flex items-center justify-between text-base font-semibold text-neutral-800 hover:text-black py-4">
-                  Wishlist
-                </Link>
-              </li>
+                  {/* Categories */}
+                  <li>
+                    <button
+                      onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                      className="w-full flex items-center justify-between text-neutral-900 text-left transition-colors active:bg-neutral-50"
+                      style={{ fontSize: "17px", fontWeight: 400, letterSpacing: "0.01em", paddingTop: "18px", paddingBottom: "18px", paddingLeft: "22px", paddingRight: "20px" }}
+                    >
+                      <span>Categories</span>
+                      <ChevronRight
+                        className="text-neutral-400 transition-transform duration-200"
+                        style={{ width: "16px", height: "16px", strokeWidth: 1.5, flexShrink: 0, transform: categoriesExpanded ? "rotate(90deg)" : "rotate(0deg)" }}
+                      />
+                    </button>
+                    {categoriesExpanded && (
+                      <ul style={{ background: "#fafafa", borderTop: "1px solid #f0f0f0", paddingLeft: "22px", paddingRight: "20px", paddingBottom: "8px", maxHeight: "220px", overflowY: "auto" }}>
+                        {categoriesList.map((cat) => (
+                          <li key={cat.path} style={{ borderBottom: "1px solid #f0f0f0" }} className="last:border-0">
+                            <Link
+                              href={cat.path}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className="drawer-sub-link block text-neutral-500 transition-colors"
+                              style={{ fontSize: "14px", paddingTop: "12px", paddingBottom: "12px" }}
+                            >
+                              {cat.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
 
-            </ul>
-          </nav>
+                  {/* Collections */}
+                  <li>
+                    <button
+                      onClick={() => setCollectionsExpanded(!collectionsExpanded)}
+                      className="w-full flex items-center justify-between text-neutral-900 text-left transition-colors active:bg-neutral-50"
+                      style={{ fontSize: "17px", fontWeight: 400, letterSpacing: "0.01em", paddingTop: "18px", paddingBottom: "18px", paddingLeft: "22px", paddingRight: "20px" }}
+                    >
+                      <span>Collections</span>
+                      <ChevronRight
+                        className="text-neutral-400 transition-transform duration-200"
+                        style={{ width: "16px", height: "16px", strokeWidth: 1.5, flexShrink: 0, transform: collectionsExpanded ? "rotate(90deg)" : "rotate(0deg)" }}
+                      />
+                    </button>
+                    {collectionsExpanded && (
+                      <ul style={{ background: "#fafafa", borderTop: "1px solid #f0f0f0", paddingLeft: "22px", paddingRight: "20px", paddingBottom: "8px" }}>
+                        {collectionsList.map((col) => (
+                          <li key={col.path} style={{ borderBottom: "1px solid #f0f0f0" }} className="last:border-0">
+                            <Link
+                              href={col.path}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className="drawer-sub-link block text-neutral-500 transition-colors"
+                              style={{ fontSize: "14px", paddingTop: "12px", paddingBottom: "12px" }}
+                            >
+                              {col.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
 
-          {/* Drawer bottom: Account */}
-          <div className="bg-white border-t border-neutral-100 px-6 py-6 flex-shrink-0">
-            <h3 className="text-xl font-bold text-neutral-900 mb-3">My Account</h3>
-            {user ? (
-              <div className="flex flex-col gap-3">
-                <div className="bg-neutral-50 p-4 rounded-lg flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
-                    {(user.name || user.email)[0].toUpperCase()}
+                  {/* Wishlist */}
+                  <li>
+                    <Link
+                      href="/wishlist"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-between text-neutral-900 transition-colors active:bg-neutral-50"
+                      style={{ fontSize: "17px", fontWeight: 400, letterSpacing: "0.01em", paddingTop: "18px", paddingBottom: "18px", paddingLeft: "22px", paddingRight: "20px", display: "flex" }}
+                    >
+                      <span>Wishlist</span>
+                    </Link>
+                  </li>
+
+                </ul>
+              </nav>
+
+              {/* ── MY ACCOUNT (bottom) ── */}
+              <div style={{ borderTop: "1px solid #f0f0f0", padding: "28px 24px 32px", background: "#fff", marginTop: "auto" }}>
+                <p style={{ fontSize: "10px", letterSpacing: "0.16em", fontWeight: 700, color: "#aaa", marginBottom: "20px" }}>
+                  MY ACCOUNT
+                </p>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+                  {/* Avatar circle */}
+                  <div style={{
+                    width: "40px", height: "40px", borderRadius: "50%",
+                    border: "1.5px solid #e0e0e0",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "#fafafa", flexShrink: 0
+                  }}>
+                    <User style={{ width: "18px", height: "18px", strokeWidth: 1.5, color: "#555" }} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-neutral-400 font-bold uppercase">Logged In</p>
-                    <p className="text-xs font-bold text-neutral-800 truncate mt-1">{user.name || user.email}</p>
+                  <div style={{ lineHeight: 1.3 }}>
+                    {user ? (
+                      <>
+                        <p style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>
+                          {user.name || "My Profile"}
+                        </p>
+                        <p style={{ fontSize: "12px", color: "#999" }}>{user.email || ""}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>Guest</p>
+                        <p style={{ fontSize: "12px", color: "#999" }}>Sign in to your account</p>
+                      </>
+                    )}
                   </div>
                 </div>
-                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full bg-black text-white font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">My Profile</Link>
-                <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full bg-white border border-black text-black font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase">Log Out</button>
+
+                {user ? (
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    style={{
+                      width: "100%", border: "1.5px solid #111", background: "#fff",
+                      color: "#111", fontSize: "11px", fontWeight: 600,
+                      letterSpacing: "0.14em", textTransform: "uppercase",
+                      paddingTop: "14px", paddingBottom: "14px",
+                      cursor: "pointer", transition: "background 0.2s, color 0.2s"
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#111"; e.currentTarget.style.color = "#fff"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#111"; }}
+                  >
+                    LOG OUT
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{
+                      display: "block", width: "100%", border: "1.5px solid #111", background: "#fff",
+                      color: "#111", fontSize: "11px", fontWeight: 600,
+                      letterSpacing: "0.14em", textTransform: "uppercase",
+                      paddingTop: "14px", paddingBottom: "14px",
+                      textAlign: "center", textDecoration: "none",
+                      transition: "background 0.2s, color 0.2s"
+                    }}
+                  >
+                    LOG IN
+                  </Link>
+                )}
               </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-black text-white font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Log In</Link>
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full bg-white border border-black text-black font-bold text-center py-4 rounded-sm text-[11px] tracking-widest uppercase block">Register</Link>
-              </div>
-            )}
+
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );
 };
 
 export default Header;
+

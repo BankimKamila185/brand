@@ -6,10 +6,10 @@ const Logo = ({ className = "", height }) => {
   return (
     <img
       src="/logo.svg"
-      alt="House of Outliers Logo"
-      className={className}
+      alt="The Outliers Studio Logo"
+      className={`logo-img ${className}`}
       style={{
-        height: height ? `${height}px` : undefined,
+        ...(height ? { height: `${height}px` } : {}),
         width: "auto",
         objectFit: "contain",
         display: "block",
@@ -19,3 +19,4 @@ const Logo = ({ className = "", height }) => {
 };
 
 export default Logo;
+

@@ -465,12 +465,23 @@ export default function ProfilePage() {
     }
   }, []);
 
-  // ── Sync settings form from user ──────────────────────────────────────────
+  // ── Sync settings form from user and addresses ────────────────────────────
   useEffect(() => {
     if (user) {
-      setSettingsForm({ name: user.name || "", phone: user.phone || "" });
+      const phoneNum =
+        user.phone ||
+        user.phoneNumber ||
+        user.mobile ||
+        user.phone_number ||
+        addresses.find((a) => a.isDefault)?.phone ||
+        addresses[0]?.phone ||
+        "";
+      setSettingsForm({
+        name: user.name || "",
+        phone: phoneNum,
+      });
     }
-  }, [user]);
+  }, [user, addresses]);
 
   // ── Fetch orders ──────────────────────────────────────────────────────────
   const fetchOrders = useCallback(async (page = 1) => {
@@ -636,9 +647,9 @@ export default function ProfilePage() {
               <div className="profile-avatar-info">
                 <strong>{user?.name || "Hey there!"}</strong>
                 <span>{user?.email}</span>
-                {user?.phone && (
+                {(user?.phone || settingsForm.phone) && (
                   <span className="profile-avatar-phone">
-                    <Phone size={11} /> {user.phone}
+                    <Phone size={11} /> {user?.phone || settingsForm.phone}
                   </span>
                 )}
               </div>
@@ -1160,9 +1171,6 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <p className="profile-settings-avatar-name">{user?.name || user?.email}</p>
-                      <p className="profile-settings-avatar-role">
-                        {user?.role === "ADMIN" ? "Administrator" : "Member"}
-                      </p>
                     </div>
                   </div>
 
@@ -1206,17 +1214,6 @@ export default function ProfilePage() {
                         }
                         placeholder="10-digit mobile number"
                         maxLength={10}
-                      />
-                    </div>
-
-                    <div className="profile-settings-field">
-                      <label className="profile-settings-label">
-                        <Eye size={14} /> Account Role
-                      </label>
-                      <input
-                        className="profile-settings-input profile-settings-input--readonly"
-                        value={user?.role === "ADMIN" ? "Administrator" : "Customer"}
-                        readOnly
                       />
                     </div>
                   </div>
