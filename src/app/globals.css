@@ -2533,8 +2533,9 @@ html, body {
 
 @media (max-width: 768px) {
   .hero-slider {
-    height: calc(100svh - 118px);
-    min-height: 360px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: auto;
   }
 }
 
@@ -2560,7 +2561,7 @@ html, body {
 
 @media (max-width: 768px) {
   .hero-slide-img {
-    object-fit: contain;
+    object-fit: cover;
     object-position: center center;
   }
 }
@@ -2712,7 +2713,7 @@ html, body {
 
 @media (max-width: 768px) {
   .slider-dots {
-    bottom: 20px;
+    bottom: 12px;
     gap: 8px;
   }
 }
