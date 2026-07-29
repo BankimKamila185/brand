@@ -14,7 +14,7 @@ const FEATURED_COLLECTIONS = [
     id: "col-1",
     name: "All Products",
     handle: "all",
-    description: "Browse the complete Tevar catalogue — from cargo trousers to oversized tees.",
+    description: "Browse the complete catalogue — from cargo trousers to oversized tees from The Outliers Studio.",
     imageUrl: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop",
     highlight: "Complete Archive",
   },
@@ -104,7 +104,7 @@ export default function MasterCollectionsPage() {
               All Collections
             </h1>
             <p className="text-neutral-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              Explore themed drops, signature capsule releases, and curated styling edits from House of Outliers.
+              Explore themed drops, signature capsule releases, and curated styling edits from The Outliers Studio.
             </p>
           </div>
         </section>
