@@ -48,16 +48,6 @@ const HeroSlider = () => {
                 className="hero-slide-img"
               />
             </picture>
-
-            {/* Editorial Ticker Bar across bottom of banner */}
-            <div className="hero-editorial-bar">
-              <span className="hero-editorial-tag">
-                100% COTTON | SPRING/SUMMER &apos;26 | STREETWEAR EDITORIAL
-              </span>
-              <span className="hero-editorial-cta">
-                SHOP NOW &rarr;
-              </span>
-            </div>
           </Link>
         </div>
       ))}
