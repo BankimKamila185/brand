@@ -141,8 +141,8 @@ function LoginForm() {
         <X className="w-4.5 h-4.5" />
       </button>
 
-      {/* Left Column: Media Card with Rounded Corners & Overlays */}
-      <div className="tevar-login-left">
+      {/* Left Column: Media Card with Rounded Corners & Overlays (hidden on mobile) */}
+      <div className="tevar-login-left hidden md:block">
         <img 
           src="/login-showcase.png" 
           alt="Tevar Streetwear Showcase" 
