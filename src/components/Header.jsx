@@ -55,7 +55,7 @@ const Header = ({ onSearch }) => {
         if (colRes.status === "fulfilled" && colRes.value?.data?.length > 0) {
           setCollectionsList(colRes.value.data.map((c) => ({ name: c.name, path: `/collections/${c.handle}` })));
         }
-      } catch (_) {}
+      } catch (_) { }
     };
     fetchNavItems();
     return () => { isMounted = false; };
@@ -274,7 +274,8 @@ const Header = ({ onSearch }) => {
             className="fixed top-0 left-0 right-0 z-[9999] bg-white shadow-lg border-b border-neutral-200"
             style={{ animation: "searchSlideDown 0.28s cubic-bezier(0.16,1,0.3,1) forwards" }}
           >
-            <style dangerouslySetInnerHTML={{__html: `
+            <style dangerouslySetInnerHTML={{
+              __html: `
               @keyframes searchSlideDown {
                 from { transform: translateY(-100%); opacity: 0; }
                 to   { transform: translateY(0);    opacity: 1; }
@@ -375,7 +376,8 @@ const Header = ({ onSearch }) => {
          ════════════════════════════════════ */}
       {mobileMenuOpen && (
         <>
-          <style dangerouslySetInnerHTML={{__html: `
+          <style dangerouslySetInnerHTML={{
+            __html: `
             @keyframes drawerSlideIn {
               from { transform: translateX(-100%); }
               to   { transform: translateX(0); }
@@ -387,23 +389,23 @@ const Header = ({ onSearch }) => {
             .drawer-sub-link:hover { color: #000; }
           `}} />
 
-          {/* Backdrop — starts below announcement + header */}
+          {/* Backdrop — starts exactly below header */}
           <div
-            style={{ position: "fixed", top: "118px", left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
+            style={{ position: "fixed", top: `${drawerTop}px`, left: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(0,0,0,0.45)", animation: "backdropFadeIn 0.25s ease forwards" }}
             className="md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Drawer panel — starts below announcement bar + header (118px) */}
+          {/* Drawer panel — starts exactly below main header */}
           <div
             className="md:hidden"
             style={{
               position: "fixed",
-              top: "118px",
+              top: `${drawerTop}px`,
               left: 0,
               width: "82vw",
               maxWidth: "340px",
-              height: "calc(100% - 118px)",
+              height: `calc(100% - ${drawerTop}px)`,
               background: "#fff",
               zIndex: 9999,
               display: "flex",
