@@ -223,7 +223,7 @@ const Header = ({ onSearch }) => {
             {/* ── CENTER: Logo (always centered) ── */}
             <div className="logo-container">
               <Link href="/" className="inline-block">
-                <Logo className="h-10 sm:h-12 md:h-[78px]" />
+                <Logo className="h-11 sm:h-12 md:h-[78px]" />
               </Link>
             </div>
 
