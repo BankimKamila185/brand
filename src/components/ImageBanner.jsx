@@ -13,7 +13,7 @@ const ImageBanner = ({
   link = "/collections/all",
 }) => {
   return (
-    <section className="home-section" style={{ width: "100%" }}>
+    <section className="home-section hidden md:block" style={{ width: "100%" }}>
       {/* Container: full-width on mobile, max-width centered on desktop */}
       <div className="md:container-fluid">
         <div className="relative w-full overflow-hidden md:rounded-lg group aspect-[4/3] md:aspect-[21/9] bg-neutral-900">
