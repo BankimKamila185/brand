@@ -395,11 +395,13 @@ const Header = ({ onSearch }) => {
               </div>
             </div>
           </div>
+        </>
+      )}
 
-          {/* ════════════════════════════════════
-              MOBILE DRAWER — slides in from LEFT
-             ════════════════════════════════════ */}
-          {mobileMenuOpen && (
+      {/* ════════════════════════════════════
+          MOBILE DRAWER — slides in from LEFT
+         ════════════════════════════════════ */}
+      {mobileMenuOpen && (
             <>
               <style dangerouslySetInnerHTML={{
                 __html: `
@@ -671,7 +673,6 @@ const Header = ({ onSearch }) => {
           </div>
         </>
       )}
-      </header>
     </>
   );
 };
