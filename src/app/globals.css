@@ -2534,8 +2534,9 @@ html, body {
 @media (max-width: 768px) {
   .hero-slider {
     height: auto;
-    aspect-ratio: 16 / 9;
-    min-height: auto;
+    aspect-ratio: 4 / 5;
+    min-height: 460px;
+    max-height: 580px;
   }
 }
 
@@ -2564,6 +2565,47 @@ html, body {
     object-fit: cover;
     object-position: center center;
   }
+}
+
+.hero-editorial-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 15;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-editorial-tag {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-editorial-cta {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* The global link hover opacity must not dim full-bleed images. */
@@ -2713,7 +2755,7 @@ html, body {
 
 @media (max-width: 768px) {
   .slider-dots {
-    bottom: 12px;
+    bottom: 44px;
     gap: 8px;
   }
 }
