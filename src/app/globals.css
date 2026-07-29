@@ -2286,7 +2286,7 @@ html, body {
 
 @media (min-width: 769px) {
   .header-inner {
-    height: 96px !important;
+    height: 120px !important;
   }
   .logo-container {
     position: absolute;
@@ -2298,9 +2298,9 @@ html, body {
   }
   .logo-container img,
   .logo-container svg {
-    height: 64px !important;
-    max-height: 64px !important;
-    max-width: 320px !important;
+    height: 92px !important;
+    max-height: 92px !important;
+    max-width: 380px !important;
     object-fit: contain;
   }
   .mobile-menu-btn { display: none; }
