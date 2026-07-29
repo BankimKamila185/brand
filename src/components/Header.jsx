@@ -609,32 +609,50 @@ const Header = ({ onSearch }) => {
                   MY ACCOUNT
                 </p>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+                <Link
+                  href={user ? "/profile" : "/login"}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "20px",
+                    textDecoration: "none",
+                    padding: "12px",
+                    borderRadius: "14px",
+                    background: "#f9f9f9",
+                    border: "1px solid #eeeeee",
+                    transition: "background 0.2s, border-color 0.2s"
+                  }}
+                >
                   {/* Avatar circle */}
                   <div style={{
                     width: "40px", height: "40px", borderRadius: "50%",
-                    border: "1.5px solid #e0e0e0",
+                    border: "1.5px solid #dcdcdc",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "#fafafa", flexShrink: 0
+                    background: "#ffffff", flexShrink: 0, boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
                   }}>
-                    <User style={{ width: "18px", height: "18px", strokeWidth: 1.5, color: "#555" }} />
+                    <User style={{ width: "18px", height: "18px", strokeWidth: 1.8, color: "#111" }} />
                   </div>
-                  <div style={{ lineHeight: 1.3 }}>
+                  <div style={{ lineHeight: 1.3, flex: 1, minWidth: 0 }}>
                     {user ? (
                       <>
-                        <p style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>
-                          {user.name || "My Profile"}
+                        <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {user.name || "My Account"}
                         </p>
-                        <p style={{ fontSize: "12px", color: "#999" }}>{user.email || ""}</p>
+                        <p style={{ fontSize: "11px", color: "#666", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          View & Edit Profile →
+                        </p>
                       </>
                     ) : (
                       <>
-                        <p style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "2px" }}>Guest</p>
-                        <p style={{ fontSize: "12px", color: "#999" }}>Sign in to your account</p>
+                        <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "2px" }}>Guest User</p>
+                        <p style={{ fontSize: "11px", color: "#666" }}>Sign in to view orders →</p>
                       </>
                     )}
                   </div>
-                </div>
+                  <ChevronRight size={16} color="#888" />
+                </Link>
 
                 {user ? (
                   <button

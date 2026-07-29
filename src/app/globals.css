@@ -2380,7 +2380,7 @@ html, body {
 
   .account-action,
   .wishlist-action {
-    display: none !important;
+    display: flex !important;
   }
 
   .header-actions .action-btn {
