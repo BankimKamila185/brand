@@ -638,23 +638,23 @@ export default function ProfilePage() {
         <div className="profile-container">
 
           {/* ── Mobile Top Banner & Navigation Segment Pills (Mobile Only) ── */}
-          <div className="md:hidden w-full mb-2">
+          <div className="profile-mobile-header">
             {/* Mobile User Info Card */}
-            <div className="bg-white border border-neutral-200 rounded-2xl p-4 mb-4 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neutral-900 to-neutral-700 text-white font-bold text-base flex items-center justify-center shadow-inner flex-shrink-0">
+            <div className="profile-mobile-user-card">
+              <div className="profile-mobile-user-left">
+                <div className="profile-mobile-avatar">
                   {initials}
                 </div>
-                <div className="min-w-0">
-                  <h2 className="font-bold text-neutral-900 text-base leading-tight truncate">
+                <div className="profile-mobile-user-info">
+                  <h2 className="profile-mobile-user-name">
                     {user?.name || "My Account"}
                   </h2>
-                  <p className="text-xs text-neutral-500 truncate mt-0.5">{user?.email}</p>
+                  <p className="profile-mobile-user-email">{user?.email}</p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2.5 rounded-full text-neutral-500 hover:text-red-600 hover:bg-neutral-100 transition-colors flex-shrink-0"
+                className="profile-mobile-logout-btn"
                 title="Sign Out"
                 aria-label="Sign Out"
               >
@@ -663,18 +663,14 @@ export default function ProfilePage() {
             </div>
 
             {/* Mobile Horizontal Pill Navigation Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-3 scrollbar-none border-b border-neutral-100 mb-5 -mx-4 px-4">
+            <div className="profile-mobile-tabs">
               {TABS.map(({ id, label, icon: Icon }) => {
                 const isActive = activeTab === id;
                 return (
                   <button
                     key={id}
                     onClick={() => setActiveTab(id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
-                      isActive
-                        ? "bg-neutral-900 text-white shadow-md"
-                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-                    }`}
+                    className={`profile-mobile-tab-pill${isActive ? " active" : ""}`}
                   >
                     <Icon size={14} />
                     <span>{label}</span>
