@@ -7242,24 +7242,53 @@ textarea.form-input {
   .profile-avatar-phone { justify-content: flex-start; }
 }
 
-@media (max-width: 640px) {
-  .profile-sidebar {
+@media (max-width: 768px) {
+  .profile-page {
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: calc(var(--header-h) + var(--announce-h) + 16px);
+    padding-bottom: 60px;
+  }
+  .profile-container {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
-  .profile-stats-grid { grid-template-columns: 1fr 1fr; }
-  .profile-addr-form-grid { grid-template-columns: 1fr; }
-  .profile-addr-form-grid--3 { grid-template-columns: 1fr; }
-  .profile-order-right { flex-direction: column; align-items: flex-end; gap: 6px; }
-  .profile-recent-order-row {
-    flex-wrap: wrap;
-    gap: 8px;
+  .profile-sidebar {
+    display: none !important;
   }
-  .profile-section-header { flex-direction: column; align-items: flex-start; }
+  .profile-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .profile-stat-card {
+    padding: 14px 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+  .profile-stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .profile-stat-value {
+    font-size: 17px;
+  }
+  .profile-order-card {
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .profile-order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .profile-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 480px) {
-  .profile-page { padding-top: calc(var(--header-h) + var(--announce-h) + 20px); }
-  .profile-stats-grid { grid-template-columns: 1fr; }
+  .profile-stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ── 21. Collection Page 2-Column Layout ─────────────────── */

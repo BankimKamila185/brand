@@ -637,8 +637,55 @@ export default function ProfilePage() {
       <main className="profile-page">
         <div className="profile-container">
 
-          {/* ── Sidebar ── */}
-          <aside className="profile-sidebar">
+          {/* ── Mobile Top Banner & Navigation Segment Pills (Mobile Only) ── */}
+          <div className="md:hidden w-full mb-2">
+            {/* Mobile User Info Card */}
+            <div className="bg-white border border-neutral-200 rounded-2xl p-4 mb-4 flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neutral-900 to-neutral-700 text-white font-bold text-base flex items-center justify-center shadow-inner flex-shrink-0">
+                  {initials}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-bold text-neutral-900 text-base leading-tight truncate">
+                    {user?.name || "My Account"}
+                  </h2>
+                  <p className="text-xs text-neutral-500 truncate mt-0.5">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2.5 rounded-full text-neutral-500 hover:text-red-600 hover:bg-neutral-100 transition-colors flex-shrink-0"
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+
+            {/* Mobile Horizontal Pill Navigation Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-neutral-200 scrollbar-none">
+              {TABS.map(({ id, label, icon: Icon }) => {
+                const isActive = activeTab === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setActiveTab(id)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
+                      isActive
+                        ? "bg-neutral-900 text-white shadow-md"
+                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    }`}
+                  >
+                    <Icon size={14} />
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Sidebar (Desktop Only) ── */}
+          <aside className="profile-sidebar hidden md:flex">
             {/* Avatar */}
             <div className="profile-avatar-card">
               <div className="profile-avatar">
