@@ -2225,31 +2225,31 @@ html, body {
 .desktop-nav { display: block; }
 
 @media (max-width: 768px) {
-  .header-inner { height: 60px; }
+  .header-inner {
+    height: 56px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
   .logo-container {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
-    max-width: calc(100vw - 160px);
+    max-width: 130px !important;
     pointer-events: auto;
   }
   .logo-container img, .logo-container svg {
-    height: 32px;
-    max-height: 32px;
-    max-width: 120px;
+    height: 26px !important;
+    max-height: 26px !important;
+    max-width: 105px !important;
     object-fit: contain;
   }
   .mobile-menu-btn { display: flex; }
   .desktop-nav { display: none; }
 
   .header-actions {
-    gap: 6px;
-  }
-
-  .mobile-search {
-    display: flex;
+    gap: 4px !important;
   }
 
   .account-action,
@@ -2260,24 +2260,28 @@ html, body {
   .header-actions .action-btn,
   .header-left-zone .action-btn,
   .hdr-hamburger {
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .header-actions .action-btn svg,
   .header-left-zone .action-btn svg,
   .hdr-hamburger svg {
-    width: 20px;
-    height: 20px;
+    width: 18px !important;
+    height: 18px !important;
   }
 
   .badge-count {
-    top: 0px;
+    top: -2px;
     right: -2px;
+    font-size: 9px;
+    min-width: 14px;
+    height: 14px;
+    line-height: 14px;
   }
 }
 
@@ -2414,43 +2418,6 @@ html, body {
   display: flex;
   align-items: center;
   gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .header-actions {
-    gap: 12px;
-  }
-
-  .mobile-search {
-    display: flex;
-    transform: translateX(16px);
-  }
-
-  .mobile-search input {
-    display: none;
-  }
-
-  .account-action,
-  .wishlist-action {
-    display: flex !important;
-  }
-
-  .header-actions .action-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 26px;
-  }
-
-  .header-actions .action-btn svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 1.6;
-  }
-
-  .badge-count {
-    top: 2px;
-    right: 0;
-  }
 }
 
 .mobile-search-overlay {
