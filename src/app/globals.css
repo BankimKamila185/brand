@@ -2226,9 +2226,9 @@ html, body {
 
 @media (max-width: 768px) {
   .header-inner {
-    height: 56px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    height: 64px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
   }
   .logo-container {
     position: absolute;
@@ -2236,20 +2236,20 @@ html, body {
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
-    max-width: 130px !important;
+    max-width: 155px !important;
     pointer-events: auto;
   }
   .logo-container img, .logo-container svg {
-    height: 26px !important;
-    max-height: 26px !important;
-    max-width: 105px !important;
+    height: 38px !important;
+    max-height: 38px !important;
+    max-width: 145px !important;
     object-fit: contain;
   }
   .mobile-menu-btn { display: flex; }
   .desktop-nav { display: none; }
 
   .header-actions {
-    gap: 4px !important;
+    gap: 3px !important;
   }
 
   .account-action,
@@ -2260,8 +2260,8 @@ html, body {
   .header-actions .action-btn,
   .header-left-zone .action-btn,
   .hdr-hamburger {
-    width: 32px !important;
-    height: 32px !important;
+    width: 28px !important;
+    height: 28px !important;
     padding: 0 !important;
     align-items: center;
     justify-content: center;
@@ -2275,8 +2275,8 @@ html, body {
   }
 
   .badge-count {
-    top: -2px;
-    right: -2px;
+    top: -3px;
+    right: -3px;
     font-size: 9px;
     min-width: 14px;
     height: 14px;
