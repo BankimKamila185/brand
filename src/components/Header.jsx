@@ -223,7 +223,7 @@ const Header = ({ onSearch }) => {
             {/* ── CENTER: Logo (always centered) ── */}
             <div className="logo-container">
               <Link href="/" className="inline-block">
-                <Logo className="h-9 md:h-[72px]" />
+                <Logo className="h-11 sm:h-12 md:h-[78px]" />
               </Link>
             </div>
 
@@ -320,7 +320,7 @@ const Header = ({ onSearch }) => {
                 {/* Mobile Top Row / Desktop Left */}
                 <div className="srch-top-row flex items-center justify-between w-full md:w-auto">
                   <Link href="/" onClick={closeSearch} className="srch-logo flex-shrink-0">
-                    <Logo className="h-8 md:h-11" />
+                    <Logo className="h-10 md:h-12" />
                   </Link>
                   <button onClick={closeSearch} className="srch-close-btn md:hidden p-1 text-neutral-700 hover:text-black" aria-label="Close search">
                     <X className="w-5 h-5" />
@@ -462,7 +462,7 @@ const Header = ({ onSearch }) => {
                     flexShrink: 0
                   }}
                 >
-                  <Logo height={24} />
+                  <Logo height={36} />
                   <button
                     onClick={() => setMobileMenuOpen(false)}
                     style={{
