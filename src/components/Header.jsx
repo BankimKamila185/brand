@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -30,7 +30,9 @@ const DEFAULT_COLLECTIONS = [
 const Header = ({ onSearch }) => {
   const { cartCount, wishlist, setCartOpen } = useCart();
   const { user, logout } = useAuth();
+  const headerRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [drawerTop, setDrawerTop] = useState(118);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [shopExpanded, setShopExpanded] = useState(false);
@@ -38,6 +40,24 @@ const Header = ({ onSearch }) => {
   const [collectionsExpanded, setCollectionsExpanded] = useState(false);
   const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
   const [collectionsList, setCollectionsList] = useState(DEFAULT_COLLECTIONS);
+
+  // Dynamically calculate main header bottom edge to eliminate any gap above mobile drawer
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const updateTop = () => {
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect();
+        setDrawerTop(rect.bottom);
+      }
+    };
+    updateTop();
+    window.addEventListener("resize", updateTop);
+    window.addEventListener("scroll", updateTop);
+    return () => {
+      window.removeEventListener("resize", updateTop);
+      window.removeEventListener("scroll", updateTop);
+    };
+  }, [mobileMenuOpen]);
 
   // Fetch live nav items from backend
   useEffect(() => {
