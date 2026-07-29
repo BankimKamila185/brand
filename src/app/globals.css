@@ -2263,9 +2263,8 @@ html, body {
     width: 32px !important;
     height: 32px !important;
     padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    align-items: center;
+    justify-content: center;
   }
 
   .header-actions .action-btn svg,
