@@ -32,7 +32,7 @@ const Header = ({ onSearch }) => {
   const { user, logout } = useAuth();
   const headerRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [drawerTop, setDrawerTop] = useState(118);
+  const [drawerTop, setDrawerTop] = useState(78);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [shopExpanded, setShopExpanded] = useState(false);
@@ -43,14 +43,16 @@ const Header = ({ onSearch }) => {
 
   // Dynamically calculate main header bottom edge to eliminate any gap above mobile drawer
   useEffect(() => {
-    if (!mobileMenuOpen) return;
     const updateTop = () => {
       if (headerRef.current) {
         const rect = headerRef.current.getBoundingClientRect();
-        setDrawerTop(rect.bottom);
+        if (rect.bottom > 0) {
+          setDrawerTop(rect.bottom);
+        }
       }
     };
     updateTop();
+    if (!mobileMenuOpen) return;
     window.addEventListener("resize", updateTop);
     window.addEventListener("scroll", updateTop);
     return () => {
@@ -147,7 +149,12 @@ const Header = ({ onSearch }) => {
               {/* Mobile hamburger */}
               <button
                 className="hdr-hamburger md:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={() => {
+                  if (headerRef.current) {
+                    setDrawerTop(headerRef.current.getBoundingClientRect().bottom);
+                  }
+                  setMobileMenuOpen(!mobileMenuOpen);
+                }}
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {mobileMenuOpen ? (
