@@ -27,15 +27,12 @@ export const metadata = {
   publisher: "The Outliers Studio",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
     apple: [
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: ["/favicon.ico"],
+    shortcut: ["/icon.svg"],
   },
   openGraph: {
     title: "The Outliers Studio | Premium Streetwear & Urban Clothing",
@@ -147,8 +144,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/icon.png?v=18" type="image/png" />
-        <link rel="icon" href="/favicon.ico?v=18" sizes="any" />
+        <link rel="icon" href="/icon.svg?v=19" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-icon.png?v=18" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
