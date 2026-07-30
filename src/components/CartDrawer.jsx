@@ -95,6 +95,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
           </button>
         </div>
 
+        <div className="drawer-body">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               {/* Icon Badge */}
