@@ -266,9 +266,9 @@ const ProductCard = ({ product, onOpenDetails }) => {
 
             <div className="quickview-modal-grid">
               {/* Left Column: Main Image & Gallery Thumbnails */}
-              <div className="quickview-image-container flex flex-col justify-between p-6 bg-[#0c0c0e] text-white relative">
+              <div className="quickview-image-container flex flex-col justify-between p-6 md:p-8 bg-[#0c0c0e] text-white relative">
                 {/* Product Badge */}
-                <div className="absolute top-5 left-5 z-10 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/10 uppercase tracking-widest">
+                <div className="absolute top-6 left-6 z-10 bg-black/70 backdrop-blur-md text-white text-[11px] font-extrabold px-3.5 py-1.5 rounded-full border border-white/10 uppercase tracking-widest">
                   Oversize Drop
                 </div>
 
@@ -276,21 +276,21 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   <img
                     src={selectedModalImg || firstImg}
                     alt={product.title}
-                    className="max-h-[400px] w-full object-contain transition-all duration-300 rounded-md"
+                    className="max-h-[480px] w-full object-contain transition-all duration-300 rounded-md"
                   />
                 </div>
 
                 {/* Gallery Thumbnails Strip */}
                 {imagesList.length > 1 && (
-                  <div className="flex items-center justify-center gap-2.5 pt-3 overflow-x-auto max-w-full z-10">
+                  <div className="flex items-center justify-center gap-3 pt-4 overflow-x-auto max-w-full z-10">
                     {imagesList.map((img, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => setSelectedModalImg(img.src)}
-                        className={`w-12 h-14 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
+                        className={`w-14 h-16 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
                           selectedModalImg === img.src
-                            ? "border-white scale-105 shadow-lg"
+                            ? "border-white scale-105 shadow-xl"
                             : "border-neutral-800 opacity-50 hover:opacity-100"
                         }`}
                       >
@@ -306,29 +306,29 @@ const ProductCard = ({ product, onOpenDetails }) => {
               </div>
 
               {/* Right Column: Details & Actions */}
-              <div className="quickview-details-container p-6 md:p-8 flex flex-col justify-between bg-white">
-                <div className="flex flex-col gap-4">
+              <div className="quickview-details-container p-8 md:p-10 flex flex-col justify-between bg-white">
+                <div className="flex flex-col gap-5">
                   {/* Category / Brand Eyebrow */}
-                  <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 uppercase">
+                  <span className="text-[11px] font-extrabold tracking-[0.22em] text-neutral-400 uppercase">
                     THE OUTLIERS STUDIO
                   </span>
 
                   {/* Title */}
-                  <h2 className="text-xl md:text-2xl font-extrabold text-neutral-900 leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-neutral-900 leading-tight tracking-tight">
                     {product.title}
                   </h2>
 
                   {/* Pricing */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl font-black text-neutral-900 tracking-tight">
+                  <div className="flex items-center gap-3.5">
+                    <span className="text-3xl font-black text-neutral-900 tracking-tight">
                       ₹{priceNum.toFixed(2)}
                     </span>
                     {comparePriceNum > priceNum && (
                       <>
-                        <span className="line-through text-neutral-400 text-sm font-medium">
+                        <span className="line-through text-neutral-400 text-base font-medium">
                           ₹{comparePriceNum.toFixed(2)}
                         </span>
-                        <span className="bg-black text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        <span className="bg-black text-white text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                           SAVE {Math.round(((comparePriceNum - priceNum) / comparePriceNum) * 100)}%
                         </span>
                       </>
@@ -336,7 +336,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   </div>
 
                   {/* Description */}
-                  <div className="border-y border-neutral-100 py-3 text-xs md:text-sm text-neutral-600 leading-relaxed">
+                  <div className="border-y border-neutral-100 py-4 text-sm text-neutral-600 leading-relaxed">
                     <p className="m-0">
                       {descriptionText}{" "}
                       <Link
@@ -350,10 +350,10 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   </div>
 
                   {/* Stock Status Indicator */}
-                  <div className={`flex items-center gap-2 text-xs font-bold ${
+                  <div className={`flex items-center gap-2.5 text-xs font-bold ${
                     isSelectedVariantInStock ? "text-emerald-600" : "text-red-500"
                   }`}>
-                    <span className={`w-2 h-2 rounded-full ${
+                    <span className={`w-2.5 h-2.5 rounded-full ${
                       isSelectedVariantInStock ? "bg-emerald-500 animate-pulse" : "bg-red-500"
                     }`} />
                     <span>{isSelectedVariantInStock ? "In Stock • Ready to ship" : "Out of Stock"}</span>
@@ -361,12 +361,12 @@ const ProductCard = ({ product, onOpenDetails }) => {
 
                   {/* Interactive Size Selector */}
                   {sizes.length > 0 && (
-                    <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex flex-col gap-2.5 pt-1">
                       <div className="text-xs font-bold text-neutral-900 flex items-center justify-between">
-                        <span>SELECT SIZE</span>
+                        <span className="tracking-wider">SELECT SIZE</span>
                         <span className="text-neutral-500 font-medium">Selected: <strong className="text-black uppercase">{modalSize}</strong></span>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2.5">
                         {sizes.map((size) => {
                           const isSelected = modalSize === size;
                           return (
@@ -374,9 +374,9 @@ const ProductCard = ({ product, onOpenDetails }) => {
                               key={size}
                               type="button"
                               onClick={() => setModalSize(size)}
-                              className={`w-12 h-11 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                              className={`w-13 h-12 rounded-lg text-sm font-extrabold transition-all cursor-pointer flex items-center justify-center border ${
                                 isSelected
-                                  ? "bg-black text-white border-black shadow-md scale-[1.02]"
+                                  ? "bg-black text-white border-black shadow-md scale-[1.03]"
                                   : "bg-neutral-50 text-neutral-800 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-100"
                               }`}
                             >
@@ -389,27 +389,27 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   )}
 
                   {/* Quantity Selector & Add To Cart Row */}
-                  <div className="flex flex-col gap-2 pt-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  <div className="flex flex-col gap-2.5 pt-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                       QUANTITY
                     </span>
-                    <div className="grid grid-cols-[120px_1fr] gap-3">
+                    <div className="grid grid-cols-[130px_1fr] gap-3.5">
                       
                       {/* Quantity Stepper */}
-                      <div className="flex items-center border border-neutral-200 rounded-lg h-12 overflow-hidden select-none bg-neutral-50">
+                      <div className="flex items-center border border-neutral-200 rounded-lg h-13 overflow-hidden select-none bg-neutral-50">
                         <button
                           type="button"
-                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-base"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-lg"
                           onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                         >
                           -
                         </button>
-                        <span className="flex-1 text-center font-bold text-sm text-neutral-900">
+                        <span className="flex-1 text-center font-bold text-base text-neutral-900">
                           {quantity}
                         </span>
                         <button
                           type="button"
-                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-base"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-lg"
                           onClick={() => setQuantity((prev) => prev + 1)}
                         >
                           +
@@ -420,7 +420,7 @@ const ProductCard = ({ product, onOpenDetails }) => {
                       <button
                         type="button"
                         disabled={isAdding}
-                        className={`h-12 rounded-lg font-bold text-xs tracking-[0.1em] uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
+                        className={`h-13 rounded-lg font-bold text-xs tracking-[0.12em] uppercase transition-all flex items-center justify-center gap-2.5 cursor-pointer shadow-sm ${
                           addedSuccess
                             ? "bg-emerald-600 text-white border-emerald-600"
                             : "bg-neutral-900 text-white hover:bg-black hover:shadow-md active:scale-[0.99]"
@@ -445,11 +445,11 @@ const ProductCard = ({ product, onOpenDetails }) => {
                 </div>
 
                 {/* Buy It Now Button */}
-                <div className="pt-4">
+                <div className="pt-5">
                   <button
                     type="button"
                     disabled={isAdding}
-                    className="w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-[0.16em] rounded-lg hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center"
+                    className="w-full h-14 bg-black text-white font-extrabold text-xs uppercase tracking-[0.18em] rounded-lg hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center"
                     onClick={handleModalBuyNow}
                   >
                     BUY IT NOW
