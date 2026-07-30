@@ -144,7 +144,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/icon.svg?v=19" type="image/svg+xml" />
+        <link rel="icon" href="/icon.svg?v=20" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-icon.png?v=18" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
