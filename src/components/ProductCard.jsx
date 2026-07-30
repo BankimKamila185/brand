@@ -265,26 +265,32 @@ const ProductCard = ({ product, onOpenDetails }) => {
 
             <div className="quickview-modal-grid">
               {/* Left Column: Main Image & Gallery Thumbnails */}
-              <div className="quickview-image-container flex flex-col items-center justify-between p-4 bg-neutral-900 text-white relative">
-                <div className="w-full flex-1 flex items-center justify-center overflow-hidden min-h-[320px]">
+              <div className="quickview-image-container flex flex-col justify-between p-6 bg-[#0c0c0e] text-white relative">
+                {/* Product Badge */}
+                <div className="absolute top-5 left-5 z-10 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/10 uppercase tracking-widest">
+                  Oversize Drop
+                </div>
+
+                <div className="w-full flex-1 flex items-center justify-center overflow-hidden py-4">
                   <img
                     src={selectedModalImg || firstImg}
                     alt={product.title}
-                    className="max-h-[460px] w-auto object-contain transition-all duration-300"
+                    className="max-h-[400px] w-full object-contain transition-all duration-300 rounded-md"
                   />
                 </div>
 
                 {/* Gallery Thumbnails Strip */}
                 {imagesList.length > 1 && (
-                  <div className="flex items-center gap-2 pt-3 overflow-x-auto max-w-full z-10">
+                  <div className="flex items-center justify-center gap-2.5 pt-3 overflow-x-auto max-w-full z-10">
                     {imagesList.map((img, idx) => (
                       <button
                         key={idx}
+                        type="button"
                         onClick={() => setSelectedModalImg(img.src)}
-                        className={`w-12 h-14 rounded overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
+                        className={`w-12 h-14 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
                           selectedModalImg === img.src
-                            ? "border-white scale-105"
-                            : "border-neutral-700 opacity-60 hover:opacity-100"
+                            ? "border-white scale-105 shadow-lg"
+                            : "border-neutral-800 opacity-50 hover:opacity-100"
                         }`}
                       >
                         <img
@@ -298,33 +304,38 @@ const ProductCard = ({ product, onOpenDetails }) => {
                 )}
               </div>
 
-              {/* Right Column: Interactive Product Details & Actions */}
-              <div className="quickview-details-container p-6 md:p-8 flex flex-col justify-between">
+              {/* Right Column: Details & Actions */}
+              <div className="quickview-details-container p-6 md:p-8 flex flex-col justify-between bg-white">
                 <div className="flex flex-col gap-4">
+                  {/* Category / Brand Eyebrow */}
+                  <span className="text-[10px] font-extrabold tracking-[0.2em] text-neutral-400 uppercase">
+                    THE OUTLIERS STUDIO
+                  </span>
+
                   {/* Title */}
-                  <h2 className="quickview-product-title text-xl md:text-2xl font-bold text-neutral-900 leading-tight">
+                  <h2 className="text-xl md:text-2xl font-extrabold text-neutral-900 leading-tight">
                     {product.title}
                   </h2>
 
                   {/* Pricing */}
-                  <div className="quickview-price-row flex items-center gap-3">
-                    <span className="quickview-price-sale text-xl md:text-2xl font-extrabold text-[#e84e4e]">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black text-neutral-900 tracking-tight">
                       ₹{priceNum.toFixed(2)}
                     </span>
                     {comparePriceNum > priceNum && (
                       <>
-                        <span className="quickview-price-compare line-through text-neutral-400 text-sm">
+                        <span className="line-through text-neutral-400 text-sm font-medium">
                           ₹{comparePriceNum.toFixed(2)}
                         </span>
-                        <span className="bg-[#e84e4e] text-white text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
-                          SALE
+                        <span className="bg-black text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                          SAVE {Math.round(((comparePriceNum - priceNum) / comparePriceNum) * 100)}%
                         </span>
                       </>
                     )}
                   </div>
 
-                  {/* Description Snippet & Link */}
-                  <div className="quickview-desc-wrap border-y border-neutral-200 py-3 text-xs md:text-sm text-neutral-600 leading-relaxed">
+                  {/* Description */}
+                  <div className="border-y border-neutral-100 py-3 text-xs md:text-sm text-neutral-600 leading-relaxed">
                     <p className="m-0">
                       {descriptionText}{" "}
                       <Link
@@ -332,42 +343,41 @@ const ProductCard = ({ product, onOpenDetails }) => {
                         onClick={() => setIsQuickViewOpen(false)}
                         className="font-bold text-neutral-900 underline hover:text-black ml-1 whitespace-nowrap"
                       >
-                        View details
+                        View full details →
                       </Link>
                     </p>
                   </div>
 
                   {/* Stock Status Indicator */}
-                  <div className={`quickview-stock-status flex items-center gap-2 text-xs font-bold ${
+                  <div className={`flex items-center gap-2 text-xs font-bold ${
                     isSelectedVariantInStock ? "text-emerald-600" : "text-red-500"
                   }`}>
                     <span className={`w-2 h-2 rounded-full ${
                       isSelectedVariantInStock ? "bg-emerald-500 animate-pulse" : "bg-red-500"
                     }`} />
-                    <span>{isSelectedVariantInStock ? "In Stock" : "Out of Stock"}</span>
+                    <span>{isSelectedVariantInStock ? "In Stock • Ready to ship" : "Out of Stock"}</span>
                   </div>
 
                   {/* Interactive Size Selector */}
                   {sizes.length > 0 && (
-                    <div className="quickview-size-section flex flex-col gap-2 pt-1">
-                      <div className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                        <span>Size:</span>
-                        <span className="font-extrabold text-black uppercase">{modalSize}</span>
+                    <div className="flex flex-col gap-2 pt-1">
+                      <div className="text-xs font-bold text-neutral-900 flex items-center justify-between">
+                        <span>SELECT SIZE</span>
+                        <span className="text-neutral-500 font-medium">Selected: <strong className="text-black uppercase">{modalSize}</strong></span>
                       </div>
-                      <div className="quickview-sizes-grid flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {sizes.map((size) => {
                           const isSelected = modalSize === size;
                           return (
                             <button
                               key={size}
                               type="button"
-                              style={{
-                                backgroundColor: isSelected ? "#000000" : "#ffffff",
-                                color: isSelected ? "#ffffff" : "#111111",
-                                borderColor: isSelected ? "#000000" : "#d4d4d4",
-                              }}
-                              className="w-11 h-11 rounded border text-xs font-bold transition-all cursor-pointer flex items-center justify-center shadow-none hover:border-black"
                               onClick={() => setModalSize(size)}
+                              className={`w-12 h-11 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center border ${
+                                isSelected
+                                  ? "bg-black text-white border-black shadow-md scale-[1.02]"
+                                  : "bg-neutral-50 text-neutral-800 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-100"
+                              }`}
                             >
                               {size}
                             </button>
@@ -378,27 +388,27 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   )}
 
                   {/* Quantity Selector & Add To Cart Row */}
-                  <div className="quickview-quantity-section flex flex-col gap-2 pt-2">
+                  <div className="flex flex-col gap-2 pt-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                      Quantity
+                      QUANTITY
                     </span>
-                    <div className="quickview-actions-row flex items-center gap-3">
+                    <div className="grid grid-cols-[120px_1fr] gap-3">
                       
-                      {/* Quantity Stepper (- 1 +) */}
-                      <div className="flex items-center border border-neutral-300 rounded h-11 overflow-hidden select-none bg-white">
+                      {/* Quantity Stepper */}
+                      <div className="flex items-center border border-neutral-200 rounded-lg h-12 overflow-hidden select-none bg-neutral-50">
                         <button
                           type="button"
-                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-100 hover:text-black transition-colors cursor-pointer"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-base"
                           onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                         >
                           -
                         </button>
-                        <span className="w-10 text-center font-bold text-xs text-neutral-900">
+                        <span className="flex-1 text-center font-bold text-sm text-neutral-900">
                           {quantity}
                         </span>
                         <button
                           type="button"
-                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-100 hover:text-black transition-colors cursor-pointer"
+                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-base"
                           onClick={() => setQuantity((prev) => prev + 1)}
                         >
                           +
@@ -409,10 +419,10 @@ const ProductCard = ({ product, onOpenDetails }) => {
                       <button
                         type="button"
                         disabled={isAdding}
-                        className={`flex-1 h-11 rounded border font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        className={`h-12 rounded-lg font-bold text-xs tracking-[0.1em] uppercase transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
                           addedSuccess
                             ? "bg-emerald-600 text-white border-emerald-600"
-                            : "bg-white border-black text-black hover:bg-neutral-900 hover:text-white"
+                            : "bg-neutral-900 text-white hover:bg-black hover:shadow-md active:scale-[0.99]"
                         }`}
                         onClick={handleModalAddToCart}
                       >
@@ -438,15 +448,10 @@ const ProductCard = ({ product, onOpenDetails }) => {
                   <button
                     type="button"
                     disabled={isAdding}
-                    style={{
-                      backgroundColor: "#000000",
-                      color: "#ffffff",
-                      border: "none",
-                    }}
-                    className="quickview-buy-now-btn w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-widest rounded hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center"
+                    className="w-full h-12 bg-black text-white font-bold text-xs uppercase tracking-[0.16em] rounded-lg hover:bg-neutral-800 transition-all shadow-md active:scale-[0.99] cursor-pointer flex items-center justify-center"
                     onClick={handleModalBuyNow}
                   >
-                    Buy It Now
+                    BUY IT NOW
                   </button>
                 </div>
 

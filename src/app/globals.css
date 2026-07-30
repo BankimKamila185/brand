@@ -4034,46 +4034,47 @@ html, body {
 }
 
 .quickview-modal-content {
-  background: var(--c-surface);
+  background: #ffffff;
   width: 100%;
-  max-width: 880px;
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-xl);
+  max-width: 900px;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  max-height: 90svh;
+  max-height: 88vh;
   display: flex;
   animation: scaleIn 0.35s var(--ease-spring);
 }
 
 .quickview-close-btn {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  background: rgba(248, 247, 245, .9);
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-sm);
-  width: 34px;
-  height: 34px;
+  top: 16px;
+  right: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--c-ink);
-  z-index: 10;
+  color: #111111;
+  z-index: 30;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all var(--t-fast);
 }
 
 .quickview-close-btn:hover {
-  background: var(--c-dark);
-  color: var(--c-dark-text);
-  border-color: var(--c-dark);
-  transform: scale(1.04);
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  transform: scale(1.08);
 }
 
 .quickview-modal-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   width: 100%;
 }
 
@@ -4083,26 +4084,27 @@ html, body {
   }
 
   .quickview-modal-content {
-    max-height: 96svh;
+    max-height: 94vh;
     overflow-y: auto;
     flex-direction: column;
+    border-radius: 16px;
   }
 }
 
 .quickview-image-container {
-  background: var(--c-bg-2);
+  background: #0c0c0e;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
-  max-height: 540px;
+  max-height: 560px;
   overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .quickview-image-container {
-    height: 340px;
-    max-height: 340px;
+    height: 360px;
+    max-height: 360px;
   }
 }
 
