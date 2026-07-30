@@ -97,32 +97,49 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
         <div className="drawer-body">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full min-h-[380px] text-center px-6 py-12">
-              {/* Minimalist Icon Circle */}
-              <div className="w-16 h-16 rounded-full bg-neutral-900 text-white flex items-center justify-center mb-6 shadow-sm">
-                <ShoppingBag className="w-7 h-7" style={{ strokeWidth: 1.5 }} />
+            <div className="flex flex-col items-center justify-center h-full min-h-[420px] text-center px-6 py-12">
+              {/* Minimalist Dark Icon Circle */}
+              <div 
+                className="w-20 h-20 rounded-full bg-neutral-900 text-white flex items-center justify-center shadow-md"
+                style={{ marginBottom: "28px" }}
+              >
+                <ShoppingBag className="w-8 h-8" style={{ strokeWidth: 1.5 }} />
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-bold text-neutral-900 uppercase tracking-[0.14em] mb-2">
+              <h3 
+                className="text-xl font-extrabold text-neutral-900 uppercase"
+                style={{ marginBottom: "12px", letterSpacing: "0.16em" }}
+              >
                 YOUR CART IS EMPTY
               </h3>
 
-              {/* Subtitle */}
-              <p className="text-xs text-neutral-500 max-w-[250px] leading-relaxed mb-8">
-                Your shopping cart is currently empty. Explore our latest drops and statement streetwear.
+              {/* Subtitle Description */}
+              <p 
+                className="text-xs text-neutral-500 max-w-[270px]"
+                style={{ marginBottom: "36px", lineHeight: "1.6" }}
+              >
+                Your shopping cart is currently empty. Explore our latest drops and statement streetwear essentials.
               </p>
 
-              {/* CTA Button */}
+              {/* High-End Luxury CTA Button */}
               <button
                 onClick={() => {
                   setCartOpen(false);
                   router.push("/collections/all");
                 }}
-                className="w-full max-w-[240px] bg-black hover:bg-neutral-800 text-white py-3.5 px-6 rounded-md text-xs font-bold tracking-[0.16em] uppercase transition-all shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center gap-2"
+                style={{
+                  height: "52px",
+                  paddingLeft: "28px",
+                  paddingRight: "28px",
+                  letterSpacing: "0.18em",
+                  backgroundColor: "#000000",
+                  color: "#ffffff",
+                }}
+                className="w-full max-w-[270px] rounded-lg text-xs font-bold uppercase transition-all shadow-md hover:shadow-xl hover:bg-neutral-800 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-3 group"
               >
                 <span>CONTINUE SHOPPING</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
           ) : (
