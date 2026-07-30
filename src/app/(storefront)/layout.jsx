@@ -44,10 +44,10 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
-        width: 652,
-        height: 298,
-        alt: "The Outliers Studio",
+        url: `${SITE_URL}/seo-logo.png`,
+        width: 328,
+        height: 326,
+        alt: "The Outliers Studio flame logo",
       },
     ],
   },
@@ -56,7 +56,7 @@ export const metadata = {
     title: "The Outliers Studio | Premium Streetwear",
     description:
       "The Outliers Studio is for those who refuse to blend in. We create premium streetwear that celebrates individuality, confidence, and the courage to choose your own path.",
-    images: [`${SITE_URL}/logo.png`],
+    images: [`${SITE_URL}/seo-logo.png`],
   },
   robots: {
     index: true,
@@ -101,8 +101,13 @@ export default function RootLayout({ children }) {
         "@id": `${SITE_URL}/#organization`,
         "name": "The Outliers Studio",
         "url": SITE_URL,
-        "logo": `${SITE_URL}/logo.png`,
-        "image": `${SITE_URL}/logo.png`,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${SITE_URL}/seo-logo.png`,
+          "width": 328,
+          "height": 326
+        },
+        "image": `${SITE_URL}/seo-logo.png`,
         "sameAs": [
           "https://www.instagram.com/theoutliersstudio"
         ]
