@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
-import { FileText, Truck, Tag } from "lucide-react";
+import { FileText, Truck, Tag, ShoppingBag, ArrowRight } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -95,19 +95,67 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
           </button>
         </div>
 
-        <div className="drawer-body">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <span className="text-5xl mb-4">👜</span>
-              <p className="text-gray-500 font-bold uppercase tracking-wider mb-6">
-                Your cart is empty
-              </p>
-              <button
-                onClick={() => setCartOpen(false)}
-                className="bg-black text-white px-8 py-3 uppercase font-bold text-sm tracking-wider"
+            <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
+              {/* Icon Badge */}
+              <div 
+                className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-6 relative shadow-inner"
+                style={{ border: "1px solid #eaeaea" }}
               >
-                Continue Shopping
+                <ShoppingBag className="w-9 h-9 text-neutral-800" style={{ strokeWidth: 1.5 }} />
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black text-white text-[10px] flex items-center justify-center font-bold">
+                  0
+                </span>
+              </div>
+
+              {/* Eyebrow & Title */}
+              <p className="text-[11px] font-semibold tracking-[0.2em] text-neutral-400 uppercase mb-2">
+                YOUR SHOPPING BAG IS EMPTY
+              </p>
+              <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">
+                Looks like you haven't added anything yet
+              </h3>
+              <p className="text-xs text-neutral-500 max-w-[270px] mb-8 leading-relaxed">
+                Explore our latest drops and elevated streetwear essentials to start building your wardrobe.
+              </p>
+
+              {/* Action Button */}
+              <button
+                onClick={() => {
+                  setCartOpen(false);
+                  router.push("/collections/all");
+                }}
+                className="w-full max-w-[260px] bg-black hover:bg-neutral-800 text-white py-4 px-6 rounded-full text-xs font-bold tracking-[0.14em] uppercase transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+              >
+                <span>CONTINUE SHOPPING</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
+
+              {/* Quick Collection Pills */}
+              <div className="mt-10 pt-8 border-t border-neutral-100 w-full max-w-[300px]">
+                <p className="text-[10px] font-bold tracking-[0.16em] text-neutral-400 uppercase mb-3 text-center">
+                  POPULAR CATEGORIES
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {[
+                    { label: "Bestsellers", href: "/collections/bestsellers" },
+                    { label: "Winterwear", href: "/collections/winterwear" },
+                    { label: "Outerwear", href: "/collections/outerwear" },
+                    { label: "All Items", href: "/collections/all" }
+                  ].map((cat) => (
+                    <button
+                      key={cat.href}
+                      onClick={() => {
+                        setCartOpen(false);
+                        router.push(cat.href);
+                      }}
+                      className="text-xs px-3.5 py-1.5 rounded-full bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 text-neutral-700 font-medium transition-colors cursor-pointer"
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col gap-6">
