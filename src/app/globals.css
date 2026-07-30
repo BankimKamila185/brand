@@ -80,7 +80,7 @@
 
   /* --- Layout --- */
   --max-w: 1440px;
-  --container-px: clamp(20px, 4vw, 60px);
+  --container-px: clamp(16px, 2.5vw, 36px);
   --header-h: 100px;
   --announce-h: 40px;
 
