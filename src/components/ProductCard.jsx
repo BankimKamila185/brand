@@ -1,5 +1,6 @@
 "use strict";
 "use client";
+// QuickView Modal updated with dark studio layout & crisp typography
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
