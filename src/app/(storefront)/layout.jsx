@@ -104,7 +104,7 @@ export default function RootLayout({ children }) {
         "@id": `${SITE_URL}/#organization`,
         "name": "The Outliers Studio",
         "url": SITE_URL,
-        "logo": `${SITE_URL}/icon-512.png`,
+        "logo": `${SITE_URL}/logo.png`,
         "image": `${SITE_URL}/logo.png`,
         "sameAs": [
           "https://www.instagram.com/theoutliersstudio"
