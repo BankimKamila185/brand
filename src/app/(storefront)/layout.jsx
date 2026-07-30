@@ -25,6 +25,18 @@ export const metadata = {
   authors: [{ name: "The Outliers Studio" }],
   creator: "The Outliers Studio",
   publisher: "The Outliers Studio",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: ["/favicon.ico"],
+  },
   openGraph: {
     title: "The Outliers Studio | Premium Streetwear & Urban Clothing",
     description:
@@ -33,12 +45,21 @@ export const metadata = {
     siteName: "The Outliers Studio",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${SITE_URL}/logo.png`,
+        width: 652,
+        height: 298,
+        alt: "The Outliers Studio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "The Outliers Studio | Premium Streetwear",
     description:
       "The Outliers Studio is for those who refuse to blend in. We create premium streetwear that celebrates individuality, confidence, and the courage to choose your own path.",
+    images: [`${SITE_URL}/logo.png`],
   },
   robots: {
     index: true,
@@ -83,7 +104,8 @@ export default function RootLayout({ children }) {
         "@id": `${SITE_URL}/#organization`,
         "name": "The Outliers Studio",
         "url": SITE_URL,
-        "logo": `${SITE_URL}/icon.svg`,
+        "logo": `${SITE_URL}/icon-512.png`,
+        "image": `${SITE_URL}/logo.png`,
         "sameAs": [
           "https://www.instagram.com/theoutliersstudio"
         ]
