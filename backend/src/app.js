@@ -48,6 +48,8 @@ const createApp = () => {
       origin: (origin, callback) => {
         const allowed = [
           env.FRONTEND_URL,
+          "https://admin.theoutliersstudio.com",
+          "https://theoutliersstudio.com",
           "http://localhost:3000",
           "http://localhost:3001",
         ].filter(Boolean);
@@ -57,7 +59,8 @@ const createApp = () => {
           allowed.includes(origin) ||
           allowed.includes(origin.replace(/\/$/, "")) ||
           origin.endsWith(".vercel.app") ||
-          origin.endsWith(".onrender.com");
+          origin.endsWith(".onrender.com") ||
+          origin.endsWith(".theoutliersstudio.com");
 
         if (isAllowed) {
           callback(null, true);

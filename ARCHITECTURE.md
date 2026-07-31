@@ -56,8 +56,8 @@ The data & infrastructure stack is powered by **Neon DB** (Serverless PostgreSQL
 ```mermaid
 flowchart TB
     subgraph Clients ["Client Layer"]
-        Storefront["Storefront Web App\n(Next.js 16 / React 19)"]
-        AdminApp["Admin Dashboard\n(Next.js App Router)"]
+        Storefront["Storefront Web App\n(theoutliersstudio.com)"]
+        AdminApp["Admin Dashboard\n(admin.theoutliersstudio.com)"]
     end
 
     subgraph HostingFrontend ["Vercel Edge Network"]
