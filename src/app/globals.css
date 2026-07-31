@@ -1290,6 +1290,92 @@ html {
   border-radius: var(--r-xs);
 }
 
+/* Home loading uses its own layout so it cannot inherit sizing rules from
+   interactive product cards. This keeps the placeholder geometry stable while
+   the page is still resolving data. */
+.sk-home-section {
+  width: min(100%, var(--max-w));
+  box-sizing: border-box;
+  align-self: center;
+  padding-inline: var(--container-px);
+}
+
+.sk-home-section + .sk-home-section {
+  margin-top: clamp(40px, 6vw, 88px);
+}
+
+.sk-section-title-wrap {
+  justify-content: flex-start;
+  margin-bottom: clamp(20px, 3vw, 28px);
+}
+
+.sk-product-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 28px);
+}
+
+.sk-product-grid--featured {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sk-product-card {
+  min-width: 0;
+}
+
+.sk-product-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--sk-base);
+}
+
+.sk-product-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 12px;
+}
+
+.sk-campaign-banner {
+  height: clamp(220px, 34vw, 480px);
+}
+
+.sk-campaign-banner-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-md);
+}
+
+@media (max-width: 1200px) {
+  .sk-product-grid--featured,
+  .sk-product-grid--row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .sk-product-grid--featured,
+  .sk-product-grid--row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .sk-product-grid--featured,
+  .sk-product-grid--row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-product-card-info {
+    gap: 5px;
+    padding-top: 9px;
+  }
+}
+
 .sk-header-desktop-nav {
   display: flex;
   gap: 32px;
@@ -1402,6 +1488,11 @@ html {
   display: flex;
   justify-content: center;
   margin-bottom: 48px;
+}
+
+.sk-home-section .sk-section-title-wrap {
+  justify-content: flex-start;
+  margin-bottom: clamp(20px, 3vw, 28px);
 }
 
 @media (max-width: 480px) {

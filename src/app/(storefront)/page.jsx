@@ -94,14 +94,14 @@ function SkHeroSlider() {
 // ─── Skeleton product card ────────────────────────────────────────────────────
 function SkProductCard() {
   return (
-    <div className="product-card">
-      <div className="product-card-media" style={{ background: "transparent" }}>
+    <div className="sk-product-card" aria-hidden="true">
+      <div className="sk-product-card-media">
         <SkBox style={{ position: "absolute", inset: 0, width: "100%", height: "100%", borderRadius: 0 }} />
       </div>
-      <div className="product-card-info">
-        <SkLine w="48%" h={11} />
-        <SkLine w="88%" h={14} />
-        <SkLine w="38%" h={14} />
+      <div className="sk-product-card-info">
+        <SkLine w="42%" h={10} />
+        <SkLine w="82%" h={15} />
+        <SkLine w="34%" h={13} />
       </div>
     </div>
   );
@@ -132,11 +132,11 @@ function SkCategoryGrid() {
 // ─── Trending Now Skeleton ────────────────────────────────────────────────────
 function SkTrendingSection() {
   return (
-    <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
+    <section className="sk-home-section">
       <div className="sk-section-title-wrap">
         <SkBox style={{ width: 200, height: 28, borderRadius: 5 }} />
       </div>
-      <div className="product-grid">
+      <div className="sk-product-grid sk-product-grid--featured">
         {Array.from({ length: 8 }).map((_, i) => (
           <SkProductCard key={i} />
         ))}
@@ -148,11 +148,11 @@ function SkTrendingSection() {
 // ─── Row Skeleton ─────────────────────────────────────────────────────────────
 function SkProductRow({ count = 5 }) {
   return (
-    <section className="container-fluid sk-section" style={{ marginTop: 64, marginBottom: 64 }}>
+    <section className="sk-home-section">
       <div className="sk-section-title-wrap">
         <SkBox style={{ width: 280, height: 28, borderRadius: 5 }} />
       </div>
-      <div className="sk-5col-grid">
+      <div className="sk-product-grid sk-product-grid--row">
         {Array.from({ length: count }).map((_, i) => (
           <SkProductCard key={i} />
         ))}
@@ -160,6 +160,14 @@ function SkProductRow({ count = 5 }) {
       <div className="sk-cta-row">
         <SkBox style={{ width: 160, height: 48, borderRadius: 4 }} />
       </div>
+    </section>
+  );
+}
+
+function SkCampaignBanner() {
+  return (
+    <section className="sk-home-section sk-campaign-banner" aria-hidden="true">
+      <SkBox className="sk-campaign-banner-fill" />
     </section>
   );
 }
@@ -277,7 +285,7 @@ export default function Home() {
         )}
 
         {/* ⑥.5 Campaign Image Banner */}
-        <ImageBanner />
+        {loading ? <SkCampaignBanner /> : <ImageBanner />}
 
         {/* ⑦ New Arrivals */}
         {loading ? (
