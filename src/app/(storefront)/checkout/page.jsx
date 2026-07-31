@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   Tag,
   Trash2,
+  Truck,
 } from "lucide-react";
 
 const EMPTY_ADDRESS = {
@@ -334,7 +335,52 @@ function Input({ label, name, value, onChange, full = false }) {
 }
 
 function OrderSummary({ cart, subtotal, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading }) {
-  return <section className="checkout-v3-order"><div className="checkout-v3-order-top"><p className="checkout-v3-eyebrow">Your bag</p><h2>Order total</h2></div><div className="checkout-items">{cart.map((item) => { const variant = item.product.variants.find((entry) => entry.id === item.variantId) || item.product.variants[0]; const price = Number(variant.price); return <div key={item.variantId} className="checkout-v3-product"><img src={item.product.images[0]?.src || ""} alt="" /><div><p>{item.product.title}</p><span>Size {item.selectedSize} · Qty {item.quantity}</span></div><strong>₹{(price * item.quantity).toFixed(2)}</strong></div>; })}</div><form onSubmit={applyCoupon} className="checkout-v3-coupon"><input value={couponInput} onChange={(event) => setCouponInput(event.target.value)} placeholder="Coupon code" /><button disabled={couponLoading}>{couponLoading ? "…" : "Apply"}</button></form>{couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}{appliedCoupon && <p className="mt-2 flex items-center justify-between text-xs font-bold text-[#b9ff57]"><span><Tag className="mr-1 inline" size={13} />{appliedCoupon.code} applied</span><button type="button" onClick={removeCoupon}>Remove</button></p>}<div className="checkout-v3-totals"><Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} /><Row label="Shipping" value={shippingCharge ? `₹${shippingCharge.toFixed(2)}` : "Free"} /><div><span>Total</span><strong>₹{total.toFixed(2)}</strong></div></div></section>;
+  return (
+    <section className="checkout-v3-order">
+      <div className="checkout-v3-order-top">
+        <p className="checkout-v3-eyebrow">Your bag</p>
+        <h2>Order total</h2>
+      </div>
+      <div className="checkout-items">
+        {cart.map((item, index) => {
+          const variants = item.product?.variants || [];
+          const variant = variants.find((entry) => entry.id === item.variantId) || variants[0];
+          const price = Number(variant?.price || item.price || 0);
+          const title = item.product?.title || item.title || "Product";
+          const imageSrc = item.product?.images?.[0]?.src || item.image || "";
+          return (
+            <div key={item.variantId || index} className="checkout-v3-product">
+              <img src={imageSrc} alt={title} />
+              <div>
+                <p>{title}</p>
+                <span>Size {item.selectedSize || "M"} · Qty {item.quantity || 1}</span>
+              </div>
+              <strong>₹{(price * (item.quantity || 1)).toFixed(2)}</strong>
+            </div>
+          );
+        })}
+      </div>
+      <form onSubmit={applyCoupon} className="checkout-v3-coupon">
+        <input value={couponInput} onChange={(event) => setCouponInput(event.target.value)} placeholder="Coupon code" />
+        <button disabled={couponLoading}>{couponLoading ? "…" : "Apply"}</button>
+      </form>
+      {couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}
+      {appliedCoupon && (
+        <p className="mt-2 flex items-center justify-between text-xs font-bold text-[#b9ff57]">
+          <span><Tag className="mr-1 inline" size={13} />{appliedCoupon.code} applied</span>
+          <button type="button" onClick={removeCoupon}>Remove</button>
+        </p>
+      )}
+      <div className="checkout-v3-totals">
+        <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+        <Row label="Shipping" value={shippingCharge ? `₹${shippingCharge.toFixed(2)}` : "Free"} />
+        <div>
+          <span>Total</span>
+          <strong>₹{total.toFixed(2)}</strong>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function Row({ label, value }) { return <div><span>{label}</span><span>{value}</span></div>; }

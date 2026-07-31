@@ -318,14 +318,16 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartCount = cart.reduce((total, item) => total + (item?.quantity || 0), 0);
 
   const cartTotal = cart.reduce((total, item) => {
+    if (!item) return total;
+    const variants = item.product?.variants || [];
     const variant =
-      item.product.variants.find((v) => v.id === item.variantId) ||
-      item.product.variants[0];
-    const priceNum = parseFloat(variant.price);
-    return total + (isNaN(priceNum) ? 0 : priceNum) * item.quantity;
+      variants.find((v) => v.id === item.variantId) ||
+      variants[0];
+    const priceNum = parseFloat(variant?.price || item.price || 0);
+    return total + (isNaN(priceNum) ? 0 : priceNum) * (item.quantity || 1);
   }, 0);
 
   return (
