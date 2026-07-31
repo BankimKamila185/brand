@@ -2,19 +2,29 @@
 
 ## 1. Executive Summary
 
-**Tevar** is an enterprise-grade, high-performance E-Commerce platform designed specifically for modern fashion retail. The system features a decoupling between a high-speed **Next.js 16 Storefront & Admin Portal** and a robust **Node.js/Express REST API Server** powered by **Prisma ORM**, **PostgreSQL 16**, and **Redis 7**. 
+**Tevar** is an enterprise-grade, high-performance E-Commerce platform designed specifically for modern fashion retail. The system features a production topology separating a high-speed **Next.js 16 Storefront & Admin Portal** (hosted on **Vercel**) from a robust **Node.js/Express REST API Server** (hosted on **Render**).
 
-The platform supports end-to-end e-commerce workflows, including complex product variant builder, multi-warehouse inventory management, Razorpay payment gateway integration, real-time analytics dashboard, coupon engine, dynamic wishlist, ratings & reviews, and transactional notifications.
+The data & infrastructure stack is powered by **Neon DB** (Serverless PostgreSQL), **Render Redis**, **Cloudflare R2 Storage** (S3-compatible bucket for zero-egress asset CDN), **Razorpay** payment gateway, and **Firebase / Nodemailer** notifications.
 
 ---
 
-## 2. Technology Stack
+## 2. Technology Stack & Infrastructure
 
-### 2.1 Frontend Architecture (Storefront & Admin Dashboard)
+### 2.1 Cloud Hosting & Deployment Infrastructure
+
+| Infrastructure Layer | Service / Provider | Purpose & Specifications |
+| :--- | :--- | :--- |
+| **Frontend Hosting** | **Vercel Edge Network** | Global CDN deployment for Next.js App Router, automatic SSL, edge route rewrites to Render backend. |
+| **Backend API Hosting** | **Render Web Service** | Managed Node.js runtime environment running Express API (`https://brand-eo90.onrender.com`). |
+| **Primary Database** | **Neon DB** | Serverless, autoscaling PostgreSQL 16 database with instant branching & connection pooling. |
+| **Caching & Rate Limiting** | **Render Redis** | Managed Redis instance with LRU eviction policy for API rate limiting (`rate-limit-redis`) and session cache. |
+| **Object Storage & CDN** | **Cloudflare R2** | High-performance, zero-egress S3-compatible bucket (`@aws-sdk/client-s3`) & Cloudinary for product image storage. |
+
+### 2.2 Frontend Stack (Storefront & Admin Dashboard)
 
 | Component / Layer | Technology | Key Details & Purpose |
 | :--- | :--- | :--- |
-| **Framework** | Next.js 16.2 (App Router) | Server-Side Rendering (SSR), Static Site Generation (SSG), and API Route handlers. |
+| **Framework** | Next.js 16.2 (App Router) | Server-Side Rendering (SSR), Static Site Generation (SSG), and Vercel edge deployment. |
 | **UI Library & React** | React 19.2 | High-performance dynamic component rendering. |
 | **Styling & Design System** | Tailwind CSS v4 + tw-animate-css | Utility-first responsive styling, custom theme variables, smooth micro-interactions. |
 | **Component Primitives** | Radix UI / @shadcn/react | Accessible headless UI primitives (Dialogs, Dropdowns, Tabs, Modals). |
@@ -25,25 +35,19 @@ The platform supports end-to-end e-commerce workflows, including complex product
 | **Drag & Drop** | @dnd-kit (core, sortable) | Drag-and-drop product gallery reordering & layout builder. |
 | **Form Management** | React Hook Form + Zod | Schema-validated form submissions with client-side error handling. |
 
-### 2.2 Backend API Services & Core Infrastructure
+### 2.3 Backend API & Core Infrastructure
 
 | Component / Layer | Technology | Key Details & Purpose |
 | :--- | :--- | :--- |
-| **Runtime & Server** | Node.js (ES Modules) + Express 4.21 | Modular, asynchronous RESTful API architecture running with `tsx` runner. |
-| **Database ORM** | Prisma ORM 5.22 | Type-safe query building, migration management, complex relation modeling. |
-| **Primary Database** | PostgreSQL 16 (Alpine) | ACID-compliant relational DB, indexed schema for products, orders, users, & full-text search vector. |
-| **In-Memory Cache & Redis** | Redis 7 (Alpine) | Session caching, distributed rate-limiting (`rate-limit-redis`), LRU memory policy. |
+| **Runtime & Server** | Node.js (ES Modules) + Express 4.21 | Modular, asynchronous RESTful API architecture running on Render Web Service. |
+| **Database ORM** | Prisma ORM 5.22 | Type-safe query building, migration management, complex relation modeling for Neon DB. |
+| **Database** | Neon DB (PostgreSQL 16) | Cloud serverless PostgreSQL with connection pooling & full-text search vector. |
+| **In-Memory Cache & Redis** | Render Redis | Managed Redis 7 instance for distributed rate-limiting (`rate-limit-redis`) and session cache. |
+| **Asset Storage** | Cloudflare R2 + Cloudinary | S3-compatible bucket via `@aws-sdk/client-s3` for product images with zero egress costs. |
 | **Authentication & AuthZ** | JWT + Bcryptjs (12 rounds) | Dual-token authentication (Access 15m + Refresh 7d) with Role-Based Access Control (`USER`, `ADMIN`, `SUPER_ADMIN`). |
 | **Input Validation** | Zod 3.24 | Runtime type safety & strict API body/query validation middleware. |
 | **Security Headers** | Helmet 8 & CORS | OWASP security header compliance, configurable origin validation. |
 | **Logging & Diagnostics** | Winston 3.17 + Morgan | Structured daily file logging, levels, HTTP request logs. |
-
-### 2.3 Third-Party Cloud Integrations & Services
-
-* **Payment Gateway**: **Razorpay** (Order creation, Checkout modal integration, Webhook handling with HMAC signature validation).
-* **Media Storage & CDN**: **Cloudinary** & **AWS S3** (`@aws-sdk/client-s3`) (Automated image upload, thumbnail generation, variant picture storage).
-* **Notification Engine**: **Firebase Admin SDK 14** (Push notifications, mobile messaging) & **Nodemailer** (SMTP integration for transactional order emails and password resets).
-* **Containerization & Deployment**: **Docker & Docker Compose** (Containerized PostgreSQL, Redis, and Express API server with health-check contracts).
 
 ---
 
@@ -56,65 +60,46 @@ flowchart TB
         AdminApp["Admin Dashboard\n(Next.js App Router)"]
     end
 
-    subgraph Edge ["Edge & Gateways"]
-        Vercel["Vercel CDN / Reverse Proxy"]
-        ExpressGateway["Express API Gateway (Port 4000)\n- Helmet / CORS\n- Rate Limiting (Redis)\n- JWT Auth Middleware"]
+    subgraph HostingFrontend ["Vercel Edge Network"]
+        VercelCDN["Vercel CDN & Edge Router"]
+        VercelRewrite["API Rewrite Rules (/api/*)"]
     end
 
-    subgraph ServiceModules ["Backend Micro-Modules (Node.js/Express)"]
-        AuthMod["Auth Module"]
-        ProdMod["Products & Builder Module"]
-        OrderMod["Orders & Cart Module"]
-        PayMod["Payments Module"]
-        InvMod["Multi-Warehouse Inventory"]
-        AnalytMod["Analytics Engine"]
+    subgraph HostingBackend ["Render Cloud Platform"]
+        RenderAPI["Render Web Service (Node.js/Express API)\nhttps://brand-eo90.onrender.com\n- Helmet / CORS\n- Rate Limiting\n- JWT Auth Middleware"]
+        RenderRedis[("Render Redis Cache\nRate Limiting & Sessions")]
     end
 
-    subgraph Persistence ["Data & Storage Layer"]
-        Postgres[(PostgreSQL 16 DB\nPrimary Storage)]
-        Redis[(Redis 7 Cache\nRate Limiting & Sessions)]
+    subgraph CloudData ["Cloud Data & Storage"]
+        NeonDB[("Neon DB\nServerless PostgreSQL 16")]
+        CloudflareR2[("Cloudflare R2 Storage\nS3-Compatible Image CDN")]
     end
 
     subgraph External ["External Services"]
-        Razorpay["Razorpay Gateway"]
-        Cloudinary["Cloudinary / S3 CDN"]
-        Firebase["Firebase Admin (FCM)"]
+        Razorpay["Razorpay Payment Gateway"]
+        Firebase["Firebase Admin (Push FCM)"]
         SMTP["SMTP Mail Server"]
     end
 
-    Storefront --> Vercel
-    AdminApp --> Vercel
-    Vercel --> ExpressGateway
+    Storefront --> VercelCDN
+    AdminApp --> VercelCDN
+    VercelCDN --> VercelRewrite
+    VercelRewrite --> RenderAPI
 
-    ExpressGateway --> AuthMod
-    ExpressGateway --> ProdMod
-    ExpressGateway --> OrderMod
-    ExpressGateway --> PayMod
-    ExpressGateway --> InvMod
-    ExpressGateway --> AnalytMod
+    RenderAPI --> RenderRedis
+    RenderAPI --> NeonDB
+    RenderAPI <--> CloudflareR2
 
-    AuthMod --> Redis
-    ExpressGateway --> Redis
-
-    AuthMod --> Postgres
-    ProdMod --> Postgres
-    OrderMod --> Postgres
-    PayMod --> Postgres
-    InvMod --> Postgres
-    AnalytMod --> Postgres
-
-    PayMod <--> Razorpay
-    ProdMod <--> Cloudinary
-    AuthMod --> SMTP
-    OrderMod --> SMTP
-    OrderMod --> Firebase
+    RenderAPI <--> Razorpay
+    RenderAPI --> SMTP
+    RenderAPI --> Firebase
 ```
 
 ---
 
 ## 4. Database Schema & Data Modeling
 
-The platform relies on PostgreSQL managed through Prisma ORM with soft deletes, strict indexes, and relational integrity.
+The platform relies on Neon DB (PostgreSQL) managed through Prisma ORM with soft deletes, strict indexes, and relational integrity.
 
 ```mermaid
 erDiagram
@@ -145,25 +130,14 @@ erDiagram
     Order ||--o| Payment : generates
 ```
 
-### Core Schema Models Summary
-
-1. **Users & Addresses (`users`, `addresses`)**: Manages identity, salted bcrypt password hashes, OAuth tokens, email verification tokens, and role-based permissions (`USER`, `ADMIN`, `SUPER_ADMIN`).
-2. **Products & Variants (`products`, `product_variants`, `product_images`)**: Product catalog supporting options (Size, Color, Material), price snapshots, compare prices, cost prices, weight, SKU tracking, and tag arrays.
-3. **Multi-Warehouse Inventory (`inventory`, `warehouses`, `warehouse_inventory`)**: Tracks global variant quantity, reserved items for pending orders, and per-warehouse location stock breakdown.
-4. **Collections & Categories (`categories`, `collections`, `product_collections`)**: Flexible categorization with unique handles/slugs for SEO URL structuring.
-5. **Carts & Wishlists (`carts`, `cart_items`, `wishlist_items`)**: Persistent customer cart and wishlist items per user.
-6. **Coupons (`coupons`)**: Discount engine supporting percentage or flat value discounts, usage limits, minimum order thresholds, and expiry tracking.
-7. **Orders & Payments (`orders`, `order_items`, `payments`)**: Full lifecycle order management (`PENDING`, `CONFIRMED`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`, `REFUNDED`), tracking numbers, price snapshots, and Razorpay signature verification details.
-8. **Reviews & Notifications (`reviews`, `notifications`)**: Customer rating/review system with admin moderation flag, alongside in-app notification center.
-
 ---
 
 ## 5. End-to-End Data Flow & Key Lifecycles
 
 ### 5.1 Authentication & Session Management
 1. User logs in with email & password via `/api/v1/auth/login`.
-2. Backend verifies bcrypt hash, generates a **Short-lived Access Token (JWT - 15m)** and a **Long-lived Refresh Token (JWT - 7d)**.
-3. Refresh token hash is stored in PostgreSQL/Redis; client holds JWT securely for authorization headers.
+2. Render API verifies bcrypt hash, generates a **Short-lived Access Token (JWT - 15m)** and a **Long-lived Refresh Token (JWT - 7d)**.
+3. Refresh token hash is stored in Neon DB / Render Redis; client holds JWT securely for authorization headers.
 4. Admin endpoints verify `Role.ADMIN` or `Role.SUPER_ADMIN` claims.
 
 ### 5.2 E-Commerce Order & Payment Processing
@@ -171,9 +145,9 @@ erDiagram
 sequenceDiagram
     autonumber
     actor Customer
-    participant App as Next.js Storefront
-    participant API as Express Backend
-    participant DB as PostgreSQL
+    participant App as Next.js Storefront (Vercel)
+    participant API as Express API (Render)
+    participant DB as Neon DB (PostgreSQL)
     participant RZ as Razorpay Gateway
 
     Customer->>App: Clicks "Proceed to Pay"
@@ -200,38 +174,42 @@ sequenceDiagram
 
 ### 6.1 Security Standards
 * **HMAC Signature Validation**: Prevents payment tampering by verifying Razorpay signatures on the server before confirming order status.
-* **Brute-Force & Rate-Limiting**: Express API routes protected via `express-rate-limit` with Redis backstore.
+* **Brute-Force & Rate-Limiting**: Express API routes protected via `express-rate-limit` using Render Redis backstore.
 * **SQL Injection & XSS Protection**: Prisma ORM parameterized queries prevent SQL injection; Helmet sets strict CSP, HSTS, and Frameguard headers.
 * **Password Hashing**: Bcrypt with work factor of 12 rounds.
 
 ### 6.2 Performance Tuning
-* **Redis Caching**: Caching active product catalog responses and user sessions to minimize database query latency.
-* **PostgreSQL Indexing**: Composite indexes on `[product_id]`, `[handle]`, `[user_id]`, `[status]`, and full-text search vector (`search_vector`).
-* **Next.js Rendering**: Static generation for marketing pages, Server Side Rendering for dynamic category listings, and client-side dynamic fetching for real-time stock status.
+* **Cloudflare R2 CDN**: Zero-egress fee object storage bucket for instant image serving.
+* **Render Redis Caching**: Caching active product catalog responses and user sessions to minimize database query latency.
+* **Neon DB Connection Pooling**: Auto-scaling connection pool to prevent connection exhaustion on serverless workloads.
+* **Next.js Vercel Edge Optimization**: Static generation for marketing pages, SSG/ISR for category listings, dynamic route rewrites to Render backend.
 
 ---
 
-## 7. Operational Deployment & Environment Layout
-
-### Docker Container Orchestration (`docker-compose.yml`)
+## 7. Deployment Configuration Summary
 
 ```yaml
-Services:
-  - postgres:
-      Image: postgres:16-alpine
-      Port: 5432
-      Volume: postgres_data
-      Healthcheck: pg_isready
+Hosting & Deployment Topology:
+  Frontend:
+    Provider: Vercel
+    Framework: Next.js 16 (App Router)
+    Rewrites: /api/:path* -> https://brand-eo90.onrender.com/api/:path*
 
-  - redis:
-      Image: redis:7-alpine
-      Port: 6379
-      Volume: redis_data
-      Policy: allkeys-lru (Max 256MB)
+  Backend API:
+    Provider: Render Web Service
+    Service: tevar-backend (Node.js 20 runtime)
+    Build Command: npm install && npx prisma generate
+    Start Command: npx prisma migrate deploy && npm start
 
-  - backend:
-      Build: ./backend
-      Port: 4000
-      Environment: Node production
-      Depends On: postgres (healthy), redis (healthy)
+  Redis Cache:
+    Provider: Render Redis
+    Service: tevar-redis
+    Policy: allkeys-lru
+
+  Database:
+    Provider: Neon DB (Serverless PostgreSQL 16)
+    URL: DATABASE_URL (pooled connection)
+
+  Image Storage:
+    Provider: Cloudflare R2 (S3 API via @aws-sdk/client-s3) & Cloudinary
 ```
