@@ -97,7 +97,7 @@ export default function ContactPage() {
                 </div>
                 <div className="contact-social-links">
                   <a
-                    href="https://instagram.com/houseofoutliers"
+                    href="https://instagram.com/theoutliersstudio"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contact-social-link"
@@ -105,7 +105,7 @@ export default function ContactPage() {
                     Instagram
                   </a>
                   <a
-                    href="https://facebook.com/houseofoutliers"
+                    href="https://facebook.com/theoutliersstudio"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contact-social-link"
