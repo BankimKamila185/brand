@@ -5418,6 +5418,39 @@ html, body {
   margin-left: 4px;
 }
 
+.tevar-login-checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 4px;
+  margin-left: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tevar-login-checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 4px;
+  border: 1px solid var(--c-border);
+  accent-color: #000;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tevar-login-checkbox-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--c-ink-2);
+  transition: color var(--t-fast);
+}
+
+.tevar-login-checkbox-group:hover .tevar-login-checkbox-label {
+  color: var(--c-ink);
+}
+
 /* ── 24. Buttons (Smart System) ─────────────────────────── */
 .btn,
 .btn-primary {

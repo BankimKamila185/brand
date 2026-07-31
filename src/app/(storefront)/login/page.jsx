@@ -28,6 +28,7 @@ function LoginForm() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [subscribeMarketing, setSubscribeMarketing] = useState(true);
 
   // Password Validation Criteria Checks
   const isMinLength = registerPassword.length >= 8;
@@ -83,7 +84,8 @@ function LoginForm() {
       await register({
         name: registerEmail.split('@')[0], // Fallback name
         email: registerEmail,
-        password: registerPassword
+        password: registerPassword,
+        subscribeMarketing,
       });
       setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => {
@@ -296,6 +298,20 @@ function LoginForm() {
                     </button>
                   </div>
                 </div>
+
+                {/* Marketing / Promotional Offers Subscription Checkbox */}
+                <label className="tevar-login-checkbox-group">
+                  <input 
+                    type="checkbox"
+                    checked={subscribeMarketing}
+                    onChange={(e) => setSubscribeMarketing(e.target.checked)}
+                    disabled={loading}
+                    className="tevar-login-checkbox-input"
+                  />
+                  <span className="tevar-login-checkbox-label">
+                    Email me about news, exclusive offers, and special drops.
+                  </span>
+                </label>
 
                 {/* Submit button */}
                 <button

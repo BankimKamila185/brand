@@ -310,13 +310,13 @@ router.post(
 
     // Find or create a simulation user
     let simUser = await db.user.findFirst({
-      where: { email: "simulator@tevar.in" },
+      where: { email: "simulator@theoutliersstudio.com" },
     });
     if (!simUser) {
       simUser = await db.user.create({
         data: {
           name: "Simulation Bot",
-          email: "simulator@tevar.in",
+          email: "simulator@theoutliersstudio.com",
           passwordHash: "$2a$12$L7pBWhY8Xo36QZ0k9jL3OeYJ4r9Z7yYVqW0R5A7G8C9D0E1F2G3H4", // dummy hash
           role: "USER",
         },

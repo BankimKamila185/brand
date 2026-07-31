@@ -10,7 +10,7 @@ import bcrypt from "bcryptjs";
 
 const db = new PrismaClient();
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@tevar.in";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@theoutliersstudio.com";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Tevar@Admin2025";
 const ADMIN_NAME = process.env.ADMIN_NAME || "Tevar Admin";
 

@@ -30,7 +30,7 @@ const envSchema = z.object({
   SMTP_PORT: z.string().default("587").transform(Number),
   SMTP_USER: z.string().default(""),
   SMTP_PASS: z.string().default(""),
-  SMTP_FROM: z.string().default("Tevar <noreply@tevar.in>"),
+  SMTP_FROM: z.string().default("The Outliers Studio <support@theoutliersstudio.com>"),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().default(""),
