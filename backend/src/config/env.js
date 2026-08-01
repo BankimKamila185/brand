@@ -36,6 +36,14 @@ const envSchema = z.object({
     .string()
     .default("Tevar <support@theoutliersstudio.com>"),
 
+  // Velocity Shipping API
+  VELOCITY_BASE_URL: z.string().default("https://shazam.velocity.in"),
+  VELOCITY_USERNAME: z.string().default(""),
+  VELOCITY_PASSWORD: z.string().default(""),
+  VELOCITY_WAREHOUSE_ID: z.string().default(""),
+  VELOCITY_PICKUP_LOCATION: z.string().default("Tevar Warehouse"),
+  VELOCITY_PICKUP_PINCODE: z.string().default("400097"),
+
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().default(""),
   CLOUDINARY_API_KEY: z.string().default(""),
