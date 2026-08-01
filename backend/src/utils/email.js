@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { env } from "../config/env";
-import { logger } from "./logger";
+import { env } from "../config/env.js";
+import { logger } from "./logger.js";
 
 let transporter;
 
@@ -19,19 +19,74 @@ const getTransporter = () => {
   return transporter;
 };
 
+export const verifyEmailConnection = async () => {
+  if (env.BREVO_API_KEY) {
+    const response = await fetch("https://api.brevo.com/v3/account", {
+      headers: {
+        accept: "application/json",
+        "api-key": env.BREVO_API_KEY,
+      },
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(`Brevo API Key validation failed: ${data.message || response.statusText}`);
+    }
+    return true;
+  }
+  const mailer = getTransporter();
+  return mailer.verify();
+};
+
 export const sendEmail = async (options) => {
+  // Option 1: Brevo REST API v3 (if BREVO_API_KEY is configured)
+  if (env.BREVO_API_KEY) {
+    try {
+      const fromMatch = env.SMTP_FROM.match(/^(.*?)\s*<([^>]+)>$/);
+      const senderName = fromMatch ? fromMatch[1].trim() : "Tevar";
+      const senderEmail = fromMatch ? fromMatch[2].trim() : env.SMTP_FROM;
+
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "api-key": env.BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: senderName, email: senderEmail },
+          to: [{ email: options.to }],
+          subject: options.subject,
+          htmlContent: options.html,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `Brevo API error ${response.status}`);
+      }
+
+      logger.info(`Email sent via Brevo API to ${options.to}: ${options.subject} (ID: ${data.messageId || "ok"})`);
+      return { messageId: data.messageId };
+    } catch (error) {
+      logger.error("Failed to send email via Brevo API:", error);
+      throw new Error(`Email delivery failed: ${error.message}`);
+    }
+  }
+
+  // Option 2: SMTP Relay via Nodemailer
   try {
     const mailer = getTransporter();
-    await mailer.sendMail({
+    const info = await mailer.sendMail({
       from: env.SMTP_FROM,
       to: options.to,
       subject: options.subject,
       html: options.html,
     });
-    logger.info(`Email sent to ${options.to}: ${options.subject}`);
+    logger.info(`Email sent via SMTP to ${options.to}: ${options.subject} (ID: ${info.messageId || "ok"})`);
+    return info;
   } catch (error) {
-    logger.error("Failed to send email:", error);
-    throw new Error("Email delivery failed");
+    logger.error("Failed to send email via Brevo/SMTP:", error);
+    throw new Error(`Email delivery failed: ${error.message}`);
   }
 };
 

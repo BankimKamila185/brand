@@ -25,12 +25,13 @@ const envSchema = z.object({
     .min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
-  // Email
-  SMTP_HOST: z.string().default("smtp.ethereal.email"),
+  // Email (Brevo API Key or SMTP)
+  BREVO_API_KEY: z.string().optional(),
+  SMTP_HOST: z.string().default("smtp-relay.brevo.com"),
   SMTP_PORT: z.string().default("587").transform(Number),
   SMTP_USER: z.string().default(""),
   SMTP_PASS: z.string().default(""),
-  SMTP_FROM: z.string().default("The Outliers Studio <support@theoutliersstudio.com>"),
+  SMTP_FROM: z.string().default("Tevar <noreply@tevar.in>"),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().default(""),
