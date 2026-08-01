@@ -30,19 +30,19 @@ const slugMap = {
 };
 
 const placeholders = {
-  "[BUSINESS_NAME]": "THE OUTLIERS STUDIO PRIVATE LIMITED",
+  "[BUSINESS_NAME]": "THE OUTLIERS STUDIO",
   "[BRAND_NAME]": "The Outliers Studio",
-  "[REGISTERED_OFFICE_ADDRESS]": "Flat No. 402, 4th Floor, Block-A, Streetwear Residency, HSR Layout Sector 2, Bengaluru, Karnataka - 560102, India",
-  "[WAREHOUSE_ADDRESS]": "Warehouse No. 12, Ground Floor, Industrial Logistics Park, Nelamangala Road, Bengaluru Rural, Karnataka - 562123, India",
-  "[GSTIN]": "29AAAAA0000A1Z1",
+  "[REGISTERED_OFFICE_ADDRESS]": "3 A, Rakeshe Chawl, Shivshakti Colony, Laxman Nagar, Kurar Village, Nr Shiv Mandir, Malad East, Mumbai, Mumbai Suburban, Maharashtra - 400097, India",
+  "[WAREHOUSE_ADDRESS]": "3 A, Rakeshe Chawl, Shivshakti Colony, Laxman Nagar, Kurar Village, Nr Shiv Mandir, Malad East, Mumbai, Mumbai Suburban, Maharashtra - 400097, India",
+  "[GSTIN]": "27AAAAA0000A1Z1",
   "[PAN]": "AAAAA0000A",
-  "[CIN]": "U17299KA2026PTC123456",
+  "[CIN]": "Partnership Firm",
   "[SUPPORT_PHONE]": "+91 73044 06772",
   "[SUPPORT_EMAIL]": "support@theoutliersstudio.com",
   "[GRIEVANCE_EMAIL]": "grievance@theoutliersstudio.com",
   "[NODAL_EMAIL]": "nodal@theoutliersstudio.com",
   "[WORKING_HOURS]": "Monday to Saturday, 10:00 AM to 7:00 PM (IST)",
-  "[WEBSITE_URL]": "https://brand-two-mocha.vercel.app",
+  "[WEBSITE_URL]": "https://admin.theoutliersstudio.com",
   "[INSTAGRAM_URL]": "https://instagram.com/theoutliersstudio"
 };
 

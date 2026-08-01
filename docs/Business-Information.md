@@ -4,10 +4,10 @@ This document contains the master legal and contact information placeholders for
 
 | Placeholder | Key | Realistic Value / Placeholder Format |
 | :--- | :--- | :--- |
-| **Legal Business Name** | `[BUSINESS_NAME]` | THE OUTLIERS STUDIO PRIVATE LIMITED |
+| **Legal Business Name** | `[BUSINESS_NAME]` | THE OUTLIERS STUDIO |
 | **Brand Name** | `[BRAND_NAME]` | The Outliers Studio |
-| **Registered Office Address** | `[REGISTERED_OFFICE_ADDRESS]` | Flat No. 402, 4th Floor, Block-A, Streetwear Residency, HSR Layout Sector 2, Bengaluru, Karnataka - 560102, India |
-| **Warehouse/Operations Address** | `[WAREHOUSE_ADDRESS]` | Warehouse No. 12, Ground Floor, Industrial Logistics Park, Nelamangala Road, Bengaluru Rural, Karnataka - 562123, India |
+| **Registered Office Address** | `[REGISTERED_OFFICE_ADDRESS]` | 3 A, Rakeshe Chawl, Shivshakti Colony, Laxman Nagar, Kurar Village, Nr Shiv Mandir, Malad East, Mumbai, Mumbai Suburban, Maharashtra - 400097, India |
+| **Warehouse/Operations Address** | `[WAREHOUSE_ADDRESS]` | 3 A, Rakeshe Chawl, Shivshakti Colony, Laxman Nagar, Kurar Village, Nr Shiv Mandir, Malad East, Mumbai, Mumbai Suburban, Maharashtra - 400097, India |
 | **GSTIN (GST Number)** | `[GSTIN]` | 29AAAAA0000A1Z1 |
 | **PAN** | `[PAN]` | AAAAA0000A |
 | **CIN** | `[CIN]` | U17299KA2026PTC123456 |

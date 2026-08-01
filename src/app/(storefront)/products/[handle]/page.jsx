@@ -926,8 +926,8 @@ export default function ProductDetailPage({ params }) {
                     </div>
                   ) : (
                     <div>
-                      <p style={{ margin: 0 }}><strong>Company:</strong> The Outliers Studio Fashion Private Limited</p>
-                      <p style={{ margin: "4px 0 0 0" }}><strong>Address:</strong> Ground Floor, Sector 4, HSR Layout, Bengaluru, Karnataka, 560102</p>
+                      <p style={{ margin: 0 }}><strong>Company:</strong> THE OUTLIERS STUDIO</p>
+                      <p style={{ margin: "4px 0 0 0" }}><strong>Address:</strong> 3 A, Rakeshe Chawl, Shivshakti Colony, Laxman Nagar, Kurar Village, Nr Shiv Mandir, Malad East, Mumbai, Maharashtra - 400097</p>
                     </div>
                   )}
                 </AccordionItem>

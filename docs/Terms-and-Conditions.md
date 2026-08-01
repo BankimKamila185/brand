@@ -66,7 +66,7 @@ You agree not to use the Website or its content for any unlawful purpose or to:
 
 ## 8. Governing Law & Dispute Resolution
 * **Governing Law**: These Terms and any transaction conducted through this Website shall be governed by and construed in accordance with the laws of India.
-* **Jurisdiction**: Any dispute, controversy, or claim arising out of or relating to these Terms, including their validity, breach, or termination, shall be subject to the exclusive jurisdiction of the courts located in Bengaluru, Karnataka, India.
+* **Jurisdiction**: Any dispute, controversy, or claim arising out of or relating to these Terms, including their validity, breach, or termination, shall be subject to the exclusive jurisdiction of the courts located in Mumbai, Maharashtra, India.
 
 ---
 
