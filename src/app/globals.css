@@ -7938,6 +7938,68 @@ textarea.form-input {
 .dynamic-catalog-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 .dynamic-catalog-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
 
+/* ── Order journey tracker ──────────────────────────────── */
+.profile-order-tracking {
+  margin-top: 8px;
+  padding: 24px;
+  background: linear-gradient(135deg, #fafaf8 0%, #f4f7f1 100%);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+
+.profile-tracker-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.profile-tracker-heading .profile-order-shipping-label { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--c-ink); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+
+.profile-tracker-callout { display: flex; align-items: center; gap: 15px; margin: 20px 0; padding: 17px; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 16px; }
+.profile-tracker-callout-icon { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; color: #fff; background: #059669; border-radius: 13px; }
+.profile-tracker-kicker { margin: 0 0 3px; color: #047857; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.profile-tracker-callout h4 { margin: 0; color: #064e3b; font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
+.profile-tracker-callout > div:last-child > p:last-child { margin: 3px 0 0; color: #047857; font-size: 12px; line-height: 1.45; }
+.profile-tracker-callout--pending { color: #92400e; background: #fffbeb; border-color: #fde68a; }
+.profile-tracker-callout--pending .profile-tracker-callout-icon { background: #d97706; }
+.profile-tracker-callout--pending h4 { color: #78350f; }
+.profile-tracker-callout--pending .profile-tracker-kicker, .profile-tracker-callout--pending > div:last-child > p:last-child { color: #a16207; }
+.profile-tracker-callout--shipped { color: #5b21b6; background: #f5f3ff; border-color: #ddd6fe; }
+.profile-tracker-callout--shipped .profile-tracker-callout-icon { background: #7c3aed; }
+.profile-tracker-callout--shipped h4 { color: #4c1d95; }
+.profile-tracker-callout--shipped .profile-tracker-kicker, .profile-tracker-callout--shipped > div:last-child > p:last-child { color: #6d28d9; }
+.profile-tracker-callout--cancelled, .profile-tracker-callout--refunded { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+.profile-tracker-callout--cancelled .profile-tracker-callout-icon, .profile-tracker-callout--refunded .profile-tracker-callout-icon { background: #dc2626; }
+.profile-tracker-callout--cancelled h4, .profile-tracker-callout--refunded h4 { color: #7f1d1d; }
+.profile-tracker-callout--cancelled .profile-tracker-kicker, .profile-tracker-callout--refunded .profile-tracker-kicker, .profile-tracker-callout--cancelled > div:last-child > p:last-child, .profile-tracker-callout--refunded > div:last-child > p:last-child { color: #b91c1c; }
+
+.profile-tracker-details { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 22px; }
+.profile-tracker-code { display: flex; flex: 1; flex-wrap: wrap; gap: 8px 18px; padding: 11px 14px; color: var(--c-ink-2); background: #fff; border: 1px solid var(--c-border); border-radius: 11px; font-size: 12px; }
+.profile-tracker-code span { display: inline-flex; align-items: center; gap: 6px; }
+.profile-tracker-code strong { color: var(--c-ink); }
+.profile-tracker-link { padding: 12px 15px; color: #fff; background: var(--c-ink); border-radius: 10px; font-size: 11px; font-weight: 800; letter-spacing: .03em; text-decoration: none; transition: transform .2s var(--ease-out-expo), background .2s ease; }
+.profile-tracker-link:hover { color: #fff; background: var(--c-ink-2); transform: translateY(-1px); }
+
+.profile-tracker-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0; padding-top: 6px; }
+.profile-tracker-step { position: relative; min-width: 0; }
+.profile-tracker-step-main { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.profile-tracker-marker { display: grid; width: 34px; height: 34px; place-items: center; color: var(--c-ink-3); background: #fff; border: 1px solid var(--c-border); border-radius: 50%; box-shadow: 0 0 0 5px #f6f8f3; font-size: 13px; font-weight: 800; }
+.profile-tracker-step-copy { margin-top: 10px; }
+.profile-tracker-step-copy p { margin: 0; color: var(--c-ink-3); font-size: 12px; font-weight: 800; }
+.profile-tracker-step-copy span { display: block; margin-top: 3px; color: var(--c-ink-3); font-size: 11px; }
+.profile-tracker-connector { position: absolute; top: 16px; left: calc(50% + 17px); width: calc(100% - 34px); height: 1px; background: var(--c-border); }
+.profile-tracker-step.is-complete .profile-tracker-marker { color: #fff; background: #16a34a; border-color: #16a34a; }
+.profile-tracker-step.is-complete .profile-tracker-step-copy p, .profile-tracker-step.is-active .profile-tracker-step-copy p { color: var(--c-ink); }
+.profile-tracker-step.is-complete .profile-tracker-connector { background: #16a34a; }
+.profile-tracker-step.is-active .profile-tracker-marker { color: #fff; background: var(--c-ink); border-color: var(--c-ink); box-shadow: 0 0 0 5px #e4e8de; }
+.profile-tracker-step.is-pending .profile-tracker-marker { color: #fff; background: #d97706; border-color: #d97706; }
+.profile-tracker-step.is-cancelled .profile-tracker-marker { color: #fff; background: #dc2626; border-color: #dc2626; }
+
+@media (max-width: 640px) {
+  .profile-order-tracking { padding: 18px; }
+  .profile-tracker-callout { align-items: flex-start; }
+  .profile-tracker-details { align-items: stretch; }
+  .profile-tracker-code, .profile-tracker-link { width: 100%; }
+  .profile-tracker-link { text-align: center; }
+  .profile-tracker-rail { display: flex; gap: 0; overflow-x: auto; padding: 8px 6px 12px; scroll-snap-type: x proximity; }
+  .profile-tracker-step { width: 126px; min-width: 126px; scroll-snap-align: start; }
+}
+
 /* Order confirmation is a receipt, not a full checkout workspace. Keep this
    composition deliberately narrow so it remains calm on desktop displays. */
 .checkout-success-shell {

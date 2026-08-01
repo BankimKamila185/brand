@@ -159,6 +159,20 @@ function getTrackingSteps(status) {
   return steps;
 }
 
+function getTrackingMessage(status) {
+  const normalized = String(status).toLowerCase();
+  const messages = {
+    pending: ["Payment is awaiting confirmation", "Complete payment to start preparing your order."],
+    confirmed: ["Your order is in motion", "We have received it and are preparing everything for dispatch."],
+    processing: ["Packing your order", "Your pieces are being checked and packed with care."],
+    shipped: ["It is on the way", "Your order has left our studio and is heading to you."],
+    delivered: ["Delivered to your door", "Your order has arrived. We hope you love it."],
+    cancelled: ["This order was cancelled", "This journey has come to a close."],
+    refunded: ["Your refund is being handled", "The payment for this order is being returned."],
+  };
+  return messages[normalized] || messages.pending;
+}
+
 function parseTracking(trackingNumber) {
   if (!trackingNumber) return { courier: "", number: "", url: "" };
   if (trackingNumber.includes(":")) {
@@ -1016,23 +1030,34 @@ export default function ProfilePage() {
                             )}
 
                             {/* Shipment Tracker Timeline */}
-                            <div className="profile-order-tracking" style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid #f0f0f0" }}>
-                              <p className="profile-order-shipping-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 800, color: "#111", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "20px" }}>
-                                <Truck size={14} /> Shipment Tracker
-                              </p>
+                            <div className="profile-order-tracking">
+                              <div className="profile-tracker-heading">
+                                <p className="profile-order-shipping-label"><Truck size={14} /> Shipment tracker</p>
+                                <StatusBadge status={order.status} />
+                              </div>
+
+                              {(() => {
+                                const [title, description] = getTrackingMessage(order.status);
+                                return (
+                                  <div className={`profile-tracker-callout profile-tracker-callout--${String(order.status).toLowerCase()}`}>
+                                    <div className="profile-tracker-callout-icon"><Truck size={20} /></div>
+                                    <div><p className="profile-tracker-kicker">Live order update</p><h4>{title}</h4><p>{description}</p></div>
+                                  </div>
+                                );
+                              })()}
                               
                               {order.trackingNumber && (() => {
                                 const tr = parseTracking(order.trackingNumber);
                                 return (
-                                  <div style={{ marginBottom: "24px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
-                                    <div className="text-sm bg-neutral-50 px-4 py-3 rounded-xl border border-neutral-200 flex flex-wrap items-center gap-x-4 gap-y-2">
+                                  <div className="profile-tracker-details">
+                                    <div className="profile-tracker-code">
                                       {tr.courier && (
-                                        <span className="flex items-center gap-1.5 text-neutral-600 font-medium">
+                                        <span>
                                           <Truck size={14} className="text-neutral-400" />
                                           Courier: <strong className="text-neutral-800">{tr.courier}</strong>
                                         </span>
                                       )}
-                                      <span className="flex items-center gap-1.5 text-neutral-600 font-medium border-l border-neutral-200 pl-0 md:pl-4">
+                                      <span>
                                         Tracking ID: <strong className="font-mono text-neutral-900">{tr.number}</strong>
                                       </span>
                                     </div>
@@ -1041,7 +1066,7 @@ export default function ProfilePage() {
                                         href={tr.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs bg-[#0E0D0B] text-white hover:bg-neutral-800 font-bold px-4 py-3.5 rounded-xl transition-all duration-200"
+                                        className="profile-tracker-link"
                                       >
                                         Track shipment ↗
                                       </a>
@@ -1128,41 +1153,20 @@ export default function ProfilePage() {
                                   </div>
                                 </div>
                               )}
-                              {String(order.status).toLowerCase() === "confirmed" && (
-                                <div className="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-semibold flex items-center gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                                  <span>Order confirmed! We are preparing your items for packaging and shipment.</span>
-                                </div>
-                              )}
-
-                              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-4 mt-2">
+                              <div className="profile-tracker-rail" aria-label="Shipment progress">
                                 {getTrackingSteps(order.status).map((step, idx, arr) => (
-                                  <div key={step.label} className="flex-1 w-full relative">
-                                    <div className="flex md:flex-col items-center gap-3 md:gap-2 text-left md:text-center">
-                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                                        step.isCancelled 
-                                          ? "bg-red-500 text-white"
-                                          : step.isPending
-                                            ? "bg-amber-500 text-white ring-4 ring-amber-100"
-                                            : step.complete
-                                              ? "bg-[#16a34a] text-white"
-                                              : step.active
-                                                ? "bg-[#0E0D0B] text-white ring-4 ring-neutral-100"
-                                                : "bg-neutral-100 text-neutral-400"
-                                      }`}>
-                                        {step.isCancelled ? "✕" : step.isPending ? "!" : step.complete ? "✓" : idx + 1}
+                                  <div key={step.label} className={`profile-tracker-step ${step.complete ? "is-complete" : ""} ${step.active ? "is-active" : ""} ${step.isPending ? "is-pending" : ""} ${step.isCancelled ? "is-cancelled" : ""}`}>
+                                    <div className="profile-tracker-step-main">
+                                      <div className="profile-tracker-marker">
+                                        {step.isCancelled
+                                          ? "✕"
+                                          : step.isPending ? "!" : step.complete ? "✓" : idx + 1}
                                       </div>
-                                      <div>
-                                        <p className={`text-sm font-bold ${step.active || step.complete ? "text-neutral-900" : "text-neutral-500"}`}>{step.label}</p>
-                                        <p className="text-xs text-neutral-400">{step.desc}</p>
+                                      <div className="profile-tracker-step-copy">
+                                        <p>{step.label}</p><span>{step.desc}</span>
                                       </div>
                                     </div>
-                                    {/* Line connector between steps */}
-                                    {idx < arr.length - 1 && !step.isCancelled && (
-                                      <div className={`hidden md:block absolute top-4 left-[calc(50%+16px)] right-[calc(-50%+16px)] h-0.5 transition-all duration-300 ${
-                                        step.complete ? "bg-[#16a34a]" : "bg-neutral-200"
-                                      }`} style={{ top: '16px' }} />
-                                    )}
+                                    {idx < arr.length - 1 && !step.isCancelled && <div className="profile-tracker-connector" />}
                                   </div>
                                 ))}
                               </div>
