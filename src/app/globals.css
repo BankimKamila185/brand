@@ -7938,6 +7938,65 @@ textarea.form-input {
 .dynamic-catalog-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 .dynamic-catalog-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
 
+/* Order confirmation is a receipt, not a full checkout workspace. Keep this
+   composition deliberately narrow so it remains calm on desktop displays. */
+.checkout-success-shell {
+  width: min(calc(100% - 32px), 780px) !important;
+  max-width: 780px !important;
+  margin-inline: auto !important;
+}
+
+.checkout-success-card {
+  margin-top: 0 !important;
+  padding: clamp(28px, 4vw, 44px) !important;
+  text-align: left;
+}
+
+.checkout-success-header {
+  max-width: 580px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.checkout-success-icon {
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.checkout-v3-success h1 {
+  font-size: clamp(2.15rem, 5vw, 3.65rem) !important;
+  line-height: .95;
+  letter-spacing: -.06em;
+}
+
+.checkout-v3-success .checkout-v3-copy {
+  max-width: 510px;
+  margin-inline: auto;
+  line-height: 1.55;
+}
+
+.checkout-success-roadmap {
+  margin-block: 32px !important;
+}
+
+.checkout-success-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkout-success-actions > a {
+  min-height: 48px;
+}
+
+@media (max-width: 640px) {
+  .checkout-success-shell { width: min(calc(100% - 24px), 780px) !important; }
+  .checkout-success-card { padding: 24px 18px !important; }
+  .checkout-v3-success h1 { font-size: clamp(2rem, 11vw, 2.7rem) !important; }
+  .checkout-success-roadmap { padding-inline: 10px !important; }
+  .checkout-success-roadmap .w-12 { width: 24px; }
+  .checkout-success-actions { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 1024px) {
   .dynamic-catalog-grid.cols-4,
   .dynamic-catalog-grid.cols-5 {

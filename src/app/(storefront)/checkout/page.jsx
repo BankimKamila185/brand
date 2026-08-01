@@ -222,21 +222,23 @@ export default function CheckoutPage() {
     return (
       <CheckoutFrame>
         <main className="checkout-v3-main flex-1 py-12 md:py-20">
-          <section className="checkout-v3-shell mx-auto max-w-xl px-4 text-center">
-            <div className="checkout-v3-panel checkout-v3-success bg-white border border-neutral-100 rounded-3xl p-8 shadow-lg">
-              <PackageCheck className="mx-auto mb-6 h-16 w-16 text-[#1a9e5d]" />
-              <p className="checkout-v3-eyebrow text-xs font-bold uppercase tracking-wider text-[#1a9e5d] mb-2">
+          <section className="checkout-v3-shell checkout-success-shell px-4 text-center">
+            <div className="checkout-v3-panel checkout-v3-success checkout-success-card bg-white border border-neutral-100 rounded-3xl p-8 shadow-lg">
+              <header className="checkout-success-header">
+                <PackageCheck className="checkout-success-icon h-16 w-16 text-[#1a9e5d]" />
+                <p className="checkout-v3-eyebrow text-xs font-bold uppercase tracking-wider text-[#1a9e5d] mb-2">
                 Thank you for your order!
-              </p>
-              <h1 className="font-display text-3xl font-extrabold text-neutral-900 tracking-tight leading-tight">
-                Order placed successfully
-              </h1>
-              <p className="checkout-v3-copy text-sm text-neutral-500 mt-3 max-w-md mx-auto">
-                Your order <span className="font-mono font-bold text-neutral-800">#{completedOrder.id.slice(-8).toUpperCase()}</span> has been confirmed. We've sent a confirmation email to your registered address.
-              </p>
+                </p>
+                <h1 className="font-display text-3xl font-extrabold text-neutral-900 tracking-tight leading-tight">
+                  Order placed successfully
+                </h1>
+                <p className="checkout-v3-copy text-sm text-neutral-500 mt-3 max-w-md mx-auto">
+                  Your order <span className="font-mono font-bold text-neutral-800">#{completedOrder.id.slice(-8).toUpperCase()}</span> has been confirmed. We&apos;ve sent a confirmation email to your registered address.
+                </p>
+              </header>
 
               {/* Shipment Roadmap */}
-              <div className="my-8 py-6 px-4 bg-neutral-50 rounded-2xl border border-neutral-100">
+              <div className="checkout-success-roadmap my-8 py-6 px-4 bg-neutral-50 rounded-2xl border border-neutral-100">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-5 text-left">
                   Shipment Roadmap
                 </p>
@@ -271,7 +273,7 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="checkout-success-actions flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
                   href={`/profile?tab=orders&orderId=${completedOrder.id}`}
                   className="bg-[#0E0D0B] hover:bg-[#1C1B18] text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 flex-1"
