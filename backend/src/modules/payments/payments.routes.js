@@ -139,12 +139,18 @@ router.post(
       },
     });
     if (orderDetails?.user) {
+      const customerName =
+        orderDetails.user.name ||
+        orderDetails.user.email?.split("@")[0] ||
+        "Customer";
       sendOrderConfirmationEmail(
         orderDetails.user.email,
-        orderDetails.user.name,
+        customerName,
         orderId,
         Number(orderDetails.total),
-      ).catch((e) => logger.error("Order payment confirmation email failed:", e));
+      ).catch((e) =>
+        logger.error("Order payment confirmation email failed:", e),
+      );
     }
 
     sendSuccess(res, { verified: true }, "Payment verified successfully");

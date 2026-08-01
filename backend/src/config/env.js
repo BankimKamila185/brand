@@ -30,9 +30,11 @@ const envSchema = z.object({
   ADMIN_EMAIL: z.string().default("support@theoutliersstudio.com"),
   SMTP_HOST: z.string().default("smtp-relay.brevo.com"),
   SMTP_PORT: z.string().default("587").transform(Number),
-  SMTP_USER: z.string().default(""),
+  SMTP_USER: z.string().default("b3eb4b001@smtp-brevo.com"),
   SMTP_PASS: z.string().default(""),
-  SMTP_FROM: z.string().default("Tevar <noreply@tevar.in>"),
+  SMTP_FROM: z
+    .string()
+    .default("Tevar <support@theoutliersstudio.com>"),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().default(""),

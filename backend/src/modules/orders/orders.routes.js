@@ -194,9 +194,10 @@ router.post(
       select: { name: true, email: true },
     });
     if (user) {
+      const customerName = user.name || user.email?.split("@")[0] || "Customer";
       sendOrderConfirmationEmail(
         user.email,
-        user.name,
+        customerName,
         order.id,
         Number(order.total),
       ).catch((e) => logger.error("Order confirmation email failed:", e));

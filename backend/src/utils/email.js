@@ -62,6 +62,7 @@ export const sendEmail = async (options) => {
 
       const data = await response.json();
       if (!response.ok) {
+        logger.error(`Brevo API error (${response.status}):`, data);
         throw new Error(data.message || `Brevo API error ${response.status}`);
       }
 
