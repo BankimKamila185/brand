@@ -8,6 +8,7 @@ import { paymentLimiter } from "../../middleware/rateLimit";
 import { sendSuccess } from "../../utils/response";
 import { env } from "../../config/env";
 import { logger } from "../../utils/logger";
+import { sendOrderConfirmationEmail } from "../../utils/email";
 
 const router = Router();
 
@@ -128,6 +129,23 @@ router.post(
         }),
       ),
     );
+
+    // Send order confirmation email to Customer & Admin
+    const orderDetails = await db.order.findUnique({
+      where: { id: orderId },
+      select: {
+        total: true,
+        user: { select: { name: true, email: true } },
+      },
+    });
+    if (orderDetails?.user) {
+      sendOrderConfirmationEmail(
+        orderDetails.user.email,
+        orderDetails.user.name,
+        orderId,
+        Number(orderDetails.total),
+      ).catch((e) => logger.error("Order payment confirmation email failed:", e));
+    }
 
     sendSuccess(res, { verified: true }, "Payment verified successfully");
   }),

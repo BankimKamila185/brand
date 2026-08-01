@@ -27,6 +27,7 @@ const envSchema = z.object({
 
   // Email (Brevo API Key or SMTP)
   BREVO_API_KEY: z.string().optional(),
+  ADMIN_EMAIL: z.string().default("support@theoutliersstudio.com"),
   SMTP_HOST: z.string().default("smtp-relay.brevo.com"),
   SMTP_PORT: z.string().default("587").transform(Number),
   SMTP_USER: z.string().default(""),

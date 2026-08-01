@@ -151,11 +151,42 @@ export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
           </tr>
           <tr>
             <td style="padding: 12px 0; color: #666;">Total Amount</td>
-            <td style="padding: 12px 0; font-weight: 700; text-align: right;">₹${total.toFixed(2)}</td>
+            <td style="padding: 12px 0; font-weight: 700; text-align: right;">₹${Number(total).toFixed(2)}</td>
           </tr>
         </table>
         <p style="color: #999; font-size: 12px;">You will receive shipping updates via email. Thank you for shopping with Tevar.</p>
       </div>
     `,
   });
+
+  // Send Admin Notification Email
+  if (env.ADMIN_EMAIL) {
+    sendEmail({
+      to: env.ADMIN_EMAIL,
+      subject: `🚨 New Order Placed — #${orderId.slice(-8).toUpperCase()}`,
+      html: `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 40px;">
+          <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 8px;">TEVAR ADMIN</h1>
+          <hr style="border: 1px solid #000; margin-bottom: 32px;" />
+          <h2 style="font-size: 20px; font-weight: 700;">New Customer Order! 🛍️</h2>
+          <p style="color: #555; line-height: 1.6;">A new order was just placed on your store.</p>
+          <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+            <tr>
+              <td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Customer</td>
+              <td style="padding: 12px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">${name} (${to})</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #666;">Order ID</td>
+              <td style="padding: 12px 0; border-bottom: 1px solid #eee; font-weight: 700; text-align: right;">#${orderId.slice(-8).toUpperCase()}</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 0; color: #666;">Total Amount</td>
+              <td style="padding: 12px 0; font-weight: 700; text-align: right;">₹${Number(total).toFixed(2)}</td>
+            </tr>
+          </table>
+          <p style="color: #999; font-size: 12px;">Log in to admin dashboard to manage order fulfillment.</p>
+        </div>
+      `,
+    }).catch((e) => logger.error("Admin order notification email failed:", e));
+  }
 };
