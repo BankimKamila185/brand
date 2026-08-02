@@ -38,7 +38,7 @@ const envSchema = z.object({
 
   // Velocity Shipping API
   VELOCITY_BASE_URL: z.string().default("https://shazam.velocity.in"),
-  VELOCITY_USERNAME: z.string().default(""),
+  VELOCITY_USERNAME: z.string().default("+917304406772"),
   VELOCITY_PASSWORD: z.string().default(""),
   VELOCITY_WAREHOUSE_ID: z.string().default(""),
   VELOCITY_PICKUP_LOCATION: z.string().default("Tevar Warehouse"),
