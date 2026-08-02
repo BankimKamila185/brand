@@ -43,18 +43,44 @@ export const authService = {
         email: true,
         role: true,
         emailVerified: true,
+        avatar: true,
       },
     });
 
     // Create empty cart for user
     await db.cart.create({ data: { userId: user.id } });
 
+    // Generate tokens for immediate login
+    const accessToken = generateAccessToken(user.id, user.email, user.role);
+    const { token: refreshToken } = generateRefreshToken(user.id);
+    const refreshHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        refreshTokenHash: refreshHash,
+        lastLoginAt: new Date(),
+      },
+    });
+
     // Send verification email (non-blocking)
     sendVerificationEmail(user.email, user.name, verifyToken).catch((e) =>
       logger.error("Failed to send verification email:", e),
     );
 
-    return user;
+    const userPayload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      avatar: user.avatar,
+    };
+
+    return { user: userPayload, accessToken, refreshToken };
   },
 
   async login(data) {

@@ -52,8 +52,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const register = useCallback(async (data) => {
-    await authApi.register(data);
-    // Don't auto-login — user must verify email first
+    const res = await authApi.register(data);
+    if (res.data?.user) {
+      setUser(res.data.user);
+    }
+    return res;
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
@@ -78,6 +81,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const forgotPassword = useCallback(async (email) => {
+    await authApi.forgotPassword(email);
+  }, []);
+
+  const resetPassword = useCallback(async (token, password) => {
+    await authApi.resetPassword(token, password);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -90,6 +101,8 @@ export const AuthProvider = ({ children }) => {
         refreshUser,
         loginWithGoogle,
         loginWithApple,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}

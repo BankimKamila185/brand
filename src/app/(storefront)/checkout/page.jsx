@@ -71,6 +71,12 @@ export default function CheckoutPage() {
   const [completedOrder, setCompletedOrder] = useState(null);
 
   useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/login?redirect=/checkout");
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  useEffect(() => {
     if (!isAuthenticated) return;
     const getAddresses = async () => {
       setIsAddressLoading(true);

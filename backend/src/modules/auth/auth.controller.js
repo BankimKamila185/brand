@@ -8,11 +8,18 @@ import {
 
 export const authController = {
   register: asyncHandler(async (req, res) => {
-    const user = await authService.register(req.body);
+    const { user, accessToken, refreshToken } = await authService.register(
+      req.body,
+    );
+
+    // Set tokens as HTTP-only cookies for auto-login
+    res.cookie("access_token", accessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie("refresh_token", refreshToken, REFRESH_COOKIE_OPTIONS);
+
     sendCreated(
       res,
-      user,
-      "Account created. Please check your email to verify your account.",
+      { user, accessToken },
+      "Account created and logged in successfully.",
     );
   }),
 

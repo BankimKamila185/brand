@@ -19,6 +19,48 @@ export const CartProvider = ({ children }) => {
     const loadData = async () => {
       if (isAuthenticated) {
         try {
+          // Sync any guest cart items from localStorage to backend
+          const storedCart = localStorage.getItem("hok_cart");
+          if (storedCart) {
+            try {
+              const guestItems = JSON.parse(storedCart);
+              if (Array.isArray(guestItems) && guestItems.length > 0) {
+                for (const item of guestItems) {
+                  if (item.variantId) {
+                    try {
+                      await cartApi.addItem(String(item.variantId), item.quantity || 1);
+                    } catch (err) {
+                      console.error("Error syncing guest cart item to backend:", err);
+                    }
+                  }
+                }
+              }
+            } catch (err) {
+              console.error("Error parsing guest cart:", err);
+            }
+            localStorage.removeItem("hok_cart");
+          }
+
+          // Sync any guest wishlist items from localStorage to backend
+          const storedWishlist = localStorage.getItem("hok_wishlist");
+          if (storedWishlist) {
+            try {
+              const guestWishlist = JSON.parse(storedWishlist);
+              if (Array.isArray(guestWishlist) && guestWishlist.length > 0) {
+                for (const productId of guestWishlist) {
+                  try {
+                    await wishlistApi.toggle(String(productId));
+                  } catch (err) {
+                    console.error("Error syncing guest wishlist item to backend:", err);
+                  }
+                }
+              }
+            } catch (err) {
+              console.error("Error parsing guest wishlist:", err);
+            }
+            localStorage.removeItem("hok_wishlist");
+          }
+
           // Load cart from backend
           const backendCartRes = await cartApi.get();
           if (backendCartRes.success && backendCartRes.data) {
