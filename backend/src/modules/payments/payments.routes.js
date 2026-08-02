@@ -75,11 +75,30 @@ router.post(
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature, orderId } =
       req.body;
 
-    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    if (!orderId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       throw new AppError("Missing payment verification fields", 400);
     }
 
-    // Verify signature
+    // 1. Verify order exists and belongs to the authenticated user
+    const order = await db.order.findFirst({
+      where: { id: orderId, userId: req.user.sub },
+      include: { payment: true },
+    });
+
+    if (!order) throw new AppError("Order not found", 404);
+    if (!order.payment) {
+      throw new AppError("Payment record not found for this order", 400);
+    }
+    if (order.payment.status === "PAID") {
+      throw new AppError("Order already paid", 400);
+    }
+
+    // 2. Verify Razorpay order ID matches stored payment record
+    if (order.payment.razorpayOrderId !== razorpayOrderId) {
+      throw new AppError("Payment does not match this order", 400);
+    }
+
+    // 3. Verify Razorpay signature
     const expectedSig = crypto
       .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
@@ -87,7 +106,7 @@ router.post(
 
     if (expectedSig !== razorpaySignature) {
       logger.warn("Payment signature verification failed", {
-        orderId,
+        orderId: order.id,
         razorpayOrderId,
       });
       throw new AppError("Payment verification failed", 400);
@@ -96,7 +115,7 @@ router.post(
     // Update payment and order status, and clear user's cart
     await db.$transaction([
       db.payment.update({
-        where: { orderId },
+        where: { orderId: order.id },
         data: {
           razorpayPaymentId,
           razorpaySignature,
@@ -104,7 +123,7 @@ router.post(
         },
       }),
       db.order.update({
-        where: { id: orderId },
+        where: { id: order.id },
         data: { status: "CONFIRMED" },
       }),
       db.cartItem.deleteMany({
@@ -117,7 +136,9 @@ router.post(
     ]);
 
     // Release inventory reservations and deduct actual stock
-    const orderItems = await db.orderItem.findMany({ where: { orderId } });
+    const orderItems = await db.orderItem.findMany({
+      where: { orderId: order.id },
+    });
     await Promise.all(
       orderItems.map((item) =>
         db.inventory.update({
@@ -132,7 +153,7 @@ router.post(
 
     // Send order confirmation email to Customer & Admin
     const orderDetails = await db.order.findUnique({
-      where: { id: orderId },
+      where: { id: order.id },
       select: {
         total: true,
         user: { select: { name: true, email: true } },
@@ -146,7 +167,7 @@ router.post(
       sendOrderConfirmationEmail(
         orderDetails.user.email,
         customerName,
-        orderId,
+        order.id,
         Number(orderDetails.total),
       ).catch((e) =>
         logger.error("Order payment confirmation email failed:", e),
@@ -162,11 +183,15 @@ router.post(
   "/webhook",
   asyncHandler(async (req, res) => {
     const webhookSignature = req.headers["x-razorpay-signature"];
-    const body = JSON.stringify(req.body);
+    const rawBody = Buffer.isBuffer(req.body)
+      ? req.body
+      : typeof req.body === "string"
+      ? req.body
+      : JSON.stringify(req.body);
 
     const expectedSig = crypto
       .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
-      .update(body)
+      .update(rawBody)
       .digest("hex");
 
     if (expectedSig !== webhookSignature) {
@@ -175,19 +200,25 @@ router.post(
       return;
     }
 
-    const event = req.body;
+    const event = Buffer.isBuffer(req.body)
+      ? JSON.parse(req.body.toString("utf-8"))
+      : typeof req.body === "string"
+      ? JSON.parse(req.body)
+      : req.body;
     logger.info("Razorpay webhook received:", event.event);
 
     if (event.event === "payment.failed") {
-      const orderId = event.payload.payment.entity.order_id;
-      const payment = await db.payment.findFirst({
-        where: { razorpayOrderId: orderId },
-      });
-      if (payment) {
-        await db.payment.update({
-          where: { id: payment.id },
-          data: { status: "FAILED" },
+      const razorpayOrderId = event.payload?.payment?.entity?.order_id;
+      if (razorpayOrderId) {
+        const payment = await db.payment.findFirst({
+          where: { razorpayOrderId },
         });
+        if (payment) {
+          await db.payment.update({
+            where: { id: payment.id },
+            data: { status: "FAILED" },
+          });
+        }
       }
     }
 

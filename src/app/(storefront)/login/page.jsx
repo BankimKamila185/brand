@@ -16,7 +16,8 @@ function LoginForm() {
   const { login, register, isAuthenticated, loginWithGoogle, loginWithApple } = useAuth();
   const shouldReduceMotion = useReducedMotion();
 
-  const [activeTab, setActiveTab] = useState('register');
+  const modeParam = searchParams.get('mode') || searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(modeParam === 'register' ? 'register' : 'login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -405,7 +406,7 @@ function LoginForm() {
             <div className="relative flex items-center select-none">
               <div className="flex-grow border-t border-neutral-100"></div>
               <span className="flex-shrink mx-3 text-neutral-400 text-[10px] font-semibold tracking-wider">
-                or sign up with
+                {activeTab === 'register' ? 'or sign up with' : 'or sign in with'}
               </span>
               <div className="flex-grow border-t border-neutral-100"></div>
             </div>

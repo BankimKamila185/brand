@@ -79,11 +79,10 @@ router.post(
 );
 
 // Admin CRUD
-router.use(requireAdmin);
+router.use(authenticate, requireAdmin);
 
 router.get(
   "/",
-  authenticate,
   asyncHandler(async (_req, res) => {
     const coupons = await db.coupon.findMany({
       orderBy: { createdAt: "desc" },
@@ -94,7 +93,6 @@ router.get(
 
 router.post(
   "/",
-  authenticate,
   validate(createCouponSchema),
   asyncHandler(async (req, res) => {
     const existing = await db.coupon.findUnique({
@@ -109,7 +107,6 @@ router.post(
 
 router.patch(
   "/:id",
-  authenticate,
   asyncHandler(async (req, res) => {
     const coupon = await db.coupon.update({
       where: { id: req.params["id"] },
@@ -121,7 +118,6 @@ router.patch(
 
 router.delete(
   "/:id",
-  authenticate,
   asyncHandler(async (req, res) => {
     await db.coupon.update({
       where: { id: req.params["id"] },
