@@ -139,13 +139,6 @@ export function AdminShell({ user, children }) {
             {/* Desktop spacer / search placeholder */}
             <div className="hidden md:block" />
           </div>
-
-          <div className="flex items-center gap-2">
-            {/* User Avatar Badge in Topbar */}
-            <div className="grid size-9 place-items-center rounded-xl bg-[#121212] text-sm font-semibold text-white">
-              {user?.name?.slice(0, 1) || "U"}
-            </div>
-          </div>
         </header>
 
         {/* Page Content */}
