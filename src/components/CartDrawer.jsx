@@ -290,7 +290,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             <button
               onClick={() => {
                 setCartOpen(false);
-                router.push("/checkout");
+                router.push("/cart");
               }}
               className="drawer-view-cart-link"
             >
