@@ -279,14 +279,14 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim()) e.name = "Name is required";
-    if (!form.phone.trim()) e.phone = "Phone is required";
-    else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ""))) e.phone = "Enter valid 10-digit number";
-    if (!form.line1.trim()) e.line1 = "Address line 1 is required";
-    if (!form.city.trim()) e.city = "City is required";
-    if (!form.state.trim()) e.state = "State is required";
-    if (!form.pincode.trim()) e.pincode = "Pincode is required";
-    else if (!/^\d{6}$/.test(form.pincode)) e.pincode = "Enter valid 6-digit pincode";
+    if (!form.name.trim() || form.name.trim().length < 2) e.name = "Full name must be at least 2 characters";
+    if (!form.phone.trim()) e.phone = "Phone number is required";
+    else if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\s/g, ""))) e.phone = "Enter a valid 10-digit Indian phone number starting with 6-9";
+    if (!form.line1.trim() || form.line1.trim().length < 5) e.line1 = "Address line 1 must be at least 5 characters";
+    if (!form.city.trim() || form.city.trim().length < 2) e.city = "City is required";
+    if (!form.state.trim() || form.state.trim().length < 2) e.state = "State is required";
+    if (!form.pincode.trim()) e.pincode = "PIN code is required";
+    else if (!/^[1-9]\d{5}$/.test(form.pincode.trim())) e.pincode = "Enter a valid 6-digit PIN code (e.g. 400001)";
     setErrors(e);
     return Object.keys(e).length === 0;
   };

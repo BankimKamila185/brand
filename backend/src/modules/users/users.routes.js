@@ -12,13 +12,13 @@ router.use(authenticate);
 
 const addressSchema = z.object({
   label: z.string().default("Home"),
-  name: z.string().min(2).max(100),
-  phone: z.string().min(10).max(15),
-  line1: z.string().min(5).max(255),
+  name: z.string().min(2, "Full name must be at least 2 characters").max(100),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number starting with 6-9"),
+  line1: z.string().min(5, "Address Line 1 must be at least 5 characters").max(255),
   line2: z.string().optional(),
-  city: z.string().min(2).max(100),
-  state: z.string().min(2).max(100),
-  pincode: z.string().regex(/^\d{6}$/, "Invalid PIN code"),
+  city: z.string().min(2, "City is required").max(100),
+  state: z.string().min(2, "State is required").max(100),
+  pincode: z.string().regex(/^[1-9]\d{5}$/, "Please enter a valid 6-digit Indian PIN code"),
   country: z.string().default("India"),
   isDefault: z.boolean().default(false),
 });

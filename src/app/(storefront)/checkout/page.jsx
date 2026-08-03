@@ -107,17 +107,48 @@ export default function CheckoutPage() {
   const saveAddress = async (event) => {
     event.preventDefault();
     setAddressError("");
-    const required = ["name", "phone", "line1", "city", "state", "pincode"];
-    if (required.some((field) => !String(newAddress[field]).trim())) {
-      setAddressError("Please complete all required shipping details.");
+    const name = String(newAddress.name || "").trim();
+    const phone = String(newAddress.phone || "").trim().replace(/\s+/g, "");
+    const line1 = String(newAddress.line1 || "").trim();
+    const city = String(newAddress.city || "").trim();
+    const state = String(newAddress.state || "").trim();
+    const pincode = String(newAddress.pincode || "").trim();
+
+    if (!name || name.length < 2) {
+      setAddressError("Please enter your full name (at least 2 characters).");
       return;
     }
-    if (!/^\d{10,15}$/.test(newAddress.phone) || !/^\d{6}$/.test(newAddress.pincode)) {
-      setAddressError("Enter a valid phone number and 6-digit PIN code.");
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      setAddressError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
       return;
     }
+    if (!line1 || line1.length < 5) {
+      setAddressError("Please enter your complete address / flat / building name (at least 5 characters).");
+      return;
+    }
+    if (!city || city.length < 2) {
+      setAddressError("Please enter a valid city name.");
+      return;
+    }
+    if (!state || state.length < 2) {
+      setAddressError("Please enter your state.");
+      return;
+    }
+    if (!/^[1-9]\d{5}$/.test(pincode)) {
+      setAddressError("Please enter a valid 6-digit Indian PIN code (e.g. 400001).");
+      return;
+    }
+
     try {
-      const response = await usersApi.addAddress(newAddress);
+      const response = await usersApi.addAddress({
+        ...newAddress,
+        name,
+        phone,
+        line1,
+        city,
+        state,
+        pincode,
+      });
       if (!response.success || !response.data) throw new Error("Unable to save address.");
       setAddresses((items) => [...items, response.data]);
       setSelectedAddressId(response.data.id);
