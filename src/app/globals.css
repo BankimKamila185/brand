@@ -3346,6 +3346,29 @@ html, body {
   text-decoration: line-through;
 }
 
+/* ── Disable product card hover effects on mobile & touch devices ── */
+@media (max-width: 768px), (hover: none) {
+  .product-card:hover .product-card-img {
+    transform: none !important;
+  }
+  .product-card-img.secondary {
+    display: none !important;
+    opacity: 0 !important;
+  }
+  .product-card:hover .product-badge {
+    transform: none !important;
+  }
+  .product-card-hover-actions {
+    display: none !important;
+  }
+  .product-card-bottom-action {
+    display: none !important;
+  }
+  .product-card:hover .product-card-title {
+    color: inherit !important;
+  }
+}
+
 /* ── 15. Side Drawer (Cart) ──────────────────────────────── */
 .drawer-backdrop {
   position: fixed;
