@@ -259,7 +259,10 @@ function formatError(err) {
   return err.message || "An error occurred";
 }
 
-  const submit = async (event) => {
+  const [showConfirmSaveModal, setShowConfirmSaveModal] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState(null);
+
+  const handleFormSubmit = (event) => {
     event.preventDefault();
     if (!mainImage) return setMessage("Please add a main product image.");
     if (!warehouseId)
@@ -270,9 +273,6 @@ function formatError(err) {
         return setMessage(`Please enter a valid price for size ${v.size || "variant"}.`);
       }
     }
-
-    setSaving(true);
-    setMessage("");
 
     const formattedImages = [mainImage, ...gallery]
       .filter(Boolean)
@@ -309,13 +309,23 @@ function formatError(err) {
       warehouseId,
     };
 
+    setPendingPayload(payload);
+    setShowConfirmSaveModal(true);
+  };
+
+  const executeSave = async () => {
+    if (!pendingPayload) return;
+    setShowConfirmSaveModal(false);
+    setSaving(true);
+    setMessage("");
+
     try {
       if (isEdit) {
-        await adminApi.products.update(product.id, payload);
+        await adminApi.products.update(product.id, pendingPayload);
         setMessage("Product updated successfully.");
       } else {
         await adminApi.products.create({
-          ...payload,
+          ...pendingPayload,
           handle: handle || slugify(title),
         });
         setMessage("Product created successfully.");
@@ -325,11 +335,12 @@ function formatError(err) {
       setMessage(formatError(error) || `Could not ${isEdit ? "update" : "create"} product.`);
     } finally {
       setSaving(false);
+      setPendingPayload(null);
     }
   };
 
   return (
-    <form className="product-builder" onSubmit={submit}>
+    <form className="product-builder" onSubmit={handleFormSubmit}>
       <header className="admin-page-heading">
         <div>
           <p className="admin-eyebrow">Catalog studio</p>
@@ -741,6 +752,44 @@ function formatError(err) {
             );
           }}
         />
+      )}
+
+      {/* Save Product Confirmation Modal (Yes / No) */}
+      {showConfirmSaveModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100 flex flex-col items-center text-center gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md">
+              <Save className="w-7 h-7" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl font-extrabold text-neutral-900">
+                Confirm Product Changes
+              </h3>
+              <p className="text-xs text-neutral-600 font-medium leading-relaxed">
+                Do you want to save changes to product <strong className="text-neutral-900 font-bold">&quot;{title || "Untitled Product"}&quot;</strong>?
+              </p>
+            </div>
+            <div className="flex items-center gap-3 w-full mt-2 select-none">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmSaveModal(false);
+                  setPendingPayload(null);
+                }}
+                className="flex-1 py-3 px-4 rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                No, Cancel
+              </button>
+              <button
+                type="button"
+                onClick={executeSave}
+                className="flex-1 py-3 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
+              >
+                Yes, Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </form>
   );
