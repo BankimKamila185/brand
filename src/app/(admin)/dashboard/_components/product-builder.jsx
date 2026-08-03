@@ -265,8 +265,23 @@ function formatError(err) {
     if (!warehouseId)
       return setMessage("Select a warehouse to assign size-level stock.");
 
+    for (const v of variants) {
+      if (v.price === "" || isNaN(Number(v.price)) || Number(v.price) < 0) {
+        return setMessage(`Please enter a valid price for size ${v.size || "variant"}.`);
+      }
+    }
+
     setSaving(true);
     setMessage("");
+
+    const formattedImages = [mainImage, ...gallery]
+      .filter(Boolean)
+      .map((img, idx) => ({
+        src: typeof img === "string" ? img : img.src || "",
+        altText: (typeof img === "object" && img?.altText) ? img.altText : title,
+        position: idx + 1,
+      }))
+      .filter((img) => img.src);
 
     const payload = {
       title,
@@ -280,15 +295,15 @@ function formatError(err) {
       collectionIds: selectedCollectionIds,
       isActive,
       tags: [],
-      images: [mainImage, ...gallery],
+      images: formattedImages,
       variants: variants.map((variant, idx) => ({
-        title: variant.size,
-        option1: variant.size,
+        title: variant.size || "Default",
+        option1: variant.size || "Default",
         sku: (variant.sku && variant.sku.trim()) || generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + idx),
-        price: Number(variant.price),
-        stock: Number(variant.stock),
+        price: Number(variant.price) || 0,
+        stock: Number(variant.stock) || 0,
         warehouseStocks: [
-          { warehouseId, quantity: Number(variant.stock) },
+          { warehouseId, quantity: Number(variant.stock) || 0 },
         ],
       })),
       warehouseId,
