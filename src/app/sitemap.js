@@ -1,8 +1,16 @@
+export const revalidate = 3600;
+
 export default async function sitemap() {
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
-  const backendUrl =
-    process.env.BACKEND_URL || "http://localhost:4000";
+  const rawBackend = (
+    process.env.BACKEND_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:4000"
+  ).trim();
+  const backendUrl = rawBackend.startsWith("http")
+    ? rawBackend
+    : `https://${rawBackend}`;
 
   // Static core pages
   const staticPages = [
@@ -35,48 +43,54 @@ export default async function sitemap() {
   let productEntries = [];
   try {
     const res = await fetch(`${backendUrl}/api/products?limit=500&status=active`, {
+      signal: AbortSignal.timeout(3000),
       next: { revalidate: 3600 },
     });
     if (res.ok) {
       const data = await res.json();
       const products = data?.data?.products || data?.products || data?.data || [];
-      productEntries = products
-        .filter((p) => p?.handle)
-        .map((product) => ({
-          url: `${baseUrl}/products/${product.handle}`,
-          lastModified: product.updatedAt
-            ? new Date(product.updatedAt).toISOString()
-            : new Date().toISOString(),
-          changeFrequency: "weekly",
-          priority: 0.7,
-        }));
+      if (Array.isArray(products)) {
+        productEntries = products
+          .filter((p) => p?.handle)
+          .map((product) => ({
+            url: `${baseUrl}/products/${product.handle}`,
+            lastModified: product.updatedAt
+              ? new Date(product.updatedAt).toISOString()
+              : new Date().toISOString(),
+            changeFrequency: "weekly",
+            priority: 0.7,
+          }));
+      }
     }
   } catch {
-    // Silently skip if backend is unreachable at build time
+    // Silently skip if backend is unreachable or times out during build
   }
 
   // Dynamic collection pages
   let collectionEntries = [];
   try {
     const res = await fetch(`${backendUrl}/api/collections`, {
+      signal: AbortSignal.timeout(3000),
       next: { revalidate: 3600 },
     });
     if (res.ok) {
       const data = await res.json();
       const collections = data?.data || data?.collections || [];
-      collectionEntries = collections
-        .filter((c) => c?.handle)
-        .map((collection) => ({
-          url: `${baseUrl}/collections/${collection.handle}`,
-          lastModified: collection.updatedAt
-            ? new Date(collection.updatedAt).toISOString()
-            : new Date().toISOString(),
-          changeFrequency: "weekly",
-          priority: 0.8,
-        }));
+      if (Array.isArray(collections)) {
+        collectionEntries = collections
+          .filter((c) => c?.handle)
+          .map((collection) => ({
+            url: `${baseUrl}/collections/${collection.handle}`,
+            lastModified: collection.updatedAt
+              ? new Date(collection.updatedAt).toISOString()
+              : new Date().toISOString(),
+            changeFrequency: "weekly",
+            priority: 0.8,
+          }));
+      }
     }
   } catch {
-    // Silently skip if backend is unreachable at build time
+    // Silently skip if backend is unreachable or times out during build
   }
 
   return [...staticEntries, ...productEntries, ...collectionEntries];
