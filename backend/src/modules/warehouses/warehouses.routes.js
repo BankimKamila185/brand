@@ -27,4 +27,31 @@ router.post("/", validate(warehouseSchema), async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
+router.patch("/:id", validate(warehouseSchema.partial()), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const existing = await db.warehouse.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ success: false, message: "Warehouse not found" });
+
+    if (req.body.code && req.body.code.toUpperCase() !== existing.code) {
+      const existingCode = await db.warehouse.findUnique({ where: { code: req.body.code.toUpperCase() } });
+      if (existingCode) return res.status(409).json({ success: false, message: "Warehouse code already exists" });
+    }
+
+    const warehouse = await db.warehouse.update({
+      where: { id },
+      data: req.body,
+    });
+    res.json({ success: true, data: warehouse, message: "Warehouse updated" });
+  } catch (error) { next(error); }
+});
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await db.warehouse.delete({ where: { id } });
+    res.json({ success: true, message: "Warehouse deleted" });
+  } catch (error) { next(error); }
+});
+
 export default router;

@@ -227,5 +227,7 @@ export const adminApi = {
   warehouses: {
     list: () => api.get("/api/warehouses"),
     create: (data) => api.post("/api/warehouses", data),
+    update: (id, data) => api.patch(`/api/warehouses/${id}`, data),
+    remove: (id) => api.delete(`/api/warehouses/${id}`),
   },
 };
