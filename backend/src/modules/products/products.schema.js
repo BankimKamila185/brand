@@ -82,6 +82,4 @@ export const createProductSchema = z.object({
     .min(1),
 });
 
-export const updateProductSchema = createProductSchema
-  .partial()
-  .omit({ handle: true });
+export const updateProductSchema = createProductSchema.partial();

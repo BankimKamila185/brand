@@ -270,6 +270,7 @@ function formatError(err) {
 
     const payload = {
       title,
+      handle: handle || slugify(title),
       description,
       careInstructions,
       manufacturerDetails,
@@ -372,13 +373,12 @@ function formatError(err) {
               />
             </label>
             <label>
-              Handle
+              Handle (URL Slug)
               <input
                 value={handle}
                 onChange={(e) => setHandle(slugify(e.target.value))}
                 required
-                disabled={isEdit}
-                title={isEdit ? "Handle cannot be changed after creation" : ""}
+                placeholder="product-handle"
               />
             </label>
             <label>

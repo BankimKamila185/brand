@@ -364,11 +364,31 @@ export const productsService = {
     });
     if (!existing) throw new AppError("Product not found", 404);
 
+    // Verify handle uniqueness if updated
+    let cleanHandle = undefined;
+    if (data.handle && data.handle !== existing.handle) {
+      const existingWithHandle = await db.product.findFirst({
+        where: {
+          handle: data.handle,
+          NOT: { id },
+        },
+      });
+      if (existingWithHandle) {
+        throw new AppError("A product with this handle already exists", 409);
+      }
+      cleanHandle = data.handle;
+    }
+
     // Verify category exists if provided
     let categoryId = undefined;
-    if (data.categoryId) {
-      const category = await db.category.findUnique({ where: { id: data.categoryId } });
-      if (category) categoryId = category.id;
+    if (data.categoryId !== undefined) {
+      if (data.categoryId) {
+        const category = await db.category.findUnique({ where: { id: data.categoryId } });
+        if (category) categoryId = category.id;
+        else categoryId = null;
+      } else {
+        categoryId = null;
+      }
     }
 
     // Verify collections exist if provided
@@ -402,12 +422,14 @@ export const productsService = {
       const updatedProduct = await tx.product.update({
         where: { id },
         data: {
-          title: data.title,
+          title: data.title !== undefined ? data.title : undefined,
+          handle: cleanHandle,
           description: data.description !== undefined ? data.description : undefined,
           careInstructions: data.careInstructions !== undefined ? data.careInstructions : undefined,
           manufacturerDetails: data.manufacturerDetails !== undefined ? data.manufacturerDetails : undefined,
           vendor: data.vendor !== undefined ? data.vendor : undefined,
           productType: data.productType !== undefined ? data.productType : undefined,
+          tags: data.tags !== undefined ? data.tags : undefined,
           categoryId: categoryId,
           isActive: data.isActive !== undefined ? data.isActive : undefined,
         },
@@ -461,8 +483,13 @@ export const productsService = {
             await tx.productVariant.update({
               where: { id: existingVariant.id },
               data: {
+                title: v.title || v.option1 || existingVariant.title,
+                option1: v.option1 || existingVariant.option1,
+                option2: v.option2 !== undefined ? v.option2 : existingVariant.option2,
+                option3: v.option3 !== undefined ? v.option3 : existingVariant.option3,
                 price: v.price,
                 comparePrice: v.comparePrice || null,
+                weight: v.weight !== undefined ? v.weight : existingVariant.weight,
                 sku: formattedSku,
                 isActive: true,
               },
