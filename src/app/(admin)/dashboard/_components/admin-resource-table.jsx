@@ -35,9 +35,19 @@ function formatError(err) {
 
 function rowData(resource, form) {
   const value = Object.fromEntries(new FormData(form));
-  if (value.slug) value.slug = slugify(value.slug);
-  if (value.handle) value.handle = slugify(value.handle);
-  if (resource === "products") return { title: value.title, handle: value.handle, variants: [{ title: "Default", price: Number(value.price), stock: 0 }] };
+  if (value.name && (!value.slug || !value.slug.trim())) {
+    value.slug = slugify(value.name);
+  } else if (value.slug) {
+    value.slug = slugify(value.slug);
+  }
+
+  if (value.name && (!value.handle || !value.handle.trim())) {
+    value.handle = slugify(value.name);
+  } else if (value.handle) {
+    value.handle = slugify(value.handle);
+  }
+
+  if (resource === "products") return { title: value.title, handle: value.handle || slugify(value.title), variants: [{ title: "Default", price: Number(value.price), stock: 0 }] };
   if (resource === "coupons") return { code: value.code, discountType: "PERCENTAGE", value: Number(value.value) };
   return value;
 }

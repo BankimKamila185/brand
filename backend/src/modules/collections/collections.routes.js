@@ -22,7 +22,7 @@ const collectionSchema = z.object({
         .replace(/[^a-z0-9-]+/g, "")
         .replace(/^-+|-+$/g, "")
     )
-    .refine((val) => val.length >= 2, { message: "Handle must be at least 2 valid characters" }),
+    .refine((val) => val.length >= 1, { message: "Handle must be at least 1 valid character" }),
   description: z.string().max(1000).nullable().optional(),
   imageUrl: z.string().url().nullable().optional(),
   sortOrder: z.number().int().min(0).optional(),
