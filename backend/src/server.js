@@ -23,11 +23,12 @@ const startServer = async () => {
 
     // ── Start HTTP server ──────────────────────────────────────────────────
     const app = createApp();
-    const server = app.listen(env.PORT, () => {
+    const HOST = "0.0.0.0";
+    const server = app.listen(env.PORT, HOST, () => {
       logger.info(
-        `🚀 Tevar backend running on port ${env.PORT} [${env.NODE_ENV}]`,
+        `🚀 Tevar backend running on ${HOST}:${env.PORT} [${env.NODE_ENV}]`,
       );
-      logger.info(`📖 Health: http://localhost:${env.PORT}/health`);
+      logger.info(`📖 Health: http://${HOST}:${env.PORT}/health`);
     });
 
     // ── Graceful shutdown ──────────────────────────────────────────────────

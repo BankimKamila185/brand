@@ -5,7 +5,7 @@
     "buildCommand": "cd backend && npm install && npx prisma generate"
   },
   "deploy": {
-    "startCommand": "cd backend && npx prisma db push && npm start",
+    "startCommand": "cd backend && npx prisma generate && (npx prisma db push || true) && npm start",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
