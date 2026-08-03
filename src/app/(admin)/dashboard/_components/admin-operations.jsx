@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, RefreshCw, ShieldCheck, Trash2, MapPin, Truck, ShoppingBag, Phone, ArrowLeft, Save, CreditCard, User, Mail, Calendar } from "lucide-react";
+import { Check, RefreshCw, ShieldCheck, Trash2, MapPin, Truck, ShoppingBag, Phone, ArrowLeft, Save, CreditCard, User, Mail, Calendar, X } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 const currency = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
@@ -20,6 +20,16 @@ export function AdminOperations({ type }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  // Add Admin Modal State
+  const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+  const [adminName, setAdminName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminPhone, setAdminPhone] = useState("");
+  const [adminRole, setAdminRole] = useState("ADMIN");
+  const [addingAdmin, setAddingAdmin] = useState(false);
+  const [adminMsg, setAdminMsg] = useState("");
   
   const api = adminApi[type];
   const title = type[0].toUpperCase() + type.slice(1);
@@ -56,11 +66,37 @@ export function AdminOperations({ type }) {
     );
   }
 
+  const handleCreateAdmin = async (e) => {
+    e.preventDefault();
+    setAddingAdmin(true);
+    setAdminMsg("");
+    try {
+      await adminApi.users.createAdmin({
+        name: adminName,
+        email: adminEmail,
+        password: adminPassword,
+        phone: adminPhone || undefined,
+        role: adminRole,
+      });
+      setShowAddAdminModal(false);
+      setAdminName("");
+      setAdminEmail("");
+      setAdminPassword("");
+      setAdminPhone("");
+      setAdminRole("ADMIN");
+      void load();
+    } catch (err) {
+      setAdminMsg(err.message || "Failed to create admin user.");
+    } finally {
+      setAddingAdmin(false);
+    }
+  };
+
   const headers =
     type === "orders"
       ? ["Order ID", "Customer", "Date", "Total", "Status", "Tracking"]
       : type === "users"
-      ? ["Member", "Email address", "Role", "Joined"]
+      ? ["Member", "Email address", "Phone Number", "Role", "Joined"]
       : ["Product", "Review", "Rating", "State", "Moderate"];
 
   return (
@@ -71,9 +107,20 @@ export function AdminOperations({ type }) {
           <h1>{title}</h1>
           <p>Manage and review live {title.toLowerCase()} for The Outliers Studio.</p>
         </div>
-        <button className="admin-refresh-button" onClick={() => void load()}>
-          <RefreshCw className="size-4" /> Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          {type === "users" && (
+            <button
+              type="button"
+              className="admin-primary-button text-xs py-2 px-3 flex items-center gap-1.5 cursor-pointer"
+              onClick={() => setShowAddAdminModal(true)}
+            >
+              <User className="size-3.5" /> + Add Admin
+            </button>
+          )}
+          <button className="admin-refresh-button" onClick={() => void load()}>
+            <RefreshCw className="size-4" /> Refresh
+          </button>
+        </div>
       </header>
 
       <section className="admin-operations-card">
@@ -159,29 +206,23 @@ export function AdminOperations({ type }) {
                   }
 
                   if (type === "users") {
+                    const phoneNum = item.phone || item.addresses?.[0]?.phone || "—";
                     return (
                       <tr key={item.id}>
                         <td>
-                          <div className="admin-member">
+                          <div className="admin-member font-bold text-neutral-900">
                             <i>{item.name?.slice(0, 1) || "U"}</i>
-                            {item.name}
+                            {item.name || "User"}
                           </div>
                         </td>
-                        <td>{item.email}</td>
+                        <td className="text-neutral-600 font-medium">{item.email}</td>
+                        <td className="admin-mono text-xs font-semibold text-neutral-700">{phoneNum}</td>
                         <td>
-                          <select
-                            value={item.role}
-                            onChange={async (event) => {
-                              await api.updateRole(item.id, event.target.value);
-                              void load();
-                            }}
-                          >
-                            <option>USER</option>
-                            <option>ADMIN</option>
-                            <option>SUPER_ADMIN</option>
-                          </select>
+                          <span className={`admin-status-badge status-${item.role.toLowerCase()}`}>
+                            {item.role}
+                          </span>
                         </td>
-                        <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—"}</td>
+                        <td className="text-xs text-neutral-500">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—"}</td>
                       </tr>
                     );
                   }
@@ -252,6 +293,127 @@ export function AdminOperations({ type }) {
           </table>
         </div>
       </section>
+
+      {/* Add Admin User Modal */}
+      {showAddAdminModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100 flex flex-col gap-5 relative">
+            <button
+              type="button"
+              onClick={() => {
+                setShowAddAdminModal(false);
+                setAdminMsg("");
+              }}
+              className="absolute top-5 right-5 p-2 text-neutral-400 hover:text-neutral-700 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md">
+                <User className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-neutral-900">
+                  Add Admin Account
+                </h3>
+                <p className="text-xs text-neutral-500 font-medium">
+                  Manually create an administrative user account.
+                </p>
+              </div>
+            </div>
+
+            {adminMsg && (
+              <p className="text-xs font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
+                {adminMsg}
+              </p>
+            )}
+
+            <form onSubmit={handleCreateAdmin} className="flex flex-col gap-4">
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Full Name
+                <input
+                  type="text"
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                  placeholder="e.g. John Doe"
+                  required
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Email Address
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="admin@tevar.in"
+                  required
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Password
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="At least 6 characters"
+                  required
+                  minLength={6}
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Phone Number (Optional)
+                <input
+                  type="tel"
+                  value={adminPhone}
+                  onChange={(e) => setAdminPhone(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Role
+                <select
+                  value={adminRole}
+                  onChange={(e) => setAdminRole(e.target.value)}
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors cursor-pointer"
+                >
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                  <option value="USER">USER</option>
+                </select>
+              </label>
+
+              <div className="flex items-center gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddAdminModal(false);
+                    setAdminMsg("");
+                  }}
+                  className="flex-1 py-3 px-4 rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={addingAdmin}
+                  className="flex-1 py-3 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {addingAdmin ? "Creating…" : "Create Account"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

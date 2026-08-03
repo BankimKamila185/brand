@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { db } from "../../config/database";
 import { asyncHandler, AppError } from "../../middleware/errorHandler";
 import { authenticate, requireAdmin } from "../../middleware/auth";
@@ -140,6 +141,14 @@ router.delete(
   }),
 );
 
+const createAdminSchema = z.object({
+  name: z.string().min(2).max(100),
+  email: z.string().email(),
+  password: z.string().min(6),
+  phone: z.string().optional(),
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]).default("ADMIN"),
+});
+
 router.use("/admin", requireAdmin);
 
 router.get(
@@ -152,13 +161,51 @@ router.get(
       db.user.count({ where }),
       db.user.findMany({
         where,
-        select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true, lastLoginAt: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          lastLoginAt: true,
+          addresses: {
+            select: { phone: true },
+            take: 1,
+            orderBy: { isDefault: "desc" },
+          },
+        },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
     ]);
     sendSuccess(res, users, "Admin users fetched", 200, buildPaginationMeta(total, page, limit));
+  }),
+);
+
+router.post(
+  "/admin",
+  validate(createAdminSchema),
+  asyncHandler(async (req, res) => {
+    const { name, email, password, phone, role } = req.body;
+    const existing = await db.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    if (existing) throw new AppError("A user with this email already exists", 409);
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await db.user.create({
+      data: {
+        name,
+        email: email.toLowerCase().trim(),
+        passwordHash,
+        phone: phone || null,
+        role: role || "ADMIN",
+        emailVerified: true,
+      },
+      select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+    });
+    sendCreated(res, user, "Admin user created successfully");
   }),
 );
 

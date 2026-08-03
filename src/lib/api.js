@@ -218,6 +218,7 @@ export const adminApi = {
   users: {
     list: () => api.get("/api/users/admin?limit=100"),
     updateRole: (id, role) => api.patch(`/api/users/admin/${id}/role`, { role }),
+    createAdmin: (data) => api.post("/api/users/admin", data),
   },
   reviews: {
     list: () => api.get("/api/reviews/admin"),
