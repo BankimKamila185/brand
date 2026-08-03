@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
-import { FileText, Truck, Tag, ShoppingBag, ArrowRight } from "lucide-react";
+import { Truck, Tag, ShoppingBag, ArrowRight } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -22,11 +22,8 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
   const [couponMessage, setCouponMessage] = useState("");
 
   // Expandable footer tabs state
-  const [showNote, setShowNote] = useState(false);
   const [showShipping, setShowShipping] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
-
-  const [cartNote, setCartNote] = useState("");
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault();
@@ -209,20 +206,9 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             {/* Expandable Panel Tabs */}
             <div className="drawer-footer-actions">
               <button
-                className={`footer-action-btn ${showNote ? "active" : ""}`}
-                onClick={() => {
-                  setShowNote(!showNote);
-                  setShowShipping(false);
-                  setShowCoupon(false);
-                }}
-              >
-                <FileText size={16} /> Note
-              </button>
-              <button
                 className={`footer-action-btn ${showShipping ? "active" : ""}`}
                 onClick={() => {
                   setShowShipping(!showShipping);
-                  setShowNote(false);
                   setShowCoupon(false);
                 }}
               >
@@ -232,25 +218,12 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                 className={`footer-action-btn ${showCoupon ? "active" : ""}`}
                 onClick={() => {
                   setShowCoupon(!showCoupon);
-                  setShowNote(false);
                   setShowShipping(false);
                 }}
               >
                 <Tag size={16} /> Coupon
               </button>
             </div>
-
-            {/* Note Panel */}
-            {showNote && (
-              <div className="footer-panel-expand">
-                <textarea
-                  placeholder="Add special instructions for your order..."
-                  value={cartNote}
-                  onChange={(e) => setCartNote(e.target.value)}
-                  className="footer-panel-textarea"
-                />
-              </div>
-            )}
 
             {/* Shipping Panel */}
             {showShipping && (
