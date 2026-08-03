@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CircleHelp, LogOut, Menu, PlusCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CircleHelp, LogOut, Menu } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 
@@ -48,18 +47,7 @@ export function AdminShell({ user, children }) {
           </div>
         </div>
         
-        {/* Sidebar Quick Action - Link to open New Product catalog form directly */}
-        <div className="admin-sidebar-actions flex gap-2 px-4 pb-8">
-          <Button
-            asChild
-            className="h-11 flex-1 justify-start rounded-xl bg-[#e65f36] px-3 text-white shadow-[0_8px_20px_rgba(230,95,54,.24)] hover:bg-[#f17048]"
-          >
-            <Link href="/dashboard/products?new=true" onClick={closeSidebar}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New product
-            </Link>
-          </Button>
-        </div>
+
 
         {/* Navigation Items */}
         <nav className="admin-nav flex-1 space-y-7 px-4">
