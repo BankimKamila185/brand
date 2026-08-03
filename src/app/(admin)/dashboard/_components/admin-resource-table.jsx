@@ -69,7 +69,20 @@ export function AdminResourceTable({ resource }) {
 
       <section className="admin-create-card">
         <div><p className="admin-eyebrow">Quick create</p><h2>New {singular}</h2><p>Add the essential details now; you can refine them later.</p></div>
-        <form className="admin-create-form" onSubmit={async (event) => { event.preventDefault(); try { await definition.create(rowData(resource, event.currentTarget)); event.currentTarget.reset(); void load(); } catch (err) { setError(formatError(err)); } }}>
+        <form className="admin-create-form" onSubmit={async (event) => {
+          event.preventDefault();
+          const form = event.currentTarget;
+          try {
+            const data = rowData(resource, form);
+            await definition.create(data);
+            if (form && typeof form.reset === "function") {
+              form.reset();
+            }
+            await load();
+          } catch (err) {
+            setError(formatError(err));
+          }
+        }}>
           {definition.fields.map((field) => <label key={field}><span>{field.replace(/([A-Z])/g, " $1")}</span><input name={field} placeholder={`Enter ${field}`} required /></label>)}
           <button type="submit" className="admin-primary-button"><Plus className="size-4" /> Create {singular}</button>
         </form>
