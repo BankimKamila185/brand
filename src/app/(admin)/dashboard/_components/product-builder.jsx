@@ -599,14 +599,7 @@ function formatError(err) {
                 placeholder="T-shirt, shirt…"
               />
             </label>
-            <label>
-              Brand
-              <input
-                value={vendor}
-                onChange={(e) => setVendor(e.target.value)}
-                required
-              />
-            </label>
+
             <label className="wide">
               Description / Product Details
               <textarea
