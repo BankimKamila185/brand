@@ -104,6 +104,103 @@ export default function CheckoutPage() {
     [addresses, selectedAddressId],
   );
 
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+
+  const fetchPincodeDetails = async (pincode) => {
+    if (!/^[1-9]\d{5}$/.test(pincode)) return;
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await res.json();
+      if (data?.[0]?.Status === "Success" && data[0].PostOffice?.length > 0) {
+        const po = data[0].PostOffice[0];
+        setNewAddress((prev) => ({
+          ...prev,
+          city: prev.city || po.District || po.Block || "",
+          state: prev.state || po.State || "",
+        }));
+      }
+    } catch {
+      // Silently skip if open pincode API is unreachable
+    }
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setAddressError("Geolocation is not supported by your browser.");
+      return;
+    }
+    setIsDetectingLocation(true);
+    setAddressError("");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const apiKey =
+            process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+            "AIzaSyBi6Nw61aRi9QNSondGCw6VoEd2bcUEwQg";
+          const res = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`,
+          );
+          const data = await res.json();
+
+          if (data.status === "OK" && data.results?.length > 0) {
+            const result = data.results[0];
+            const addressComponents = result.address_components || [];
+
+            let street = "";
+            let area = "";
+            let city = "";
+            let state = "";
+            let pincode = "";
+
+            addressComponents.forEach((comp) => {
+              const types = comp.types;
+              if (types.includes("street_number") || types.includes("route")) {
+                street += (street ? " " : "") + comp.long_name;
+              } else if (
+                types.includes("sublocality") ||
+                types.includes("neighborhood")
+              ) {
+                area += (area ? ", " : "") + comp.long_name;
+              } else if (types.includes("locality")) {
+                city = comp.long_name;
+              } else if (types.includes("administrative_area_level_1")) {
+                state = comp.long_name;
+              } else if (types.includes("postal_code")) {
+                pincode = comp.long_name;
+              }
+            });
+
+            const line1 =
+              [street, area].filter(Boolean).join(", ") ||
+              result.formatted_address.split(",")[0];
+
+            setNewAddress((prev) => ({
+              ...prev,
+              line1: line1 || prev.line1,
+              city: city || prev.city,
+              state: state || prev.state,
+              pincode: pincode || prev.pincode,
+            }));
+          } else {
+            setAddressError("Could not auto-fill address from GPS location.");
+          }
+        } catch {
+          setAddressError("Failed to fetch location details.");
+        } finally {
+          setIsDetectingLocation(false);
+        }
+      },
+      (err) => {
+        setIsDetectingLocation(false);
+        setAddressError(err.message || "Location access denied.");
+      },
+      { timeout: 10000, enableHighAccuracy: true },
+    );
+  };
+
   const saveAddress = async (event) => {
     event.preventDefault();
     setAddressError("");
@@ -351,7 +448,44 @@ export default function CheckoutPage() {
           {step === "shipping" ? (
             <div className="checkout-v3-stage"><section className="checkout-v3-panel">
               <div className="checkout-v3-section-head"><div><p className="checkout-v3-eyebrow">Step 01</p><h2>Delivery address</h2><p>Select a saved location or create a new one.</p></div><button onClick={() => setShowAddressForm((visible) => !visible)} className="checkout-v3-secondary"><Plus size={14} /> New address</button></div>
-              {showAddressForm && <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2"><h3 className="col-span-full font-display text-sm font-bold uppercase">New shipping address</h3>{addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}<Input label="Full name" name="name" value={newAddress.name} onChange={setNewAddress} /><Input label="Phone number" name="phone" value={newAddress.phone} onChange={setNewAddress} /><Input label="Address line 1" name="line1" value={newAddress.line1} onChange={setNewAddress} full /><Input label="Address line 2 (optional)" name="line2" value={newAddress.line2} onChange={setNewAddress} full /><Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} /><Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} /><Input label="PIN code" name="pincode" value={newAddress.pincode} onChange={setNewAddress} /><button className="bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white">Save address</button></form>}
+              {showAddressForm && (
+                <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2">
+                  <div className="col-span-full flex items-center justify-between">
+                    <h3 className="font-display text-sm font-bold uppercase">New shipping address</h3>
+                    <button
+                      type="button"
+                      onClick={handleDetectLocation}
+                      disabled={isDetectingLocation}
+                      className="flex items-center gap-1.5 rounded-lg bg-black px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-neutral-800 disabled:opacity-50"
+                    >
+                      {isDetectingLocation ? <Loader2 className="animate-spin" size={13} /> : <MapPin size={13} />}
+                      {isDetectingLocation ? "Detecting location..." : "📍 Use Current Location"}
+                    </button>
+                  </div>
+                  {addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}
+                  <Input label="Full name" name="name" value={newAddress.name} onChange={setNewAddress} />
+                  <Input label="Phone number" name="phone" value={newAddress.phone} onChange={setNewAddress} />
+                  <Input label="Address line 1" name="line1" value={newAddress.line1} onChange={setNewAddress} full />
+                  <Input label="Address line 2 (optional)" name="line2" value={newAddress.line2} onChange={setNewAddress} full />
+                  <Input
+                    label="PIN code"
+                    name="pincode"
+                    value={newAddress.pincode}
+                    onChange={(updater) => {
+                      setNewAddress((prev) => {
+                        const updated = typeof updater === "function" ? updater(prev) : updater;
+                        if (updated.pincode?.length === 6) fetchPincodeDetails(updated.pincode);
+                        return updated;
+                      });
+                    }}
+                  />
+                  <Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} />
+                  <Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} />
+                  <button className="col-span-full bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-neutral-800">
+                    Save address
+                  </button>
+                </form>
+              )}
               {isAddressLoading ? <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div> : <div className="grid gap-3 md:grid-cols-2">{addresses.map((address) => <button key={address.id} onClick={() => setSelectedAddressId(address.id)} className={`checkout-address text-left ${selectedAddressId === address.id ? "is-selected" : ""}`}><div className="mb-4 flex justify-between"><span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{address.label}</span>{selectedAddressId === address.id && <Check size={17} />}</div><p className="font-bold">{address.name}</p><p className="mt-1 text-sm leading-relaxed text-neutral-500">{address.line1}{address.line2 ? `, ${address.line2}` : ""}<br />{address.city}, {address.state} — {address.pincode}<br />{address.phone}</p><span onClick={(event) => deleteAddress(address.id, event)} className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-red-600"><Trash2 size={13} /> Remove</span></button>)}</div>}
               {!isAddressLoading && !addresses.length && !showAddressForm && <div className="rounded-xl border border-dashed border-neutral-300 py-10 text-center text-sm text-neutral-500"><MapPin className="mx-auto mb-2 text-neutral-300" />Add your delivery address to continue.</div>}
               <button onClick={continueToPayment} className="checkout-v3-action checkout-v3-full"><span>Continue to payment</span><ChevronRight size={17} /></button>
