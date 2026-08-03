@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   Bar, BarChart, Cell, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -164,19 +165,19 @@ export function Overview() {
     ? [
         {
           label: "Total Orders", value: data.orders.total,
-          note: `${data.orders.today} today`, icon: ReceiptText, accent: "coral",
+          note: `${data.orders.today} today`, icon: ReceiptText, accent: "coral", href: "/dashboard/orders",
         },
         {
           label: "Gross Revenue", value: currency.format(data.revenue.total),
-          note: `${currency.format(data.revenue.today)} today`, icon: IndianRupee, accent: "green",
+          note: `${currency.format(data.revenue.today)} today`, icon: IndianRupee, accent: "green", href: "/dashboard/orders",
         },
         {
           label: "Products Live", value: data.products.total,
-          note: "Available to sell", icon: PackageCheck, accent: "violet",
+          note: "Available to sell", icon: PackageCheck, accent: "violet", href: "/dashboard/products",
         },
         {
           label: "Registered Users", value: data.users.total,
-          note: "All time", icon: Users, accent: "yellow",
+          note: "All time", icon: Users, accent: "yellow", href: "/dashboard/users",
         },
       ]
     : [];
@@ -222,7 +223,7 @@ export function Overview() {
 
       {error && <div className="admin-error-message">{error}</div>}
 
-      {/* ── 4 Stat Cards ── */}
+      {/* ── 4 Stat Cards (Clickable Links) ── */}
       <section className="admin-stats-grid">
         {loading
           ? [0, 1, 2, 3].map((i) => (
@@ -236,13 +237,17 @@ export function Overview() {
           : stats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <article className="admin-stat-card" key={stat.label}>
+                <Link
+                  href={stat.href}
+                  className="admin-stat-card block cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  key={stat.label}
+                >
                   <div className={`admin-stat-icon ${stat.accent}`}><Icon /></div>
                   <ArrowUpRight className="admin-stat-arrow" />
                   <p>{stat.label}</p>
                   <h2>{stat.value}</h2>
                   <span>{stat.note}</span>
-                </article>
+                </Link>
               );
             })}
       </section>
