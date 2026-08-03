@@ -116,11 +116,14 @@ export function ProductBuilder({ product, onCreated, onClose }) {
     );
   };
 
+  const [initialData, setInitialData] = useState(null);
+
   // Initialize form states
   useEffect(() => {
     let active = true;
     const populate = (data) => {
       if (!data) return;
+      setInitialData(data);
       setTitle(data.title || "");
       setHandle(data.handle || "");
       setVendor(data.vendor || "The Outliers Studio");
@@ -338,6 +341,156 @@ function formatError(err) {
       setPendingPayload(null);
     }
   };
+
+  const getChangedFields = () => {
+    if (!isEdit || !initialData) {
+      return [{ label: "New Product", from: "None", to: "Creation" }];
+    }
+
+    const changes = [];
+
+    // Title
+    if (title.trim() !== (initialData.title || "").trim()) {
+      changes.push({
+        label: "Title / Name",
+        from: initialData.title || "Untitled",
+        to: title || "Untitled",
+      });
+    }
+
+    // Handle
+    if (handle.trim() !== (initialData.handle || "").trim()) {
+      changes.push({
+        label: "URL Slug / Handle",
+        from: initialData.handle || "—",
+        to: handle || "—",
+      });
+    }
+
+    // Category
+    const initialCatId = initialData.categoryId || initialData.category?.id || "";
+    if (categoryId !== initialCatId) {
+      const oldCat = categories.find((c) => c.id === initialCatId)?.name || "Uncategorized";
+      const newCat = categories.find((c) => c.id === categoryId)?.name || "Uncategorized";
+      changes.push({
+        label: "Category",
+        from: oldCat,
+        to: newCat,
+      });
+    }
+
+    // Collection
+    const initialColIds = (initialData.collections || [])
+      .map((c) => c.collection?.id || c.collectionId)
+      .filter(Boolean);
+    if (JSON.stringify(selectedCollectionIds.sort()) !== JSON.stringify(initialColIds.sort())) {
+      const oldColNames = collections.filter((c) => initialColIds.includes(c.id)).map((c) => c.name).join(", ") || "None";
+      const newColNames = collections.filter((c) => selectedCollectionIds.includes(c.id)).map((c) => c.name).join(", ") || "None";
+      changes.push({
+        label: "Collection",
+        from: oldColNames,
+        to: newColNames,
+      });
+    }
+
+    // Product Type
+    if (productType.trim() !== (initialData.productType || "").trim()) {
+      changes.push({
+        label: "Product Type",
+        from: initialData.productType || "None",
+        to: productType || "None",
+      });
+    }
+
+    // Brand / Vendor
+    if (vendor.trim() !== (initialData.vendor || "The Outliers Studio").trim()) {
+      changes.push({
+        label: "Brand / Vendor",
+        from: initialData.vendor || "None",
+        to: vendor || "None",
+      });
+    }
+
+    // Status
+    const initialIsActive = initialData.isActive !== false;
+    if (isActive !== initialIsActive) {
+      changes.push({
+        label: "Status",
+        from: initialIsActive ? "Active" : "Draft/Hidden",
+        to: isActive ? "Active" : "Draft/Hidden",
+      });
+    }
+
+    // Description
+    if (description.trim() !== (initialData.description || "").trim()) {
+      changes.push({
+        label: "Description",
+        from: "Previous details",
+        to: "Updated details",
+      });
+    }
+
+    // Care Instructions
+    if (careInstructions.trim() !== (initialData.careInstructions || "").trim()) {
+      changes.push({
+        label: "Care Instructions",
+        from: "Previous instructions",
+        to: "Updated instructions",
+      });
+    }
+
+    // Manufacturer Details
+    if (manufacturerDetails.trim() !== (initialData.manufacturerDetails || "").trim()) {
+      changes.push({
+        label: "Manufacturer Details",
+        from: "Previous details",
+        to: "Updated details",
+      });
+    }
+
+    // Variants & Stock & Prices
+    const initialVars = initialData.variants || [];
+    let variantsChanged = false;
+    if (variants.length !== initialVars.length) {
+      variantsChanged = true;
+    } else {
+      for (let i = 0; i < variants.length; i++) {
+        const v = variants[i];
+        const iv = initialVars[i];
+        if (
+          !iv ||
+          String(v.price) !== String(iv.price) ||
+          String(v.stock) !== String(iv.inventory?.quantity || 0) ||
+          v.size !== (iv.option1 || iv.title)
+        ) {
+          variantsChanged = true;
+          break;
+        }
+      }
+    }
+    if (variantsChanged) {
+      changes.push({
+        label: "Variants, Stock & Prices",
+        from: `${initialVars.length} variant(s)`,
+        to: `${variants.length} variant(s)`,
+      });
+    }
+
+    // Images
+    const initialImgCount = (initialData.images || []).length;
+    const currentImgCount = [mainImage, ...gallery].filter(Boolean).length;
+    if (currentImgCount !== initialImgCount) {
+      changes.push({
+        label: "Product Images",
+        from: `${initialImgCount} image(s)`,
+        to: `${currentImgCount} image(s)`,
+      });
+    }
+
+    return changes;
+  };
+
+  const changedFieldsList = getChangedFields();
 
   return (
     <form className="product-builder" onSubmit={handleFormSubmit}>
@@ -754,22 +907,49 @@ function formatError(err) {
         />
       )}
 
-      {/* Save Product Confirmation Modal (Yes / No) */}
+      {/* Save Product Confirmation Modal (Yes / No with List of Changes) */}
       {showConfirmSaveModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100 flex flex-col items-center text-center gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-neutral-100 flex flex-col items-center text-center gap-5 max-h-[85vh] overflow-y-auto">
+            <div className="w-14 h-14 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md flex-shrink-0">
               <Save className="w-7 h-7" />
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-1 w-full">
               <h3 className="text-xl font-extrabold text-neutral-900">
                 Confirm Product Changes
               </h3>
-              <p className="text-xs text-neutral-600 font-medium leading-relaxed">
+              <p className="text-xs text-neutral-500 font-medium">
                 Do you want to save changes to product <strong className="text-neutral-900 font-bold">&quot;{title || "Untitled Product"}&quot;</strong>?
               </p>
             </div>
-            <div className="flex items-center gap-3 w-full mt-2 select-none">
+
+            {/* List of Modified Fields */}
+            <div className="w-full bg-neutral-50 rounded-2xl p-4 border border-neutral-200/80 text-left flex flex-col gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">
+                Summary of Changes ({changedFieldsList.length}):
+              </span>
+
+              {changedFieldsList.length === 0 ? (
+                <p className="text-xs text-neutral-500 italic">No field values were modified.</p>
+              ) : (
+                <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                  {changedFieldsList.map((change, idx) => (
+                    <div key={idx} className="flex flex-col text-xs bg-white p-2.5 rounded-xl border border-neutral-200/60 shadow-sm gap-0.5">
+                      <span className="font-bold text-neutral-900 text-[11px] uppercase tracking-wider">{change.label}</span>
+                      <div className="flex items-center gap-2 text-neutral-600 text-xs">
+                        <span className="line-through text-neutral-400 font-medium">{change.from}</span>
+                        <span className="text-neutral-400 font-bold">&rarr;</span>
+                        <span className="font-bold text-emerald-600">{change.to}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 w-full mt-1 select-none">
               <button
                 type="button"
                 onClick={() => {
