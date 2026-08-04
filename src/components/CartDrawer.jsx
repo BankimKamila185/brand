@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
-import { Truck, Tag, ShoppingBag, ArrowRight, ChevronDown, Trash2, ShieldCheck } from "lucide-react";
+import { Truck, Tag, ShoppingBag, ArrowRight, Trash2, ShieldCheck, Pencil } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -13,14 +13,12 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     cartOpen,
     setCartOpen,
     updateQuantity,
-    updateItemSize,
     removeFromCart,
     cartTotal,
   } = useCart();
   const [couponCode, setCouponCode] = useState("");
   const [activeDiscount, setActiveDiscount] = useState(0); // percentage
   const [couponMessage, setCouponMessage] = useState("");
-  const [editingSizeVariantId, setEditingSizeVariantId] = useState(null);
 
   // Freeze background page scrolling when CartDrawer is open
   useEffect(() => {
@@ -168,16 +166,6 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                   item.product.variants[0];
                 const price = parseFloat(variant.price);
                 const image = item.product.images[0]?.src || "";
-                const sizeOptions = Array.from(
-                  new Set(
-                    (item.product?.variants || [])
-                      .map((v) => v.option1 || v.size || v.title)
-                      .filter(Boolean)
-                  )
-                );
-                const availableSizes = sizeOptions.length > 0
-                  ? sizeOptions
-                  : ["XS", "S", "M", "L", "XL", "XXL"];
 
                 return (
                   <div key={item.variantId} className="cart-item">
@@ -201,49 +189,23 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                         </button>
                       </div>
                       
-                      {/* Size Badge */}
-                      <div className="cart-item-size-row">
-                        <span>Size</span>
-                        {availableSizes.length === 1 ? (
-                          <span className="cart-size-static">{item.selectedSize || availableSizes[0]}</span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
-                            className="cart-size-trigger"
-                          >
-                            {item.selectedSize || "M"} <ChevronDown size={11} style={{ opacity: 0.6 }} />
-                          </button>
-                        )}
-                      </div>
-
-                      {availableSizes.length > 1 && editingSizeVariantId === item.variantId && (
-                        <div className="cart-size-picker">
-                          <span>Size</span>
-                          {availableSizes.map((sz) => {
-                            const isSelected = (item.selectedSize || "").toString().toLowerCase() === sz.toString().toLowerCase();
-                            return (
-                              <button
-                                key={sz}
-                                type="button"
-                                onClick={() => {
-                                  updateItemSize(item.variantId, sz, item.product);
-                                  setEditingSizeVariantId(null);
-                                }}
-                                className={`cart-size-option ${isSelected ? "selected" : ""}`}
-                              >
-                                {sz}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
+                      <p className="cart-item-variant">Size <strong>{item.selectedSize || variant.option1 || variant.size || "M"}</strong></p>
 
                       <span className="cart-item-price">
                         ₹{price.toFixed(2)}
                       </span>
 
                       <div className="cart-item-actions-row">
+                        <button
+                          type="button"
+                          className="cart-item-edit-button"
+                          onClick={() => {
+                            setCartOpen(false);
+                            router.push(`/products/${item.product.handle}`);
+                          }}
+                        >
+                          <Pencil size={13} /> Edit item
+                        </button>
                         <div className="cart-item-quantity">
                           <button
                             className="qty-btn"

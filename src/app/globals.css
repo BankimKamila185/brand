@@ -3650,14 +3650,14 @@ html, body {
 
 .cart-item {
   display: flex;
-  gap: 16px;
-  padding: 0 0 16px;
+  gap: 18px;
+  padding: 2px 0 20px;
   margin: 0;
   border-bottom: 1px solid var(--c-border);
 }
 
 .cart-item-img {
-  width: 88px;
+  width: 112px;
   aspect-ratio: 3/4;
   object-fit: cover;
   background: var(--c-bg-2);
@@ -3670,7 +3670,7 @@ html, body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 5px;
+  gap: 6px;
 }
 
 .cart-item-heading {
@@ -3682,7 +3682,7 @@ html, body {
 
 .cart-item-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.35;
   color: var(--c-ink);
@@ -3706,6 +3706,26 @@ html, body {
 .cart-item-remove-button:hover {
   background: #fff0f0;
   color: var(--c-sale);
+}
+
+.cart-item-variant {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--c-ink-3);
+  font-size: 12px;
+}
+
+.cart-item-variant strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: var(--c-bg-2);
+  color: var(--c-ink);
+  font-size: 12px;
 }
 
 .cart-item-size-row {
@@ -3800,8 +3820,30 @@ html, body {
 .cart-item-actions-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 6px;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cart-item-edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: var(--c-ink-2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+
+.cart-item-edit-button:hover {
+  color: var(--c-ink);
 }
 
 .cart-item-quantity {
@@ -3893,7 +3935,8 @@ html, body {
   .drawer-header { padding-inline: 18px; }
   .drawer-body { padding: 18px 18px 24px; }
   .drawer-footer { padding: 14px 18px 16px; }
-  .cart-item-img { width: 82px; }
+  .cart-item { gap: 14px; }
+  .cart-item-img { width: 96px; }
 }
 
 .cart-item-remove,
