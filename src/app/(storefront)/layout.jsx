@@ -28,12 +28,13 @@ export const metadata = {
   publisher: "The Outliers Studio",
   icons: {
     icon: [
-      { url: `/icon.png?v=${BRAND_ICON_VERSION}`, sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
     ],
+    shortcut: ["/favicon.ico"],
     apple: [
-      { url: `/apple-icon.png?v=${BRAND_ICON_VERSION}`, sizes: "180x180", type: "image/png" },
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: [`/icon.png?v=${BRAND_ICON_VERSION}`],
   },
   openGraph: {
     title: "The Outliers Studio | Premium Streetwear & Urban Clothing",
@@ -147,9 +148,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href={`/icon.png?v=${BRAND_ICON_VERSION}`} sizes="512x512" type="image/png" />
-        <link rel="shortcut icon" href={`/icon.png?v=${BRAND_ICON_VERSION}`} type="image/png" />
-        <link rel="apple-touch-icon" href={`/apple-icon.png?v=${BRAND_ICON_VERSION}`} />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.png" sizes="512x512" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
