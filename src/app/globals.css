@@ -3731,13 +3731,27 @@ html, body {
   cursor: pointer;
 }
 
+.cart-size-static {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: var(--c-dark);
+  color: var(--c-dark-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .cart-size-picker {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 5px;
-  margin: 2px 0;
-  padding: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 7px;
   border: 1px solid var(--c-border);
   border-radius: 6px;
   background: var(--c-bg);

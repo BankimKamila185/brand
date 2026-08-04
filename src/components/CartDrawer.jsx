@@ -168,6 +168,16 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                   item.product.variants[0];
                 const price = parseFloat(variant.price);
                 const image = item.product.images[0]?.src || "";
+                const sizeOptions = Array.from(
+                  new Set(
+                    (item.product?.variants || [])
+                      .map((v) => v.option1 || v.size || v.title)
+                      .filter(Boolean)
+                  )
+                );
+                const availableSizes = sizeOptions.length > 0
+                  ? sizeOptions
+                  : ["XS", "S", "M", "L", "XL", "XXL"];
 
                 return (
                   <div key={item.variantId} className="cart-item">
@@ -194,23 +204,23 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                       {/* Size Badge */}
                       <div className="cart-item-size-row">
                         <span>Size</span>
-                        <button
-                          type="button"
-                          onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
-                          className="cart-size-trigger"
-                        >
-                          {item.selectedSize || "M"} <ChevronDown size={11} style={{ opacity: 0.6 }} />
-                        </button>
+                        {availableSizes.length === 1 ? (
+                          <span className="cart-size-static">{item.selectedSize || availableSizes[0]}</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
+                            className="cart-size-trigger"
+                          >
+                            {item.selectedSize || "M"} <ChevronDown size={11} style={{ opacity: 0.6 }} />
+                          </button>
+                        )}
                       </div>
 
-                      {/* Expandable Custom Size Picker Pills */}
-                      {editingSizeVariantId === item.variantId && (
+                      {availableSizes.length > 1 && editingSizeVariantId === item.variantId && (
                         <div className="cart-size-picker">
                           <span>Size</span>
-                          {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                            ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                            : ["XS", "S", "M", "L", "XL", "XXL"]
-                          )).map((sz) => {
+                          {availableSizes.map((sz) => {
                             const isSelected = (item.selectedSize || "").toString().toLowerCase() === sz.toString().toLowerCase();
                             return (
                               <button
