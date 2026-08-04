@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
-import { Truck, Tag, ShoppingBag, ArrowRight, Trash2, ShieldCheck, Pencil } from "lucide-react";
+import { Truck, Tag, ShoppingBag, ArrowRight, Trash2, ShieldCheck, Pencil, Check } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -191,27 +191,32 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                         </button>
                       </div>
                       
-                      <p className="cart-item-variant">Size <strong>{item.selectedSize || variant.option1 || variant.size || "M"}</strong></p>
+                      <button
+                        type="button"
+                        className="cart-item-size-control"
+                        aria-expanded={editingItemVariantId === item.variantId}
+                        onClick={() => {
+                          setEditingItemVariantId(
+                            editingItemVariantId === item.variantId ? null : item.variantId
+                          );
+                        }}
+                      >
+                        <span>Size</span>
+                        <strong>{item.selectedSize || variant.option1 || variant.size || "M"}</strong>
+                        <Pencil size={12} aria-hidden="true" />
+                      </button>
 
                       <span className="cart-item-price">
                         ₹{price.toFixed(2)}
                       </span>
 
                       <div className="cart-item-actions-row">
-                        <button
-                          type="button"
-                          className="cart-item-edit-button"
-                          onClick={() => {
-                            setEditingItemVariantId(
-                              editingItemVariantId === item.variantId ? null : item.variantId
-                            );
-                          }}
-                        >
-                          <Pencil size={13} /> {editingItemVariantId === item.variantId ? "Close edit" : "Edit item"}
-                        </button>
-                        <div className="cart-item-quantity">
+                        <span className="cart-item-quantity-label">Quantity</span>
+                        <div className="cart-item-quantity" aria-label={`Quantity for ${item.product.title}`}>
                           <button
+                            type="button"
                             className="qty-btn"
+                            aria-label={`Decrease quantity of ${item.product.title}`}
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
@@ -220,9 +225,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           </button>
                           <span className="qty-val">{item.quantity}</span>
                           <button
+                            type="button"
                             className="qty-btn"
+                            aria-label={`Increase quantity of ${item.product.title}`}
                             disabled={item.quantity >= MAX_QTY_PER_ITEM}
-                            style={{ opacity: item.quantity >= MAX_QTY_PER_ITEM ? 0.4 : 1, cursor: item.quantity >= MAX_QTY_PER_ITEM ? "not-allowed" : "pointer" }}
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
@@ -233,42 +239,19 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                       </div>
 
                       {editingItemVariantId === item.variantId && (
-                        <div
-                          className="cart-size-picker-box"
-                          style={{
-                            marginTop: "12px",
-                            padding: "12px 14px",
-                            backgroundColor: "#f6f6f4",
-                            borderRadius: "14px",
-                            border: "1px solid #e5e5e0",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px",
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666666" }}>
-                              Select Size
-                            </span>
+                        <div className="cart-size-picker-box">
+                          <div className="cart-size-picker-header">
+                            <span>Select size</span>
                             <button
                               type="button"
                               onClick={() => setEditingItemVariantId(null)}
-                              style={{
-                                fontSize: "11px",
-                                fontWeight: 600,
-                                color: "#888888",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: "2px 4px",
-                              }}
+                              className="cart-size-picker-done"
                             >
-                              Done ✕
+                              <Check size={13} aria-hidden="true" /> Done
                             </button>
                           </div>
 
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                          <div className="cart-size-options">
                             {(() => {
                               const rawSizes = (item.product?.variants || [])
                                 .map((v) => v.title || v.option1 || v.size)
@@ -289,23 +272,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                       }
                                       setEditingItemVariantId(null);
                                     }}
-                                    style={{
-                                      minWidth: "38px",
-                                      height: "36px",
-                                      padding: "0 10px",
-                                      borderRadius: "10px",
-                                      fontSize: "12px",
-                                      fontWeight: isCurrent ? 700 : 500,
-                                      color: isCurrent ? "#ffffff" : "#121212",
-                                      backgroundColor: isCurrent ? "#000000" : "#ffffff",
-                                      border: isCurrent ? "1px solid #000000" : "1px solid #dcdcdc",
-                                      cursor: "pointer",
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      transition: "all 0.15s ease",
-                                      boxShadow: isCurrent ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
-                                    }}
+                                    className={`cart-size-option ${isCurrent ? "selected" : ""}`}
                                   >
                                     {sizeOpt}
                                   </button>

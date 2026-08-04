@@ -472,16 +472,16 @@ export default function CheckoutPage() {
               <div className="checkout-v3-section-head"><div><p className="checkout-v3-eyebrow">Step 01</p><h2>Delivery address</h2><p>Select a saved location or create a new one.</p></div><button onClick={() => setShowAddressForm((visible) => !visible)} className="checkout-v3-secondary"><Plus size={14} /> New address</button></div>
               {showAddressForm && (
                 <form onSubmit={saveAddress} className="mb-7 grid grid-cols-1 gap-4 rounded-xl bg-neutral-50 p-5 md:grid-cols-2">
-                  <div className="col-span-full flex items-center justify-between">
+                  <div className="checkout-address-form-header col-span-full">
                     <h3 className="font-display text-sm font-bold uppercase">New shipping address</h3>
                     <button
                       type="button"
                       onClick={handleDetectLocation}
                       disabled={isDetectingLocation}
-                      className="flex items-center gap-1.5 rounded-lg bg-black px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-neutral-800 disabled:opacity-50"
+                      className="checkout-location-button"
                     >
                       {isDetectingLocation ? <Loader2 className="animate-spin" size={13} /> : <MapPin size={13} />}
-                      {isDetectingLocation ? "Detecting location..." : "📍 Use Current Location"}
+                      {isDetectingLocation ? "Finding location…" : "Use my location"}
                     </button>
                   </div>
                   {addressError && <p className="col-span-full text-sm text-red-600">{addressError}</p>}
