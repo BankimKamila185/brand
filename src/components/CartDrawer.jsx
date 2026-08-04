@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
-import { Truck, Tag, ShoppingBag, ArrowRight, ChevronDown, Trash2 } from "lucide-react";
+import { Truck, Tag, ShoppingBag, ArrowRight, ChevronDown, Trash2, ShieldCheck } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -77,6 +77,9 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
   const discountAmount = Math.round(cartTotal * (activeDiscount / 100));
   const finalTotal = Math.max(0, cartTotal - discountAmount);
+  const freeShippingThreshold = 1500;
+  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - finalTotal);
+  const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   const handleCheckoutClick = () => {
     if (cart.length === 0) return;
@@ -97,7 +100,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
         className={`side-drawer ${cartOpen ? "open" : ""} transition-transform duration-300 ease-in-out`}
       >
         <div className="drawer-header">
-          <h2 className="drawer-title">Shopping Cart</h2>
+          <div>
+            <p className="drawer-eyebrow">Your bag</p>
+            <h2 className="drawer-title">Shopping Cart <span>({cartItemCount})</span></h2>
+          </div>
           <button
             className="drawer-close"
             onClick={() => setCartOpen(false)}
@@ -155,7 +161,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
+            <div className="cart-items-list">
               {cart.map((item) => {
                 const variant =
                   item.product.variants.find((v) => v.id === item.variantId) ||
@@ -172,28 +178,26 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                     />
 
                     <div className="cart-item-details">
-                      <h4 className="cart-item-title">{item.product.title}</h4>
+                      <div className="cart-item-heading">
+                        <h4 className="cart-item-title">{item.product.title}</h4>
+                        <button
+                          type="button"
+                          onClick={() => removeFromCart(item.variantId)}
+                          className="cart-item-remove-button"
+                          title="Remove item"
+                          aria-label={`Remove ${item.product.title} from cart`}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                       
                       {/* Size Badge */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, margin: "4px 0 6px 0" }}>
-                        <span style={{ fontSize: 12, color: "#888", fontWeight: 500 }}>Size:</span>
+                      <div className="cart-item-size-row">
+                        <span>Size</span>
                         <button
                           type="button"
                           onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                            padding: "2px 8px",
-                            fontSize: 12,
-                            fontWeight: 700,
-                            color: "#111",
-                            background: "#f4f4f5",
-                            border: "1px solid #e4e4e7",
-                            borderRadius: 4,
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                          }}
+                          className="cart-size-trigger"
                         >
                           {item.selectedSize || "M"} <ChevronDown size={11} style={{ opacity: 0.6 }} />
                         </button>
@@ -201,8 +205,8 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
                       {/* Expandable Custom Size Picker Pills */}
                       {editingSizeVariantId === item.variantId && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", margin: "6px 0 8px 0", padding: "8px", background: "#fafafa", border: "1px solid #eaeaea", borderRadius: 6 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: 2 }}>Size:</span>
+                        <div className="cart-size-picker">
+                          <span>Size</span>
                           {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
                             ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
                             : ["XS", "S", "M", "L", "XL", "XXL"]
@@ -216,17 +220,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                   updateItemSize(item.variantId, sz, item.product);
                                   setEditingSizeVariantId(null);
                                 }}
-                                style={{
-                                  padding: "3px 8px",
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  borderRadius: 4,
-                                  border: isSelected ? "1px solid #000" : "1px solid #e0e0e0",
-                                  background: isSelected ? "#000" : "#fff",
-                                  color: isSelected ? "#fff" : "#333",
-                                  cursor: "pointer",
-                                  transition: "all 0.15s ease",
-                                }}
+                                className={`cart-size-option ${isSelected ? "selected" : ""}`}
                               >
                                 {sz}
                               </button>
@@ -262,30 +256,6 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           </button>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(item.variantId)}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                            background: "none",
-                            border: "none",
-                            color: "#888",
-                            fontSize: 12,
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            marginLeft: "auto",
-                            padding: "4px 6px",
-                            borderRadius: 4,
-                            transition: "color 0.15s ease"
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.color = "#dc2626"}
-                          onMouseLeave={(e) => e.currentTarget.style.color = "#888"}
-                          title="Remove item"
-                        >
-                          <Trash2 size={15} />
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -297,6 +267,13 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
         {cart.length > 0 && (
           <div className="drawer-footer">
+            <div className="free-shipping-note">
+              <Truck size={16} />
+              <div>
+                <strong>{remainingForFreeShipping > 0 ? `Add ₹${remainingForFreeShipping.toFixed(0)} for free shipping` : "You qualify for free shipping"}</strong>
+                <div className="free-shipping-track"><span style={{ width: `${Math.min(100, (finalTotal / freeShippingThreshold) * 100)}%` }} /></div>
+              </div>
+            </div>
             {/* Expandable Panel Tabs */}
             <div className="drawer-footer-actions">
               <button
@@ -379,7 +356,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
               className="drawer-checkout-btn"
             >
               Checkout
+              <ArrowRight size={16} />
             </button>
+
+            <p className="drawer-security-note"><ShieldCheck size={14} /> Secure checkout powered by Razorpay</p>
 
             <button
               onClick={() => {
