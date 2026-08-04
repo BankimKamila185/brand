@@ -3,7 +3,7 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
-const BRAND_ICON_VERSION = "20260802";
+const BRAND_ICON_VERSION = "20260804";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,14 +26,17 @@ export const metadata = {
   authors: [{ name: "The Outliers Studio" }],
   creator: "The Outliers Studio",
   publisher: "The Outliers Studio",
+  manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: `/favicon-96x96.png?v=${BRAND_ICON_VERSION}`, sizes: "96x96", type: "image/png" },
+      { url: `/icon.svg?v=${BRAND_ICON_VERSION}`, type: "image/svg+xml" },
+      { url: `/favicon.ico?v=${BRAND_ICON_VERSION}`, sizes: "any" },
+      { url: `/icon.png?v=${BRAND_ICON_VERSION}`, sizes: "512x512", type: "image/png" },
     ],
-    shortcut: ["/favicon.ico"],
+    shortcut: [`/favicon.ico?v=${BRAND_ICON_VERSION}`],
     apple: [
-      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: `/apple-touch-icon.png?v=${BRAND_ICON_VERSION}`, sizes: "180x180", type: "image/png" },
     ],
   },
   openGraph: {
@@ -102,11 +105,11 @@ export default function RootLayout({ children }) {
         "url": SITE_URL,
         "logo": {
           "@type": "ImageObject",
-          "url": `${SITE_URL}/seo-logo.svg`,
-          "width": 2484,
-          "height": 1110
+          "url": `${SITE_URL}/seo-logo.png?v=${BRAND_ICON_VERSION}`,
+          "width": 512,
+          "height": 512
         },
-        "image": `${SITE_URL}/seo-logo.svg`,
+        "image": `${SITE_URL}/seo-logo.png?v=${BRAND_ICON_VERSION}`,
         "sameAs": [
           "https://www.instagram.com/theoutliersstudio"
         ]
@@ -148,10 +151,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.png" sizes="512x512" type="image/png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="icon" type="image/png" sizes="96x96" href={`/favicon-96x96.png?v=${BRAND_ICON_VERSION}`} />
+        <link rel="icon" type="image/svg+xml" href={`/icon.svg?v=${BRAND_ICON_VERSION}`} />
+        <link rel="icon" href={`/favicon.ico?v=${BRAND_ICON_VERSION}`} sizes="any" />
+        <link rel="shortcut icon" href={`/favicon.ico?v=${BRAND_ICON_VERSION}`} />
+        <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png?v=${BRAND_ICON_VERSION}`} />
+        <meta name="apple-mobile-web-app-title" content="The Outliers Studio" />
+        <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />

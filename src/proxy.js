@@ -87,6 +87,6 @@ export const config = {
      * - static & image assets (_next/static, _next/image)
      * - public files & icons (.svg, .png, .jpg, .ico, etc.)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|apple-icon.png|icon.png|icon.svg|robots.js|sitemap.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|apple-icon.png|icon.png|icon.svg|robots.js|sitemap.js|site.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest|json)).*)",
   ],
 };
