@@ -21,10 +21,12 @@ export class ApiError extends Error {
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
   const config = {
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
     credentials: "include", // Always send cookies (for HTTP-only JWT)
@@ -91,13 +93,36 @@ export const api = {
 // ─── Typed API helpers ────────────────────────────────────────────────────────
 
 export const authApi = {
-  register: (data) => api.post("/api/auth/register", data),
+  register: async (data) => {
+    const res = await api.post("/api/auth/register", data);
+    if (typeof window !== "undefined" && res?.data?.accessToken) {
+      localStorage.setItem("accessToken", res.data.accessToken);
+    }
+    return res;
+  },
 
-  login: (data) => api.post("/api/auth/login", data),
+  login: async (data) => {
+    const res = await api.post("/api/auth/login", data);
+    if (typeof window !== "undefined" && res?.data?.accessToken) {
+      localStorage.setItem("accessToken", res.data.accessToken);
+    }
+    return res;
+  },
   
-  socialLogin: (idToken) => api.post("/api/auth/social-login", { idToken }),
+  socialLogin: async (idToken) => {
+    const res = await api.post("/api/auth/social-login", { idToken });
+    if (typeof window !== "undefined" && res?.data?.accessToken) {
+      localStorage.setItem("accessToken", res.data.accessToken);
+    }
+    return res;
+  },
 
-  logout: () => api.post("/api/auth/logout"),
+  logout: async () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+    }
+    return api.post("/api/auth/logout");
+  },
 
   me: () => api.get("/api/auth/me"),
 

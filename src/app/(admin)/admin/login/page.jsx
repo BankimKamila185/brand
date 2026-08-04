@@ -23,10 +23,14 @@ export default function AdminLoginPage() {
 
     try {
       const result = await authApi.login(values);
-      const role = result.data?.user?.role;
+      const userObj = result.data?.user;
+      const role = userObj?.role;
       if (!["ADMIN", "SUPER_ADMIN"].includes(role)) {
         setError("This account does not have administrator access.");
         return;
+      }
+      if (result.data?.accessToken) {
+        document.cookie = `access_token=${result.data.accessToken}; path=/; max-age=900; SameSite=Lax; Secure`;
       }
       router.push("/dashboard");
       router.refresh();

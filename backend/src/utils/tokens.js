@@ -36,15 +36,15 @@ export const decodeToken = (token) => {
 export const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  path: "/api/auth",
+  path: "/",
 };
 
 export const ACCESS_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "lax",
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: "/",
 };
