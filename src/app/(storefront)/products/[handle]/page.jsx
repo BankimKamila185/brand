@@ -188,6 +188,18 @@ export default function ProductDetailPage({ params }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
 
+  // Review & Rating States (Declared at top to prevent TDZ ReferenceError in useEffect)
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewBody, setReviewBody] = useState("");
+  const [reviewImages, setReviewImages] = useState([]);
+  const [reviewModalImg, setReviewModalImg] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [reviewMsg, setReviewMsg] = useState({ type: "", text: "" });
+
   // Freeze background page scrolling when Lightbox, Size Guide, or Review photo modal is open
   useEffect(() => {
     if (lightboxOpen || sizeGuideOpen || reviewModalImg) {
@@ -309,17 +321,6 @@ export default function ProductDetailPage({ params }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const [reviews, setReviews] = useState([]);
-  const [avgRating, setAvgRating] = useState(0);
-  const [totalReviews, setTotalReviews] = useState(0);
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [reviewBody, setReviewBody] = useState("");
-  const [reviewImages, setReviewImages] = useState([]);
-  const [reviewModalImg, setReviewModalImg] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [reviewMsg, setReviewMsg] = useState({ type: "", text: "" });
 
   const handleReviewImageUpload = (e) => {
     const files = Array.from(e.target.files || []);
