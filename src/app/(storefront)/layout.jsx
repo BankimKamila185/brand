@@ -3,7 +3,7 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
-const BRAND_ICON_VERSION = "20260804";
+const BRAND_ICON_VERSION = "20260804_v2";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
