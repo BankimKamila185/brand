@@ -188,16 +188,19 @@ export default function ProductDetailPage({ params }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
 
-  // Freeze background page scrolling when Lightbox or Size Guide modal is open
+  // Freeze background page scrolling when Lightbox, Size Guide, or Review photo modal is open
   useEffect(() => {
-    if (lightboxOpen || sizeGuideOpen) {
-      const originalOverflow = document.body.style.overflow;
+    if (lightboxOpen || sizeGuideOpen || reviewModalImg) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = originalOverflow;
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
       };
     }
-  }, [lightboxOpen, sizeGuideOpen]);
+  }, [lightboxOpen, sizeGuideOpen, reviewModalImg]);
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -205,13 +208,14 @@ export default function ProductDetailPage({ params }) {
       if (e.key === "Escape") {
         setLightboxOpen(false);
         setSizeGuideOpen(false);
+        setReviewModalImg(null);
       }
     };
-    if (lightboxOpen || sizeGuideOpen) {
+    if (lightboxOpen || sizeGuideOpen || reviewModalImg) {
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
-  }, [lightboxOpen, sizeGuideOpen]);
+  }, [lightboxOpen, sizeGuideOpen, reviewModalImg]);
 
   const thumbnailsRef = useRef(null);
 
@@ -1126,7 +1130,7 @@ export default function ProductDetailPage({ params }) {
 
           {reviewModalImg && (
             <div
-              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, overscrollBehavior: "contain", touchAction: "none" }}
               onClick={() => setReviewModalImg(null)}
             >
               <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "90vh" }}>
@@ -1148,7 +1152,7 @@ export default function ProductDetailPage({ params }) {
       {/* ─── Lightbox ─── */}
       {lightboxOpen && product.images[activeImg] && (
         <div
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 350, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 350, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, overscrollBehavior: "contain", touchAction: "none" }}
           onClick={() => setLightboxOpen(false)}
         >
           <button onClick={() => setLightboxOpen(false)} style={{ position: "absolute", top: 20, right: 24, color: "#fff", fontSize: 32, background: "none", border: "none", cursor: "pointer", lineHeight: 1 }}>×</button>
@@ -1164,7 +1168,7 @@ export default function ProductDetailPage({ params }) {
 
       {/* ─── Size Guide Modal ─── */}
       {sizeGuideOpen && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 350 }} onClick={() => setSizeGuideOpen(false)}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 350, overscrollBehavior: "contain", touchAction: "none" }} onClick={() => setSizeGuideOpen(false)}>
           <div style={{ background: "#fff", maxWidth: 500, width: "100%", padding: 32, borderRadius: 10, position: "relative", boxShadow: "0 24px 64px rgba(0,0,0,0.2)" }} onClick={(e) => e.stopPropagation()}>
             <button style={{ position: "absolute", top: 16, right: 20, fontSize: 26, background: "none", border: "none", cursor: "pointer", color: "#aaa", lineHeight: 1 }} onClick={() => setSizeGuideOpen(false)}>×</button>
             <h3 style={{ fontSize: 16, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Size Guide</h3>

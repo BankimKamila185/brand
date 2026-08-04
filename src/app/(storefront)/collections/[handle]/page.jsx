@@ -469,37 +469,68 @@ export default function CollectionPage({ params }) {
                   <button
                     onClick={() => setGridCols(1)}
                     className={`grid-switcher-btn ${gridCols === 1 ? "active" : ""}`}
-                    title="1 Column List"
+                    aria-label="List View"
                   >
-                    ≡
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                    <span className="grid-tooltip">List</span>
                   </button>
+
                   <button
                     onClick={() => setGridCols(2)}
                     className={`grid-switcher-btn ${gridCols === 2 ? "active" : ""}`}
-                    title="2 Columns"
+                    aria-label="2 Columns View"
                   >
-                    ||
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="8" y1="4" x2="8" y2="20" />
+                      <line x1="16" y1="4" x2="16" y2="20" />
+                    </svg>
+                    <span className="grid-tooltip">2 columns</span>
                   </button>
+
                   <button
                     onClick={() => setGridCols(3)}
                     className={`grid-switcher-btn ${gridCols === 3 ? "active" : ""}`}
-                    title="3 Columns"
+                    aria-label="3 Columns View"
                   >
-                    |||
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <line x1="6" y1="4" x2="6" y2="20" />
+                      <line x1="12" y1="4" x2="12" y2="20" />
+                      <line x1="18" y1="4" x2="18" y2="20" />
+                    </svg>
+                    <span className="grid-tooltip">3 columns</span>
                   </button>
+
                   <button
                     onClick={() => setGridCols(4)}
                     className={`grid-switcher-btn ${gridCols === 4 ? "active" : ""}`}
-                    title="4 Columns"
+                    aria-label="4 Columns View"
                   >
-                    ||||
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <line x1="4.5" y1="4" x2="4.5" y2="20" />
+                      <line x1="9.5" y1="4" x2="9.5" y2="20" />
+                      <line x1="14.5" y1="4" x2="14.5" y2="20" />
+                      <line x1="19.5" y1="4" x2="19.5" y2="20" />
+                    </svg>
+                    <span className="grid-tooltip">4 columns</span>
                   </button>
+
                   <button
                     onClick={() => setGridCols(5)}
                     className={`grid-switcher-btn ${gridCols === 5 ? "active" : ""}`}
-                    title="5 Columns"
+                    aria-label="5 Columns View"
                   >
-                    |||||
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                      <line x1="3" y1="4" x2="3" y2="20" />
+                      <line x1="7.5" y1="4" x2="7.5" y2="20" />
+                      <line x1="12" y1="4" x2="12" y2="20" />
+                      <line x1="16.5" y1="4" x2="16.5" y2="20" />
+                      <line x1="21" y1="4" x2="21" y2="20" />
+                    </svg>
+                    <span className="grid-tooltip">5 columns</span>
                   </button>
                 </div>
               </div>
@@ -534,7 +565,11 @@ export default function CollectionPage({ params }) {
               ) : (
                 <div className={`dynamic-catalog-grid cols-${gridCols}`}>
                   {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      viewMode={gridCols === 1 ? "list" : "grid"}
+                    />
                   ))}
                 </div>
               )}
