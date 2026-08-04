@@ -151,13 +151,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/png" sizes="96x96" href={`/favicon-96x96.png?v=${BRAND_ICON_VERSION}`} />
-        <link rel="icon" type="image/svg+xml" href={`/icon.svg?v=${BRAND_ICON_VERSION}`} />
-        <link rel="icon" href={`/favicon.ico?v=${BRAND_ICON_VERSION}`} sizes="any" />
-        <link rel="shortcut icon" href={`/favicon.ico?v=${BRAND_ICON_VERSION}`} />
-        <link rel="apple-touch-icon" sizes="180x180" href={`/apple-touch-icon.png?v=${BRAND_ICON_VERSION}`} />
         <meta name="apple-mobile-web-app-title" content="The Outliers Studio" />
-        <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
