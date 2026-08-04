@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://brand-eo90.onrender.com/api/:path*"
+      "destination": "https://brand-production-8c25.up.railway.app/api/:path*"
     }
   ],
   "headers": [

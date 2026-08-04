@@ -132,72 +132,94 @@ export default function CheckoutPage() {
     setIsDetectingLocation(true);
     setAddressError("");
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const apiKey =
-            process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-            "AIzaSyBi6Nw61aRi9QNSondGCw6VoEd2bcUEwQg";
-          const res = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`,
-          );
-          const data = await res.json();
+    const successCallback = async (position) => {
+      try {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const apiKey =
+          process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+          "AIzaSyBi6Nw61aRi9QNSondGCw6VoEd2bcUEwQg";
+        const res = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`,
+        );
+        const data = await res.json();
 
-          if (data.status === "OK" && data.results?.length > 0) {
-            const result = data.results[0];
-            const addressComponents = result.address_components || [];
+        if (data.status === "OK" && data.results?.length > 0) {
+          const result = data.results[0];
+          const addressComponents = result.address_components || [];
 
-            let street = "";
-            let area = "";
-            let city = "";
-            let state = "";
-            let pincode = "";
+          let street = "";
+          let area = "";
+          let city = "";
+          let state = "";
+          let pincode = "";
 
-            addressComponents.forEach((comp) => {
-              const types = comp.types;
-              if (types.includes("street_number") || types.includes("route")) {
-                street += (street ? " " : "") + comp.long_name;
-              } else if (
-                types.includes("sublocality") ||
-                types.includes("neighborhood")
-              ) {
-                area += (area ? ", " : "") + comp.long_name;
-              } else if (types.includes("locality")) {
-                city = comp.long_name;
-              } else if (types.includes("administrative_area_level_1")) {
-                state = comp.long_name;
-              } else if (types.includes("postal_code")) {
-                pincode = comp.long_name;
-              }
-            });
+          addressComponents.forEach((comp) => {
+            const types = comp.types;
+            if (types.includes("street_number") || types.includes("route")) {
+              street += (street ? " " : "") + comp.long_name;
+            } else if (
+              types.includes("sublocality") ||
+              types.includes("neighborhood")
+            ) {
+              area += (area ? ", " : "") + comp.long_name;
+            } else if (types.includes("locality")) {
+              city = comp.long_name;
+            } else if (types.includes("administrative_area_level_1")) {
+              state = comp.long_name;
+            } else if (types.includes("postal_code")) {
+              pincode = comp.long_name;
+            }
+          });
 
-            const line1 =
-              [street, area].filter(Boolean).join(", ") ||
-              result.formatted_address.split(",")[0];
+          const line1 =
+            [street, area].filter(Boolean).join(", ") ||
+            result.formatted_address.split(",")[0];
 
-            setNewAddress((prev) => ({
-              ...prev,
-              line1: line1 || prev.line1,
-              city: city || prev.city,
-              state: state || prev.state,
-              pincode: pincode || prev.pincode,
-            }));
-          } else {
-            setAddressError("Could not auto-fill address from GPS location.");
-          }
-        } catch {
-          setAddressError("Failed to fetch location details.");
-        } finally {
-          setIsDetectingLocation(false);
+          setNewAddress((prev) => ({
+            ...prev,
+            line1: line1 || prev.line1,
+            city: city || prev.city,
+            state: state || prev.state,
+            pincode: pincode || prev.pincode,
+          }));
+        } else {
+          setAddressError("Could not auto-fill address from GPS location.");
         }
-      },
-      (err) => {
+      } catch {
+        setAddressError("Failed to fetch location details.");
+      } finally {
         setIsDetectingLocation(false);
-        setAddressError(err.message || "Location access denied.");
-      },
-      { timeout: 10000, enableHighAccuracy: true },
+      }
+    };
+
+    const errorCallback = (err, isRetry = false) => {
+      // If high accuracy failed on desktop/laptop, retry with low accuracy (Wi-Fi/IP location)
+      if (!isRetry && err.code === err.POSITION_UNAVAILABLE) {
+        navigator.geolocation.getCurrentPosition(
+          successCallback,
+          (retryErr) => errorCallback(retryErr, true),
+          { timeout: 10000, enableHighAccuracy: false, maximumAge: 60000 }
+        );
+        return;
+      }
+
+      setIsDetectingLocation(false);
+      if (err.code === err.PERMISSION_DENIED) {
+        setAddressError("Location permission was denied. Please allow location access in your browser or type your address manually below.");
+      } else if (err.code === err.POSITION_UNAVAILABLE) {
+        setAddressError("Device location is unavailable. Please type your delivery address below.");
+      } else if (err.code === err.TIMEOUT) {
+        setAddressError("Location detection timed out. Please enter your address manually.");
+      } else {
+        setAddressError("Unable to detect location. Please type your address manually below.");
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      successCallback,
+      (err) => errorCallback(err, false),
+      { timeout: 8000, enableHighAccuracy: true }
     );
   };
 

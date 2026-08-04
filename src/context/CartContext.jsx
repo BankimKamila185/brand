@@ -1,4 +1,3 @@
-"use strict";
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
@@ -6,6 +5,8 @@ import { useAuth } from "./AuthContext";
 import { cartApi, wishlistApi } from "../lib/api";
 
 const CartContext = createContext(undefined);
+
+export const MAX_QTY_PER_ITEM = 5;
 
 export const CartProvider = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
@@ -247,12 +248,15 @@ export const CartProvider = ({ children }) => {
 
         if (existingItemIndex > -1) {
           const newCart = [...prevCart];
-          newCart[existingItemIndex].quantity += qty;
+          newCart[existingItemIndex].quantity = Math.min(
+            newCart[existingItemIndex].quantity + qty,
+            MAX_QTY_PER_ITEM,
+          );
           return newCart;
         } else {
           return [
             ...prevCart,
-            { product, variantId, quantity: qty, selectedSize: size },
+            { product, variantId, quantity: Math.min(qty, MAX_QTY_PER_ITEM), selectedSize: size },
           ];
         }
       });
@@ -293,6 +297,8 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
+    const cappedQuantity = Math.min(quantity, MAX_QTY_PER_ITEM);
+
     if (isAuthenticated) {
       try {
         const backendCartRes = await cartApi.get();
@@ -302,12 +308,12 @@ export const CartProvider = ({ children }) => {
             (bi) => bi.variant.id === variantId,
           );
           if (matchedBackendItem) {
-            await cartApi.updateItem(matchedBackendItem.id, quantity);
+            await cartApi.updateItem(matchedBackendItem.id, cappedQuantity);
           }
         }
         setCart((prevCart) =>
           prevCart.map((item) =>
-            item.variantId === variantId ? { ...item, quantity } : item,
+            item.variantId === variantId ? { ...item, quantity: cappedQuantity } : item,
           ),
         );
       } catch (e) {
@@ -316,9 +322,62 @@ export const CartProvider = ({ children }) => {
     } else {
       setCart((prevCart) =>
         prevCart.map((item) =>
-          item.variantId === variantId ? { ...item, quantity } : item,
+          item.variantId === variantId ? { ...item, quantity: cappedQuantity } : item,
         ),
       );
+    }
+  };
+
+  const updateItemSize = async (oldVariantId, newSize, product) => {
+    const variants = product?.variants || [];
+    const newVariant =
+      variants.find(
+        (v) => (v.option1 || v.size || v.title || "").toString().toLowerCase() === newSize.toString().toLowerCase()
+      ) || variants[0];
+
+    const newVariantId = newVariant ? newVariant.id : oldVariantId;
+
+    setCart((prevCart) => {
+      const existingIndex = prevCart.findIndex((item) => item.variantId === oldVariantId);
+      if (existingIndex === -1) return prevCart;
+
+      const currentItem = prevCart[existingIndex];
+      const targetQty = currentItem.quantity;
+
+      const sameVariantIndex = prevCart.findIndex(
+        (item, idx) => item.variantId === newVariantId && idx !== existingIndex
+      );
+
+      if (sameVariantIndex > -1 && newVariantId !== oldVariantId) {
+        const updated = prevCart.filter((_, idx) => idx !== existingIndex);
+        return updated.map((item) =>
+          item.variantId === newVariantId
+            ? { ...item, quantity: Math.min(item.quantity + targetQty, MAX_QTY_PER_ITEM) }
+            : item
+        );
+      } else {
+        return prevCart.map((item, idx) =>
+          idx === existingIndex
+            ? { ...item, variantId: newVariantId, selectedSize: newSize }
+            : item
+        );
+      }
+    });
+
+    if (isAuthenticated && newVariantId !== oldVariantId) {
+      try {
+        const backendCartRes = await cartApi.get();
+        if (backendCartRes.success && backendCartRes.data) {
+          const backendItems = backendCartRes.data.items || [];
+          const matchedBackendItem = backendItems.find((bi) => bi.variant.id === oldVariantId);
+          if (matchedBackendItem) {
+            await cartApi.removeItem(matchedBackendItem.id);
+          }
+          await cartApi.addItem(String(newVariantId), 1);
+        }
+      } catch (e) {
+        console.error("Error updating size in backend cart:", e);
+      }
     }
   };
 
@@ -382,6 +441,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateItemSize,
         toggleWishlist,
         isInWishlist,
         clearCart,

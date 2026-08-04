@@ -7,15 +7,16 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-import { useCart } from "@/context/CartContext";
+import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { couponsApi } from "@/lib/api";
-import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag } from "lucide-react";
+import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, Edit3 } from "lucide-react";
 
 export default function CartPage() {
   const router = useRouter();
   const {
     cart,
     updateQuantity,
+    updateItemSize,
     removeFromCart,
     cartTotal,
     clearCart,
@@ -167,18 +168,42 @@ export default function CartPage() {
                               >
                                 {item.product.title}
                               </Link>
-                              {item.selectedSize && (
-                                <span className="text-xs text-neutral-500 font-medium">
-                                  Size: <strong className="text-neutral-800">{item.selectedSize}</strong>
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => removeFromCart(item.variantId)}
-                                className="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 mt-2 transition-colors cursor-pointer w-fit"
-                              >
-                                <Trash2 size={13} /> Remove
-                              </button>
+                              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
+                                <span>Size:</span>
+                                <select
+                                  value={item.selectedSize || "M"}
+                                  onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
+                                  className="bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded px-1.5 py-0.5 text-xs font-bold text-neutral-900 cursor-pointer outline-none transition-colors"
+                                >
+                                  {(Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                                    : ["XS", "S", "M", "L", "XL", "XXL"]
+                                  ).map((sz) => (
+                                    <option key={sz} value={sz}>{sz}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div className="flex items-center gap-3 mt-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    const selectEl = e.currentTarget.parentElement?.parentElement?.querySelector("select");
+                                    if (selectEl) selectEl.focus();
+                                  }}
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+                                >
+                                  <Edit3 size={13} /> Edit
+                                </button>
+                                <span className="text-xs text-neutral-300">|</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFromCart(item.variantId)}
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+                                >
+                                  <Trash2 size={13} /> Remove
+                                </button>
+                              </div>
                             </div>
                           </div>
 
@@ -203,8 +228,13 @@ export default function CartPage() {
                               </span>
                               <button
                                 type="button"
+                                disabled={item.quantity >= MAX_QTY_PER_ITEM}
                                 onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                                className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:text-neutral-900 font-bold transition-colors cursor-pointer"
+                                className={`w-7 h-7 flex items-center justify-center font-bold transition-colors ${
+                                  item.quantity >= MAX_QTY_PER_ITEM
+                                    ? "text-neutral-300 cursor-not-allowed opacity-40"
+                                    : "text-neutral-600 hover:text-neutral-900 cursor-pointer"
+                                }`}
                               >
                                 +
                               </button>

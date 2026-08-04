@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { useCart } from "@/context/CartContext";
+import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { productsApi, reviewsApi } from "@/lib/api";
 import localProducts from "@/data/products.json";
@@ -187,6 +187,31 @@ export default function ProductDetailPage({ params }) {
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
+
+  // Freeze background page scrolling when Lightbox or Size Guide modal is open
+  useEffect(() => {
+    if (lightboxOpen || sizeGuideOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [lightboxOpen, sizeGuideOpen]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setLightboxOpen(false);
+        setSizeGuideOpen(false);
+      }
+    };
+    if (lightboxOpen || sizeGuideOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [lightboxOpen, sizeGuideOpen]);
 
   const thumbnailsRef = useRef(null);
 
@@ -829,8 +854,9 @@ export default function ProductDetailPage({ params }) {
                     >−</button>
                     <span style={{ width: 36, textAlign: "center", fontSize: 14, fontWeight: 600, color: "#111" }}>{quantity}</span>
                     <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: "pointer", color: "#333" }}
+                      onClick={() => setQuantity((prev) => Math.min(MAX_QTY_PER_ITEM, prev + 1))}
+                      disabled={quantity >= MAX_QTY_PER_ITEM}
+                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: quantity >= MAX_QTY_PER_ITEM ? "not-allowed" : "pointer", color: quantity >= MAX_QTY_PER_ITEM ? "#ccc" : "#333" }}
                     >+</button>
                   </div>
 

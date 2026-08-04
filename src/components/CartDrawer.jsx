@@ -1,9 +1,8 @@
-"use strict";
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "../context/CartContext";
+import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
 import { couponsApi } from "../lib/api";
 import { Truck, Tag, ShoppingBag, ArrowRight } from "lucide-react";
 
@@ -14,12 +13,24 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     cartOpen,
     setCartOpen,
     updateQuantity,
+    updateItemSize,
     removeFromCart,
     cartTotal,
   } = useCart();
   const [couponCode, setCouponCode] = useState("");
   const [activeDiscount, setActiveDiscount] = useState(0); // percentage
   const [couponMessage, setCouponMessage] = useState("");
+
+  // Freeze background page scrolling when CartDrawer is open
+  useEffect(() => {
+    if (cartOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [cartOpen]);
 
   // Expandable footer tabs state
   const [showShipping, setShowShipping] = useState(false);
@@ -158,9 +169,31 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
                     <div className="cart-item-details">
                       <h4 className="cart-item-title">{item.product.title}</h4>
-                      <span className="cart-item-size">
-                        Size: {item.selectedSize}
-                      </span>
+                      <div className="cart-item-size" style={{ display: "flex", alignItems: "center", gap: 6, margin: "2px 0 6px 0" }}>
+                        <span style={{ fontSize: 12, color: "#666" }}>Size:</span>
+                        <select
+                          value={item.selectedSize || "M"}
+                          onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
+                          style={{
+                            padding: "2px 6px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#111",
+                            background: "#f3f3f3",
+                            border: "1px solid #ddd",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                            outline: "none"
+                          }}
+                        >
+                          {(Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                            ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                            : ["XS", "S", "M", "L", "XL", "XXL"]
+                          ).map((sz) => (
+                            <option key={sz} value={sz}>{sz}</option>
+                          ))}
+                        </select>
+                      </div>
                       <span className="cart-item-price">
                         ₹{price.toFixed(2)}
                       </span>
@@ -178,6 +211,8 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           <span className="qty-val">{item.quantity}</span>
                           <button
                             className="qty-btn"
+                            disabled={item.quantity >= MAX_QTY_PER_ITEM}
+                            style={{ opacity: item.quantity >= MAX_QTY_PER_ITEM ? 0.4 : 1, cursor: item.quantity >= MAX_QTY_PER_ITEM ? "not-allowed" : "pointer" }}
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
@@ -186,12 +221,25 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           </button>
                         </div>
 
-                        <button
-                          className="cart-item-remove-link"
-                          onClick={() => removeFromCart(item.variantId)}
-                        >
-                          Remove
-                        </button>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <button
+                            className="cart-item-remove-link"
+                            style={{ color: "#333", textDecoration: "underline" }}
+                            onClick={(e) => {
+                              const selectEl = e.currentTarget.parentElement?.parentElement?.parentElement?.querySelector("select");
+                              if (selectEl) selectEl.focus();
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <span style={{ fontSize: 12, color: "#ccc" }}>|</span>
+                          <button
+                            className="cart-item-remove-link"
+                            onClick={() => removeFromCart(item.variantId)}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -61,6 +61,7 @@ const createApp = () => {
           allowed.includes(origin.replace(/\/$/, "")) ||
           origin.endsWith(".vercel.app") ||
           origin.endsWith(".onrender.com") ||
+          origin.endsWith(".up.railway.app") ||
           origin.endsWith(".theoutliersstudio.com");
 
         if (isAllowed) {

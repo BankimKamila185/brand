@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart } from "../context/CartContext";
+import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
 import { Heart, Eye, X, Check, ShoppingBag } from "lucide-react";
 
 function normalizeR2Url(src) {
@@ -409,8 +409,13 @@ const ProductCard = ({ product, onOpenDetails }) => {
                         </span>
                         <button
                           type="button"
-                          className="w-10 h-full flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200 hover:text-black transition-colors cursor-pointer text-lg"
-                          onClick={() => setQuantity((prev) => prev + 1)}
+                          disabled={quantity >= MAX_QTY_PER_ITEM}
+                          className={`w-10 h-full flex items-center justify-center font-bold transition-colors text-lg ${
+                            quantity >= MAX_QTY_PER_ITEM
+                              ? "text-neutral-300 cursor-not-allowed"
+                              : "text-neutral-600 hover:bg-neutral-200 hover:text-black cursor-pointer"
+                          }`}
+                          onClick={() => setQuantity((prev) => Math.min(MAX_QTY_PER_ITEM, prev + 1))}
                         >
                           +
                         </button>
