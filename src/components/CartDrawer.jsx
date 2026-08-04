@@ -14,8 +14,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     setCartOpen,
     updateQuantity,
     removeFromCart,
+    updateItemSize,
     cartTotal,
   } = useCart();
+  const [editingItemVariantId, setEditingItemVariantId] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [activeDiscount, setActiveDiscount] = useState(0); // percentage
   const [couponMessage, setCouponMessage] = useState("");
@@ -200,11 +202,12 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           type="button"
                           className="cart-item-edit-button"
                           onClick={() => {
-                            setCartOpen(false);
-                            router.push(`/products/${item.product.handle}`);
+                            setEditingItemVariantId(
+                              editingItemVariantId === item.variantId ? null : item.variantId
+                            );
                           }}
                         >
-                          <Pencil size={13} /> Edit item
+                          <Pencil size={13} /> {editingItemVariantId === item.variantId ? "Close edit" : "Edit item"}
                         </button>
                         <div className="cart-item-quantity">
                           <button
@@ -227,8 +230,57 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                             +
                           </button>
                         </div>
-
                       </div>
+
+                      {editingItemVariantId === item.variantId && (
+                        <div className="mt-3 p-3 bg-neutral-50 dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in duration-150">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
+                              Change Size:
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setEditingItemVariantId(null)}
+                              className="text-[10px] text-neutral-400 hover:text-black dark:hover:text-white font-bold uppercase tracking-wider cursor-pointer"
+                            >
+                              Done ✕
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {(() => {
+                              const rawSizes = (item.product?.variants || [])
+                                .map((v) => v.title || v.option1 || v.size)
+                                .filter(Boolean);
+                              const availableSizes = Array.from(new Set(rawSizes));
+                              const sizesToDisplay = availableSizes.length > 0 ? availableSizes : ["XS", "S", "M", "L", "XL", "2XL"];
+                              const currentSize = (item.selectedSize || variant.option1 || "M").toString().toUpperCase();
+
+                              return sizesToDisplay.map((sizeOpt) => {
+                                const isCurrent = currentSize === sizeOpt.toString().toUpperCase();
+                                return (
+                                  <button
+                                    key={sizeOpt}
+                                    type="button"
+                                    onClick={async () => {
+                                      if (updateItemSize) {
+                                        await updateItemSize(item.variantId, sizeOpt, item.product);
+                                      }
+                                      setEditingItemVariantId(null);
+                                    }}
+                                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                                      isCurrent
+                                        ? "bg-black text-white dark:bg-white dark:text-black shadow-xs scale-105"
+                                        : "bg-white text-black dark:bg-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 hover:border-black"
+                                    }`}
+                                  >
+                                    {sizeOpt}
+                                  </button>
+                                );
+                              });
+                            })()}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
