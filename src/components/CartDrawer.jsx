@@ -233,20 +233,42 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                       </div>
 
                       {editingItemVariantId === item.variantId && (
-                        <div className="mt-3 p-3 bg-neutral-50 dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in duration-150">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                              Change Size:
+                        <div
+                          className="cart-size-picker-box"
+                          style={{
+                            marginTop: "12px",
+                            padding: "12px 14px",
+                            backgroundColor: "#f6f6f4",
+                            borderRadius: "14px",
+                            border: "1px solid #e5e5e0",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
+                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.04)",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666666" }}>
+                              Select Size
                             </span>
                             <button
                               type="button"
                               onClick={() => setEditingItemVariantId(null)}
-                              className="text-[10px] text-neutral-400 hover:text-black dark:hover:text-white font-bold uppercase tracking-wider cursor-pointer"
+                              style={{
+                                fontSize: "11px",
+                                fontWeight: 600,
+                                color: "#888888",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: "2px 4px",
+                              }}
                             >
                               Done ✕
                             </button>
                           </div>
-                          <div className="flex flex-wrap gap-1.5">
+
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
                             {(() => {
                               const rawSizes = (item.product?.variants || [])
                                 .map((v) => v.title || v.option1 || v.size)
@@ -267,11 +289,23 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                       }
                                       setEditingItemVariantId(null);
                                     }}
-                                    className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                                      isCurrent
-                                        ? "bg-black text-white dark:bg-white dark:text-black shadow-xs scale-105"
-                                        : "bg-white text-black dark:bg-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 hover:border-black"
-                                    }`}
+                                    style={{
+                                      minWidth: "38px",
+                                      height: "36px",
+                                      padding: "0 10px",
+                                      borderRadius: "10px",
+                                      fontSize: "12px",
+                                      fontWeight: isCurrent ? 700 : 500,
+                                      color: isCurrent ? "#ffffff" : "#121212",
+                                      backgroundColor: isCurrent ? "#000000" : "#ffffff",
+                                      border: isCurrent ? "1px solid #000000" : "1px solid #dcdcdc",
+                                      cursor: "pointer",
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      transition: "all 0.15s ease",
+                                      boxShadow: isCurrent ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+                                    }}
                                   >
                                     {sizeOpt}
                                   </button>
