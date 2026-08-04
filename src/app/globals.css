@@ -571,9 +571,9 @@ h1, h2, h3,
 
 .checkout-address-form-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .checkout-address-form-header h3 {
@@ -609,6 +609,29 @@ h1, h2, h3,
 .checkout-location-button:disabled {
   cursor: wait;
   opacity: .65;
+}
+
+.checkout-save-address {
+  display: inline-flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  color: #fff;
+  font: 700 12px/1 var(--font-display);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: var(--c-ink);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color var(--t-fast), transform var(--t-fast);
+}
+
+.checkout-save-address:hover {
+  background: var(--c-ink-2);
+  transform: translateY(-1px);
 }
 
 .checkout-v3 .checkout-address {
@@ -696,7 +719,7 @@ h1, h2, h3,
   .checkout-v3-section-head { flex-direction: column; }
   .checkout-v3-panel, .checkout-v3-order { padding: 20px; box-shadow: 4px 4px 0 var(--checkout-ink); }
   .checkout-v3-delivery { flex-direction: column; }
-  .checkout-address-form-header { align-items: stretch; flex-direction: column; }
+  .checkout-address-form-header { align-items: stretch; }
   .checkout-location-button { width: 100%; }
 }
 

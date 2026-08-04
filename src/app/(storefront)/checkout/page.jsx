@@ -503,7 +503,7 @@ export default function CheckoutPage() {
                   />
                   <Input label="City" name="city" value={newAddress.city} onChange={setNewAddress} />
                   <Input label="State" name="state" value={newAddress.state} onChange={setNewAddress} />
-                  <button className="col-span-full bg-[#0E0D0B] px-4 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-neutral-800">
+                  <button type="submit" className="checkout-save-address col-span-full">
                     Save address
                   </button>
                 </form>

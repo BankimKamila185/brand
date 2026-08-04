@@ -322,9 +322,6 @@ const Header = ({ onSearch }) => {
                   <Link href="/" onClick={closeSearch} className="srch-logo flex-shrink-0">
                     <Logo className="h-10 md:h-12" />
                   </Link>
-                  <button onClick={closeSearch} className="srch-close-btn md:hidden p-1 text-neutral-700 hover:text-black" aria-label="Close search">
-                    <X className="w-5 h-5" />
-                  </button>
                 </div>
 
                 {/* Wide search form */}
@@ -384,11 +381,6 @@ const Header = ({ onSearch }) => {
                       <path d="M16 10a4 4 0 0 1-8 0" />
                     </svg>
                     {cartCount > 0 && <span className="badge-count">{cartCount}</span>}
-                  </button>
-
-                  {/* Close X */}
-                  <button onClick={closeSearch} className="srch-close-btn" aria-label="Close search">
-                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
