@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { couponsApi } from "@/lib/api";
-import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, Edit3 } from "lucide-react";
+import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown } from "lucide-react";
 
 export default function CartPage() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function CartPage() {
 
   const [couponCode, setCouponCode] = useState("");
   const [activeDiscount, setActiveDiscount] = useState(0);
+  const [editingSizeVariantId, setEditingSizeVariantId] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
 
@@ -168,42 +169,55 @@ export default function CartPage() {
                               >
                                 {item.product.title}
                               </Link>
-                              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
+                              {/* Size Badge */}
+                              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium my-1">
                                 <span>Size:</span>
-                                <select
-                                  value={item.selectedSize || "M"}
-                                  onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
-                                  className="bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded px-1.5 py-0.5 text-xs font-bold text-neutral-900 cursor-pointer outline-none transition-colors"
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-neutral-100 hover:bg-neutral-200 text-neutral-900 rounded border border-neutral-200 transition-colors cursor-pointer"
                                 >
-                                  {(Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                                    : ["XS", "S", "M", "L", "XL", "XXL"]
-                                  ).map((sz) => (
-                                    <option key={sz} value={sz}>{sz}</option>
-                                  ))}
-                                </select>
+                                  {item.selectedSize || "M"} <ChevronDown size={11} className="opacity-60" />
+                                </button>
                               </div>
 
-                              <div className="flex items-center gap-3 mt-1.5">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    const selectEl = e.currentTarget.parentElement?.parentElement?.querySelector("select");
-                                    if (selectEl) selectEl.focus();
-                                  }}
-                                  className="inline-flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
-                                >
-                                  <Edit3 size={13} /> Edit
-                                </button>
-                                <span className="text-xs text-neutral-300">|</span>
-                                <button
-                                  type="button"
-                                  onClick={() => removeFromCart(item.variantId)}
-                                  className="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
-                                >
-                                  <Trash2 size={13} /> Remove
-                                </button>
-                              </div>
+                              {/* Expandable Custom Size Picker Pills */}
+                              {editingSizeVariantId === item.variantId && (
+                                <div className="flex items-center gap-1.5 flex-wrap my-2 p-2 bg-neutral-50 border border-neutral-200 rounded-lg">
+                                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mr-1">Size:</span>
+                                  {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                                    : ["XS", "S", "M", "L", "XL", "XXL"]
+                                  )).map((sz) => {
+                                    const isSelected = (item.selectedSize || "").toString().toLowerCase() === sz.toString().toLowerCase();
+                                    return (
+                                      <button
+                                        key={sz}
+                                        type="button"
+                                        onClick={() => {
+                                          updateItemSize(item.variantId, sz, item.product);
+                                          setEditingSizeVariantId(null);
+                                        }}
+                                        className={`px-2 py-1 text-xs font-bold rounded transition-all cursor-pointer ${
+                                          isSelected
+                                            ? "bg-black text-white shadow-sm"
+                                            : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
+                                        }`}
+                                      >
+                                        {sz}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => removeFromCart(item.variantId)}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-neutral-400 hover:text-red-600 transition-colors cursor-pointer mt-1 w-fit"
+                              >
+                                <Trash2 size={13} /> Remove
+                              </button>
                             </div>
                           </div>
 
