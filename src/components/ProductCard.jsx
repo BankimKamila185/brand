@@ -464,13 +464,6 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
               />
             </button>
 
-            <button
-              className="hover-action-btn quickview-btn"
-              onClick={openQuickView}
-              aria-label="Quick view"
-            >
-              <Eye size={18} />
-            </button>
           </div>
 
           {/* Floating bottom action bar */}
