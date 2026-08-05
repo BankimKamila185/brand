@@ -175,89 +175,56 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
   if (viewMode === "list") {
     return (
       <>
-        <div className="product-card-list-view flex flex-col sm:flex-row gap-5 p-4 border border-neutral-200 rounded-lg hover:border-neutral-400 transition-all bg-white group">
-          {/* Left Media Container */}
-          <div className="relative w-full sm:w-64 md:w-72 aspect-[3/4] overflow-hidden rounded bg-neutral-100 flex-shrink-0">
-            {discountPercent > 0 && (
-              <div className="absolute top-2.5 left-2.5 z-10 bg-[#e84e4e] text-white font-extrabold text-[11px] px-2 py-0.5 rounded-sm tracking-tight select-none">
-                -{discountPercent}%
-              </div>
-            )}
-            <Link href={`/products/${product.handle}`} className="block w-full h-full">
+        <div className="product-card-list-view">
+          {/* Left: square image */}
+          <Link href={`/products/${product.handle}`} className="product-list-img-wrap">
+            <div className="relative w-full h-full">
+              {discountPercent > 0 && (
+                <div className="product-card-discount">-{discountPercent}%</div>
+              )}
               <img
                 src={firstImg}
                 alt={product.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover"
+                loading="lazy"
               />
+            </div>
+          </Link>
+
+          {/* Right: info */}
+          <div className="product-list-info">
+            <Link href={`/products/${product.handle}`}>
+              <h3 className="product-list-title">{product.title}</h3>
             </Link>
-          </div>
 
-          {/* Right Info Panel */}
-          <div className="flex-1 flex flex-col justify-between py-1">
-            <div className="flex flex-col gap-2">
-              <Link href={`/products/${product.handle}`}>
-                <h3 className="text-base font-bold text-neutral-900 hover:text-black transition-colors leading-snug">
-                  {product.title}
-                </h3>
-              </Link>
+            <div className="product-list-rating">
+              <span>★★★★★</span>
+              <span className="product-list-reviews">{reviewsCount} reviews</span>
+            </div>
 
-              {/* Ratings */}
-              <div className="flex items-center gap-1.5 text-xs text-neutral-600">
-                <span className="text-[#111] text-[13px] tracking-tight">★★★★★</span>
-                <span className="text-[11px] text-neutral-500 font-medium">
-                  {reviewsCount} review{reviewsCount === 1 ? "" : "s"}
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="flex flex-wrap items-baseline gap-2 mt-1">
-                <span className="text-base font-extrabold text-[#e84e4e]">
-                  ₹ {priceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                </span>
-                {comparePriceNum > priceNum && (
-                  <span className="text-xs text-neutral-400 line-through">
-                    ₹ {comparePriceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            <div className="product-list-price-row">
+              {comparePriceNum > priceNum ? (
+                <>
+                  <span className="product-list-price-sale">
+                    ₹{Math.round(priceNum).toLocaleString("en-IN")}
                   </span>
-                )}
-              </div>
-
-              {/* Attributes / Description Summary */}
-              <p className="product-list-description text-xs text-neutral-600 leading-relaxed mt-1 line-clamp-3">
-                {cleanDescription}
-              </p>
+                  <span className="product-list-price-compare">
+                    ₹{Math.round(comparePriceNum).toLocaleString("en-IN")}
+                  </span>
+                </>
+              ) : (
+                <span className="product-list-price-regular">
+                  ₹{Math.round(priceNum).toLocaleString("en-IN")}
+                </span>
+              )}
             </div>
 
-            {/* Action Buttons Row */}
-            <div className="product-list-actions flex items-center gap-3 mt-4 pt-3 border-t border-neutral-100">
-              <button
-                onClick={openQuickView}
-                className="px-5 py-2.5 bg-white border border-neutral-900 text-neutral-900 text-xs font-bold uppercase tracking-wider rounded hover:bg-black hover:text-white transition-colors cursor-pointer"
-              >
-                SELECT OPTIONS
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggleWishlist(product.id);
-                }}
-                className={`p-2.5 border rounded-full transition-colors cursor-pointer ${
-                  isWishlisted
-                    ? "border-[#e84e4e] bg-red-50 text-[#e84e4e]"
-                    : "border-neutral-300 text-neutral-700 hover:border-black"
-                }`}
-                aria-label="Wishlist"
-              >
-                <Heart size={16} className={isWishlisted ? "fill-[#e84e4e] stroke-[#e84e4e]" : ""} />
-              </button>
-              <button
-                onClick={openQuickView}
-                className="p-2.5 border border-neutral-300 rounded-full text-neutral-700 hover:border-black transition-colors cursor-pointer"
-                aria-label="Quick View"
-              >
-                <Eye size={16} />
-              </button>
-            </div>
+            <button
+              className="product-list-select-btn"
+              onClick={openQuickView}
+            >
+              Select Options
+            </button>
           </div>
         </div>
 
@@ -385,13 +352,9 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
                       ) : isAdding ? (
                         "Adding..."
                       ) : addedSuccess ? (
-                        <>
-                          <Check size={16} /> Added to Cart!
-                        </>
+                        <><Check size={16} /> Added to Cart!</>
                       ) : (
-                        <>
-                          <ShoppingBag size={16} /> Add to Cart
-                        </>
+                        <><ShoppingBag size={16} /> Add to Cart</>
                       )}
                     </button>
                   </div>
