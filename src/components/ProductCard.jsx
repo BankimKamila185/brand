@@ -222,13 +222,13 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
               </div>
 
               {/* Attributes / Description Summary */}
-              <p className="text-xs text-neutral-600 leading-relaxed mt-1 line-clamp-3">
+              <p className="product-list-description text-xs text-neutral-600 leading-relaxed mt-1 line-clamp-3">
                 {cleanDescription}
               </p>
             </div>
 
             {/* Action Buttons Row */}
-            <div className="flex items-center gap-3 mt-4 pt-3 border-t border-neutral-100">
+            <div className="product-list-actions flex items-center gap-3 mt-4 pt-3 border-t border-neutral-100">
               <button
                 onClick={openQuickView}
                 className="px-5 py-2.5 bg-white border border-neutral-900 text-neutral-900 text-xs font-bold uppercase tracking-wider rounded hover:bg-black hover:text-white transition-colors cursor-pointer"
