@@ -481,8 +481,8 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
 
           {/* Ratings & Reviews */}
           <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-600">
-            <span className="text-[#111] text-[13px] tracking-tight">★★★★★</span>
-            <span className="text-[11px] text-neutral-500 font-medium">
+            <span className="product-card-stars">★★★★★</span>
+            <span className="product-card-review-count">
               {reviewsCount} reviews
             </span>
           </div>

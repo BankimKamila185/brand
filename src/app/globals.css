@@ -3431,6 +3431,19 @@ html, body {
   display: none;
 }
 
+.product-card-stars {
+  color: var(--c-ink);
+  font-size: 13px;
+  letter-spacing: .03em;
+  line-height: 1;
+}
+
+.product-card-review-count {
+  color: var(--c-ink-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 /* ── Disable product card hover effects on mobile & touch devices ── */
 @media (max-width: 768px), (hover: none) {
   .product-card:hover .product-card-img {
@@ -3462,6 +3475,45 @@ html, body {
     font-size: 9px;
     background: var(--c-ink);
     border-radius: 3px;
+  }
+  .product-card-info {
+    gap: 7px;
+    padding: 13px 1px 4px;
+  }
+  .product-card-title {
+    color: var(--c-ink);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -.025em;
+  }
+  .product-card-rating {
+    align-items: center;
+    gap: 7px;
+    min-height: 20px;
+  }
+  .product-card-stars {
+    padding: 4px 6px;
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: .07em;
+    background: var(--c-ink);
+    border-radius: var(--r-pill);
+  }
+  .product-card-review-count {
+    font-size: 12px;
+  }
+  .product-card-price-row {
+    gap: 8px;
+    margin-top: 1px;
+  }
+  .price-regular,
+  .price-sale {
+    font-size: 20px;
+    letter-spacing: -.03em;
+  }
+  .price-compare {
+    font-size: 13px;
   }
   .product-card-bottom-action {
     display: none !important;
