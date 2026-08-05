@@ -80,7 +80,7 @@ const Footer = () => {
           position: relative;
           z-index: 1;
           display: grid;
-          grid-template-columns: 1.6fr 1fr 1fr 1.8fr;
+          grid-template-columns: 1.6fr 1.2fr 1.8fr;
           gap: 0;
           max-width: 1340px;
           margin: 0 auto;
@@ -405,7 +405,7 @@ const Footer = () => {
           .hoo-footer-grid {
             grid-template-columns: 1fr 1fr;
           }
-          .hoo-footer-col:nth-child(4) {
+          .hoo-footer-col:nth-child(3) {
             padding-left: 0;
           }
         }
@@ -516,18 +516,6 @@ const Footer = () => {
               <li><Link href="/policies/terms-of-service">Terms of Service</Link></li>
               <li><Link href="/contact">Contact Us</Link></li>
               <li><Link href="/collections/whats-new">Lookbook &amp; Drops</Link></li>
-            </ul>
-          </div>
-
-          {/* Col 3 — Trending */}
-          <div className="hoo-footer-col">
-            <p className="hoo-col-label">Trending</p>
-            <ul className="hoo-nav-links">
-              <li><Link href="/collections/cargo-trousers-for-men">Baggy Cargo Trousers</Link></li>
-              <li><Link href="/collections/shirts">Shirts</Link></li>
-              <li><Link href="/collections/co-ord-sets">Co-ord Sets</Link></li>
-              <li><Link href="/collections/oversized-t-shirts">Oversized Tees</Link></li>
-              <li><Link href="/collections/all">All Products</Link></li>
             </ul>
           </div>
 
