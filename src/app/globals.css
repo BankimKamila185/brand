@@ -6467,8 +6467,12 @@ textarea.form-input {
 }
 
 @media (max-width: 640px) {
+  .pdp-two-col {
+    gap: 0 !important;
+  }
+
   .pdp-info-panel {
-    padding: 20px;
+    padding: 8px 20px 20px;
     border-radius: 18px;
   }
 
