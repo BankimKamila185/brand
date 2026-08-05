@@ -398,18 +398,18 @@ export default function CheckoutPage() {
                 <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-5 text-left">
                   Shipment Roadmap
                 </p>
-                <div className="flex justify-between items-center gap-2">
-                  <div className="flex-1 text-center">
+                <div className="checkout-roadmap-steps">
+                  <div className="checkout-roadmap-step">
                     <span className="w-6 h-6 rounded-full bg-[#1a9e5d] text-white flex items-center justify-center text-xs mx-auto font-bold mb-1">✓</span>
                     <p className="text-xs font-bold text-neutral-800">Placed</p>
                   </div>
-                  <div className="w-12 h-0.5 bg-[#1a9e5d]"></div>
-                  <div className="flex-1 text-center">
+                  <div className="checkout-roadmap-line is-complete" />
+                  <div className="checkout-roadmap-step">
                     <span className="w-6 h-6 rounded-full bg-[#0E0D0B] text-white flex items-center justify-center text-xs mx-auto font-bold mb-1">2</span>
                     <p className="text-xs font-bold text-neutral-800">Processing</p>
                   </div>
-                  <div className="w-12 h-0.5 bg-neutral-200"></div>
-                  <div className="flex-1 text-center">
+                  <div className="checkout-roadmap-line" />
+                  <div className="checkout-roadmap-step">
                     <span className="w-6 h-6 rounded-full bg-neutral-200 text-neutral-400 flex items-center justify-center text-xs mx-auto font-bold mb-1">3</span>
                     <p className="text-xs text-neutral-400 font-medium">Shipped</p>
                   </div>

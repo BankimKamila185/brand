@@ -8512,6 +8512,33 @@ textarea.form-input {
   margin-block: 32px !important;
 }
 
+.checkout-roadmap-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.checkout-roadmap-step {
+  flex: 1;
+  text-align: center;
+}
+
+.checkout-roadmap-step p {
+  margin: 0;
+}
+
+.checkout-roadmap-line {
+  width: 48px;
+  height: 2px;
+  flex: 0 0 auto;
+  background: #e5e5e5;
+}
+
+.checkout-roadmap-line.is-complete {
+  background: #1a9e5d;
+}
+
 .checkout-success-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -8525,8 +8552,12 @@ textarea.form-input {
   .checkout-success-shell { width: min(calc(100% - 24px), 780px) !important; }
   .checkout-success-card { padding: 24px 18px !important; }
   .checkout-v3-success h1 { font-size: clamp(2rem, 11vw, 2.7rem) !important; }
-  .checkout-success-roadmap { padding-inline: 10px !important; }
-  .checkout-success-roadmap .w-12 { width: 24px; }
+  .checkout-success-roadmap { padding: 20px 18px !important; }
+  .checkout-roadmap-steps { align-items: stretch; flex-direction: column; gap: 0; }
+  .checkout-roadmap-step { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 12px; min-height: 38px; text-align: left; }
+  .checkout-roadmap-step span { margin: 0 !important; }
+  .checkout-roadmap-step p { font-size: 14px !important; }
+  .checkout-roadmap-line { width: 2px; height: 22px; margin-left: 16px; }
   .checkout-success-actions { grid-template-columns: 1fr; }
 }
 
