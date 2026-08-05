@@ -68,6 +68,15 @@ export default function CollectionPage({ params }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Accordion States
   const [openSections, setOpenSections] = useState({
@@ -446,23 +455,25 @@ export default function CollectionPage({ params }) {
               <div className="collection-top-toolbar">
                 <div className="collection-sort-controls">
 
-                  {/* ── MOBILE: Filter ∨ + Featured ∨ pill row ── */}
-                  <div className="mobile-toolbar-pills md:hidden">
-                    <button
-                      className={`mobile-pill-btn${isFilterActive ? " is-active" : ""}`}
-                      onClick={() => setMobileFiltersOpen(true)}
-                    >
-                      Filter
-                      <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      className="mobile-pill-btn"
-                      onClick={() => setMobileSortOpen(true)}
-                    >
-                      {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
-                      <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  {/* ── MOBILE ONLY: Filter ∨ + Sort ∨ pill row ── */}
+                  {isMobile && (
+                    <div className="mobile-toolbar-pills">
+                      <button
+                        className={`mobile-pill-btn${isFilterActive ? " is-active" : ""}`}
+                        onClick={() => setMobileFiltersOpen(true)}
+                      >
+                        Filter
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        className="mobile-pill-btn"
+                        onClick={() => setMobileSortOpen(true)}
+                      >
+                        {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* ── DESKTOP: sort picker dropdown ── */}
                   <div className="collection-sort-picker hidden md:block">
@@ -570,30 +581,32 @@ export default function CollectionPage({ params }) {
                   </button>
                 </div>
 
-                {/* Mobile Grid Switcher: List | 2-col */}
-                <div className="mobile-grid-toggle md:hidden">
-                  <button
-                    onClick={() => setGridCols(1)}
-                    className={`mobile-grid-toggle-btn ${gridCols === 1 ? "active" : ""}`}
-                    aria-label="List view"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <line x1="3" y1="12" x2="21" y2="12" />
-                      <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setGridCols(2)}
-                    className={`mobile-grid-toggle-btn ${gridCols === 2 ? "active" : ""}`}
-                    aria-label="2 column grid"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                      <line x1="9" y1="4" x2="9" y2="20" />
-                      <line x1="15" y1="4" x2="15" y2="20" />
-                    </svg>
-                  </button>
-                </div>
+                {/* Mobile Grid Switcher: List | 2-col — mobile only */}
+                {isMobile && (
+                  <div className="mobile-grid-toggle">
+                    <button
+                      onClick={() => setGridCols(1)}
+                      className={`mobile-grid-toggle-btn ${gridCols === 1 ? "active" : ""}`}
+                      aria-label="List view"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setGridCols(2)}
+                      className={`mobile-grid-toggle-btn ${gridCols === 2 ? "active" : ""}`}
+                      aria-label="2 column grid"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                        <line x1="9" y1="4" x2="9" y2="20" />
+                        <line x1="15" y1="4" x2="15" y2="20" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
 
               </div>
 
@@ -646,7 +659,7 @@ export default function CollectionPage({ params }) {
 
 
       {/* ── MOBILE FILTER BOTTOM SHEET ───────────────────── */}
-      {mobileFiltersOpen && (
+      {isMobile && mobileFiltersOpen && (
         <div
           className="mobile-sheet-overlay"
           onClick={() => setMobileFiltersOpen(false)}
@@ -803,7 +816,7 @@ export default function CollectionPage({ params }) {
       )}
 
       {/* ── MOBILE SORT BOTTOM SHEET ─────────────────────── */}
-      {mobileSortOpen && (
+      {isMobile && mobileSortOpen && (
         <div
           className="mobile-sheet-overlay"
           onClick={() => setMobileSortOpen(false)}
