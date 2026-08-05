@@ -439,7 +439,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
           )}
 
           {/* Image actions */}
-          <div className="product-card-hover-actions">
+          <div className="product-card-hover-actions hidden md:flex">
             <button
               className="hover-action-btn mobile-card-action"
               onClick={openQuickView}
