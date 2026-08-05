@@ -442,7 +442,7 @@ export default function CollectionPage({ params }) {
               
               {/* Toolbar: Sort Left | Grid Buttons Right */}
               <div className="collection-top-toolbar">
-                <div className="flex items-center gap-3">
+                <div className="collection-sort-controls">
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
                     className="md:hidden inline-flex items-center gap-2 px-3.5 py-2 border border-neutral-300 rounded text-xs font-bold text-neutral-800"
@@ -465,7 +465,7 @@ export default function CollectionPage({ params }) {
                 </div>
 
                 {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
-                <div className="hidden sm:flex grid-switcher-bar">
+                <div className="hidden md:flex grid-switcher-bar">
                   <button
                     onClick={() => setGridCols(1)}
                     className={`grid-switcher-btn ${gridCols === 1 ? "active" : ""}`}
@@ -531,6 +531,34 @@ export default function CollectionPage({ params }) {
                       <line x1="21" y1="4" x2="21" y2="20" />
                     </svg>
                     <span className="grid-tooltip">5 columns</span>
+                  </button>
+                </div>
+
+                <div className="mobile-grid-switcher md:hidden" aria-label="Choose product layout">
+                  <button
+                    type="button"
+                    onClick={() => setGridCols(2)}
+                    className={gridCols !== 1 ? "active" : ""}
+                    aria-label="Two-column product view"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                      <line x1="8" y1="4" x2="8" y2="20" />
+                      <line x1="16" y1="4" x2="16" y2="20" />
+                    </svg>
+                    Grid
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGridCols(1)}
+                    className={gridCols === 1 ? "active" : ""}
+                    aria-label="Single-column product view"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                    List
                   </button>
                 </div>
               </div>
