@@ -475,111 +475,115 @@ export default function CollectionPage({ params }) {
                     </div>
                   )}
 
-                  {/* ── DESKTOP: sort picker dropdown ── */}
-                  <div className="collection-sort-picker hidden md:block">
+                  {/* ── DESKTOP ONLY: sort picker dropdown ── */}
+                  {!isMobile && (
+                    <div className="collection-sort-picker hidden md:block">
+                      <button
+                        type="button"
+                        className="collection-sort-trigger"
+                        aria-haspopup="listbox"
+                        aria-expanded={sortMenuOpen}
+                        onClick={() => setSortMenuOpen((open) => !open)}
+                      >
+                        {SORT_OPTIONS.find((option) => option.value === sortBy)?.label}
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                      {sortMenuOpen && (
+                        <div className="collection-sort-menu" role="listbox" aria-label="Sort products">
+                          {SORT_OPTIONS.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              role="option"
+                              aria-selected={sortBy === option.value}
+                              className={sortBy === option.value ? "is-selected" : ""}
+                              onClick={() => {
+                                setSortBy(option.value);
+                                setSortMenuOpen(false);
+                              }}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                </div>
+
+
+                {/* ── DESKTOP ONLY: Grid Column Switcher (1, 2, 3, 4, 5) ── */}
+                {!isMobile && (
+                  <div className="hidden md:flex grid-switcher-bar">
                     <button
-                      type="button"
-                      className="collection-sort-trigger"
-                      aria-haspopup="listbox"
-                      aria-expanded={sortMenuOpen}
-                      onClick={() => setSortMenuOpen((open) => !open)}
+                      onClick={() => setGridCols(1)}
+                      className={`grid-switcher-btn ${gridCols === 1 ? "active" : ""}`}
+                      aria-label="List View"
                     >
-                      {SORT_OPTIONS.find((option) => option.value === sortBy)?.label}
-                      <ChevronDown className="w-4 h-4" />
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                      </svg>
+                      <span className="grid-tooltip">List</span>
                     </button>
-                    {sortMenuOpen && (
-                      <div className="collection-sort-menu" role="listbox" aria-label="Sort products">
-                        {SORT_OPTIONS.map((option) => (
-                          <button
-                            key={option.value}
-                            type="button"
-                            role="option"
-                            aria-selected={sortBy === option.value}
-                            className={sortBy === option.value ? "is-selected" : ""}
-                            onClick={() => {
-                              setSortBy(option.value);
-                              setSortMenuOpen(false);
-                            }}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+
+                    <button
+                      onClick={() => setGridCols(2)}
+                      className={`grid-switcher-btn ${gridCols === 2 ? "active" : ""}`}
+                      aria-label="2 Columns View"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <line x1="8" y1="4" x2="8" y2="20" />
+                        <line x1="16" y1="4" x2="16" y2="20" />
+                      </svg>
+                      <span className="grid-tooltip">2 columns</span>
+                    </button>
+
+                    <button
+                      onClick={() => setGridCols(3)}
+                      className={`grid-switcher-btn ${gridCols === 3 ? "active" : ""}`}
+                      aria-label="3 Columns View"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                        <line x1="6" y1="4" x2="6" y2="20" />
+                        <line x1="12" y1="4" x2="12" y2="20" />
+                        <line x1="18" y1="4" x2="18" y2="20" />
+                      </svg>
+                      <span className="grid-tooltip">3 columns</span>
+                    </button>
+
+                    <button
+                      onClick={() => setGridCols(4)}
+                      className={`grid-switcher-btn ${gridCols === 4 ? "active" : ""}`}
+                      aria-label="4 Columns View"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <line x1="4.5" y1="4" x2="4.5" y2="20" />
+                        <line x1="9.5" y1="4" x2="9.5" y2="20" />
+                        <line x1="14.5" y1="4" x2="14.5" y2="20" />
+                        <line x1="19.5" y1="4" x2="19.5" y2="20" />
+                      </svg>
+                      <span className="grid-tooltip">4 columns</span>
+                    </button>
+
+                    <button
+                      onClick={() => setGridCols(5)}
+                      className={`grid-switcher-btn ${gridCols === 5 ? "active" : ""}`}
+                      aria-label="5 Columns View"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                        <line x1="3" y1="4" x2="3" y2="20" />
+                        <line x1="7.5" y1="4" x2="7.5" y2="20" />
+                        <line x1="12" y1="4" x2="12" y2="20" />
+                        <line x1="16.5" y1="4" x2="16.5" y2="20" />
+                        <line x1="21" y1="4" x2="21" y2="20" />
+                      </svg>
+                      <span className="grid-tooltip">5 columns</span>
+                    </button>
                   </div>
-
-                </div>
-
-
-                {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
-                <div className="hidden md:flex grid-switcher-bar">
-                  <button
-                    onClick={() => setGridCols(1)}
-                    className={`grid-switcher-btn ${gridCols === 1 ? "active" : ""}`}
-                    aria-label="List View"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <line x1="3" y1="12" x2="21" y2="12" />
-                      <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
-                    <span className="grid-tooltip">List</span>
-                  </button>
-
-                  <button
-                    onClick={() => setGridCols(2)}
-                    className={`grid-switcher-btn ${gridCols === 2 ? "active" : ""}`}
-                    aria-label="2 Columns View"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <line x1="8" y1="4" x2="8" y2="20" />
-                      <line x1="16" y1="4" x2="16" y2="20" />
-                    </svg>
-                    <span className="grid-tooltip">2 columns</span>
-                  </button>
-
-                  <button
-                    onClick={() => setGridCols(3)}
-                    className={`grid-switcher-btn ${gridCols === 3 ? "active" : ""}`}
-                    aria-label="3 Columns View"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                      <line x1="6" y1="4" x2="6" y2="20" />
-                      <line x1="12" y1="4" x2="12" y2="20" />
-                      <line x1="18" y1="4" x2="18" y2="20" />
-                    </svg>
-                    <span className="grid-tooltip">3 columns</span>
-                  </button>
-
-                  <button
-                    onClick={() => setGridCols(4)}
-                    className={`grid-switcher-btn ${gridCols === 4 ? "active" : ""}`}
-                    aria-label="4 Columns View"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <line x1="4.5" y1="4" x2="4.5" y2="20" />
-                      <line x1="9.5" y1="4" x2="9.5" y2="20" />
-                      <line x1="14.5" y1="4" x2="14.5" y2="20" />
-                      <line x1="19.5" y1="4" x2="19.5" y2="20" />
-                    </svg>
-                    <span className="grid-tooltip">4 columns</span>
-                  </button>
-
-                  <button
-                    onClick={() => setGridCols(5)}
-                    className={`grid-switcher-btn ${gridCols === 5 ? "active" : ""}`}
-                    aria-label="5 Columns View"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                      <line x1="3" y1="4" x2="3" y2="20" />
-                      <line x1="7.5" y1="4" x2="7.5" y2="20" />
-                      <line x1="12" y1="4" x2="12" y2="20" />
-                      <line x1="16.5" y1="4" x2="16.5" y2="20" />
-                      <line x1="21" y1="4" x2="21" y2="20" />
-                    </svg>
-                    <span className="grid-tooltip">5 columns</span>
-                  </button>
-                </div>
+                )}
 
                 {/* Mobile Grid Switcher: List | 2-col — mobile only */}
                 {isMobile && (

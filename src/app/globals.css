@@ -8764,7 +8764,7 @@ textarea.form-input {
   gap: 12px;
 }
 
-/* Desktop: hide all mobile-only elements, show desktop ones */
+/* Desktop: hide all mobile-only elements */
 @media (min-width: 769px) {
   .mobile-grid-toggle,
   .mobile-toolbar-pills,
@@ -8773,7 +8773,13 @@ textarea.form-input {
   }
 }
 
-/* (old mobile-grid-switcher overrides removed — now handled by .mobile-grid-toggle) */
+/* Mobile: hide all desktop-only elements */
+@media (max-width: 768px) {
+  .grid-switcher-bar,
+  .collection-sort-picker {
+    display: none !important;
+  }
+}
 
 
 @media (max-width: 420px) {
