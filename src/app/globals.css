@@ -9160,9 +9160,42 @@ textarea.form-input {
   color: #111;
 }
 
-/* ── Ensure content isn't hidden behind sticky bar on mobile ─── */
-@media (max-width: 768px) {
-  .collection-catalog-area {
-    padding-bottom: 72px;
-  }
+/* ── Mobile toolbar pill buttons (Filter ∨ / Sort ∨) ─────── */
+.mobile-toolbar-pills {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.mobile-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+  position: relative;
+}
+
+.mobile-pill-btn + .mobile-pill-btn {
+  border-left: 1px solid #e0e0e0;
+}
+
+.mobile-pill-btn:active {
+  background: #f5f5f5;
+}
+
+.mobile-pill-btn.is-active {
+  font-weight: 700;
+  color: #000;
 }

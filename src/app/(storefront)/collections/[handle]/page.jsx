@@ -445,16 +445,26 @@ export default function CollectionPage({ params }) {
               {/* Toolbar: Sort Left | Grid Buttons Right */}
               <div className="collection-top-toolbar">
                 <div className="collection-sort-controls">
-                  {/* Desktop-only filter button (hidden on mobile — mobile uses sticky bar) */}
-                  <button
-                    onClick={() => setMobileFiltersOpen(true)}
-                    className="collection-filter-trigger hidden md:hidden"
-                  >
-                    Filters
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
 
-                  {/* Desktop sort picker */}
+                  {/* ── MOBILE: Filter ∨ + Featured ∨ pill row ── */}
+                  <div className="mobile-toolbar-pills md:hidden">
+                    <button
+                      className={`mobile-pill-btn${isFilterActive ? " is-active" : ""}`}
+                      onClick={() => setMobileFiltersOpen(true)}
+                    >
+                      Filter
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      className="mobile-pill-btn"
+                      onClick={() => setMobileSortOpen(true)}
+                    >
+                      {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* ── DESKTOP: sort picker dropdown ── */}
                   <div className="collection-sort-picker hidden md:block">
                     <button
                       type="button"
@@ -487,11 +497,8 @@ export default function CollectionPage({ params }) {
                     )}
                   </div>
 
-                  {/* Mobile: show current sort label as plain text */}
-                  <span className="md:hidden text-sm font-semibold text-neutral-700">
-                    {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
-                  </span>
                 </div>
+
 
                 {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
                 <div className="hidden md:flex grid-switcher-bar">
