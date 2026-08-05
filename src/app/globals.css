@@ -8759,16 +8759,14 @@ textarea.form-input {
 /* Mobile toolbar clean position & sticky behavior */
 @media (max-width: 768px) {
   .collection-top-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 40;
+    position: relative;
     display: flex !important;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
-    margin-bottom: 16px;
-    background: #ffffff;
-    border-bottom: 1px solid #eeeeee;
+    padding: 12px 0;
+    margin-bottom: 20px;
+    background: transparent;
+    border-bottom: 1px solid #e5e5e5;
   }
 }
 
