@@ -209,7 +209,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
                 </span>
               </div>
 
-              {/* Price & EMI */}
+              {/* Price */}
               <div className="flex flex-wrap items-baseline gap-2 mt-1">
                 <span className="text-base font-extrabold text-[#e84e4e]">
                   ₹ {priceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
@@ -219,9 +219,6 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
                     ₹ {comparePriceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </span>
                 )}
-                <span className="text-[11px] text-neutral-500 ml-1">
-                  or ₹{Math.round(priceNum / 3).toLocaleString("en-IN")}/Month <span className="bg-black text-white text-[9px] px-1.5 py-0.5 rounded font-semibold ml-1 inline-block">Buy on EMI &gt;</span>
-                </span>
               </div>
 
               {/* Attributes / Description Summary */}
@@ -507,8 +504,6 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
               </span>
             )}
           </div>
-
-          <p className="product-card-emi">or ₹{Math.round(priceNum / 3).toLocaleString("en-IN")}/Month <span>Buy on EMI ›</span></p>
         </div>
       </Link>
 
