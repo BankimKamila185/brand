@@ -534,31 +534,7 @@ export default function CollectionPage({ params }) {
                   </button>
                 </div>
 
-                <div className="mobile-grid-switcher md:hidden" aria-label="Choose product layout">
-                  <button
-                    type="button"
-                    onClick={() => setGridCols(2)}
-                    className={gridCols !== 1 ? "active" : ""}
-                    aria-label="Two-column product view"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                      <line x1="8" y1="4" x2="8" y2="20" />
-                      <line x1="16" y1="4" x2="16" y2="20" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setGridCols(1)}
-                    className={gridCols === 1 ? "active" : ""}
-                    aria-label="Single-column product view"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <line x1="3" y1="12" x2="21" y2="12" />
-                      <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
-                  </button>
-                </div>
+
               </div>
 
               {/* Product Grid Area */}
