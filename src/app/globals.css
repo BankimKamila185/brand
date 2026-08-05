@@ -8756,50 +8756,25 @@ textarea.form-input {
   }
 }
 
-/* Mobile catalog toolbar: keep one compact control row, regardless of utility-class order. */
+/* Mobile catalog toolbar */
 .collection-top-toolbar {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.collection-top-toolbar .grid-switcher-bar {
-  display: none !important;
+/* Desktop: hide all mobile-only elements, show desktop ones */
+@media (min-width: 769px) {
+  .mobile-grid-toggle,
+  .mobile-toolbar-pills,
+  .mobile-sheet-overlay {
+    display: none !important;
+  }
 }
 
-.collection-top-toolbar .mobile-grid-switcher {
-  display: inline-flex !important;
-  align-items: stretch;
-  overflow: hidden;
-  border: 0;
-  border-radius: 5px;
-  background: transparent;
-}
+/* (old mobile-grid-switcher overrides removed — now handled by .mobile-grid-toggle) */
 
-.collection-top-toolbar .mobile-grid-switcher button {
-  display: inline-flex;
-  width: 58px;
-  min-height: 58px;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: #222;
-  background: #f4f4f4;
-  border: 0;
-  border-radius: 5px;
-}
-
-.collection-top-toolbar .mobile-grid-switcher button + button {
-  margin-left: 10px;
-  border: 0;
-}
-
-.collection-top-toolbar .mobile-grid-switcher button.active {
-  color: #fff;
-  background: var(--c-ink);
-  box-shadow: inset 0 0 0 3px #1683e8;
-}
 
 @media (max-width: 420px) {
   .collection-top-toolbar {
