@@ -66,6 +66,7 @@ export default function CollectionPage({ params }) {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [outOfStockOnly, setOutOfStockOnly] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   // Accordion States
@@ -444,15 +445,17 @@ export default function CollectionPage({ params }) {
               {/* Toolbar: Sort Left | Grid Buttons Right */}
               <div className="collection-top-toolbar">
                 <div className="collection-sort-controls">
+                  {/* Desktop-only filter button (hidden on mobile — mobile uses sticky bar) */}
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className="collection-filter-trigger md:hidden"
+                    className="collection-filter-trigger hidden md:hidden"
                   >
                     Filters
                     <ChevronDown className="w-4 h-4" />
                   </button>
 
-                  <div className="collection-sort-picker">
+                  {/* Desktop sort picker */}
+                  <div className="collection-sort-picker hidden md:block">
                     <button
                       type="button"
                       className="collection-sort-trigger"
@@ -483,6 +486,11 @@ export default function CollectionPage({ params }) {
                       </div>
                     )}
                   </div>
+
+                  {/* Mobile: show current sort label as plain text */}
+                  <span className="md:hidden text-sm font-semibold text-neutral-700">
+                    {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
+                  </span>
                 </div>
 
                 {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
@@ -605,81 +613,229 @@ export default function CollectionPage({ params }) {
 
       </main>
 
-      {/* Mobile Filter Drawer */}
+      {/* ── MOBILE STICKY BOTTOM BAR ─────────────────────── */}
+      <div className="mobile-filter-sort-bar md:hidden">
+        <button
+          className="mobile-bar-btn"
+          onClick={() => { setMobileFiltersOpen(true); setMobileSortOpen(false); }}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+            <line x1="11" y1="18" x2="13" y2="18" />
+          </svg>
+          Filter
+          {isFilterActive && <span className="mobile-bar-badge" />}
+        </button>
+        <div className="mobile-bar-divider" />
+        <button
+          className="mobile-bar-btn"
+          onClick={() => { setMobileSortOpen(true); setMobileFiltersOpen(false); }}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18M7 12h10M11 18h2" />
+          </svg>
+          Sort by
+        </button>
+      </div>
+
+      {/* ── MOBILE FILTER BOTTOM SHEET ───────────────────── */}
       {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-[999] flex justify-end bg-black/50 md:hidden">
-          <div className="collection-mobile-filter-panel bg-white h-full overflow-y-auto flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-neutral-200 mb-6">
-                <h3 className="font-extrabold text-base text-neutral-900">Filters &amp; Refine</h3>
-                <button
-                  onClick={() => setMobileFiltersOpen(false)}
-                  className="p-1 text-neutral-500 hover:text-black"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+        <div
+          className="mobile-sheet-overlay"
+          onClick={() => setMobileFiltersOpen(false)}
+        >
+          <div
+            className="mobile-sheet-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag handle */}
+            <div className="mobile-sheet-handle" />
 
-              {/* Mobile Size Filter */}
-              <div className="mb-6">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-700 mb-3">Size</h4>
-                <div className="filter-size-grid">
-                  {(availableSizes.length > 0 ? availableSizes : ["S", "M", "L", "XL", "XXL"]).map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => toggleSizeFilter(size)}
-                      className={`filter-size-btn ${selectedSizes.includes(size) ? "active" : ""}`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mobile Price Range */}
-              <div className="mb-6">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-700 mb-3">Max Price: ₹{priceRange}</h4>
-                <input
-                  type="range"
-                  min="0"
-                  max={priceMaxLimit}
-                  step="50"
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full accent-black cursor-pointer"
-                />
-              </div>
-
-              {/* Mobile Availability */}
-              <div className="mb-6">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-neutral-700 mb-3">Availability</h4>
-                <div className="flex flex-col gap-2">
-                  <label className="filter-stock-label">
-                    <input
-                      type="checkbox"
-                      checked={inStockOnly}
-                      onChange={(e) => setInStockOnly(e.target.checked)}
-                      className="filter-stock-checkbox"
-                    />
-                    <span>In stock ({inStockCount})</span>
-                  </label>
-                </div>
-              </div>
+            {/* Header */}
+            <div className="mobile-sheet-header">
+              <span className="mobile-sheet-title">Filters</span>
+              {isFilterActive && (
+                <button onClick={clearAllFilters} className="mobile-sheet-clear">Clear all</button>
+              )}
+              <button onClick={() => setMobileFiltersOpen(false)} className="mobile-sheet-close">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <div className="pt-4 border-t border-neutral-200 flex gap-3">
-              <button
-                onClick={clearAllFilters}
-                className="flex-1 py-3 border border-neutral-300 font-bold text-xs uppercase rounded"
-              >
-                Reset
+            {/* Scrollable body */}
+            <div className="mobile-sheet-body">
+
+              {/* 1. Size */}
+              <div className="mobile-filter-section">
+                <button
+                  className="mobile-filter-section-trigger"
+                  onClick={() => toggleSection("size")}
+                >
+                  <span>Size</span>
+                  {openSections.size ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-400" />
+                  )}
+                </button>
+                {openSections.size && (
+                  <div className="filter-size-grid mt-3">
+                    {(availableSizes.length > 0 ? availableSizes : ["S", "M", "L", "XL", "XXL"]).map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => toggleSizeFilter(size)}
+                        className={`filter-size-btn ${selectedSizes.includes(size) ? "active" : ""}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Price */}
+              <div className="mobile-filter-section">
+                <button
+                  className="mobile-filter-section-trigger"
+                  onClick={() => toggleSection("price")}
+                >
+                  <span>Price</span>
+                  {openSections.price ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-400" />
+                  )}
+                </button>
+                {openSections.price && (
+                  <div className="mt-4 px-1">
+                    <div className="mobile-price-track-wrap">
+                      <input
+                        type="range"
+                        min="0"
+                        max={priceMaxLimit}
+                        step="50"
+                        value={priceRange}
+                        onChange={(e) => setPriceRange(Number(e.target.value))}
+                        className="mobile-price-range"
+                      />
+                    </div>
+                    <div className="mobile-price-inputs">
+                      <div className="mobile-price-field">
+                        <span>₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max={maxPriceInput}
+                          value={minPriceInput}
+                          onChange={(e) => setMinPriceInput(Number(e.target.value))}
+                        />
+                      </div>
+                      <span className="mobile-price-to">To</span>
+                      <div className="mobile-price-field">
+                        <span>₹</span>
+                        <input
+                          type="number"
+                          min={minPriceInput}
+                          max={priceMaxLimit}
+                          value={maxPriceInput}
+                          onChange={(e) => setMaxPriceInput(Number(e.target.value))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Availability */}
+              <div className="mobile-filter-section">
+                <button
+                  className="mobile-filter-section-trigger"
+                  onClick={() => toggleSection("availability")}
+                >
+                  <span>Availability</span>
+                  {openSections.availability ? (
+                    <ChevronUp className="w-4 h-4 text-neutral-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-neutral-400" />
+                  )}
+                </button>
+                {openSections.availability && (
+                  <div className="mt-3 flex flex-col gap-3">
+                    <label className="filter-stock-label">
+                      <input
+                        type="checkbox"
+                        checked={inStockOnly}
+                        onChange={(e) => setInStockOnly(e.target.checked)}
+                        className="filter-stock-checkbox"
+                      />
+                      <span>In stock ({inStockCount})</span>
+                    </label>
+                    <label className="filter-stock-label mobile-stock-muted">
+                      <input
+                        type="checkbox"
+                        checked={outOfStockOnly}
+                        onChange={(e) => setOutOfStockOnly(e.target.checked)}
+                        className="filter-stock-checkbox"
+                        disabled={outOfStockCount === 0}
+                      />
+                      <span>Out of stock ({outOfStockCount})</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Footer actions */}
+            <div className="mobile-sheet-footer">
+              <button onClick={clearAllFilters} className="mobile-sheet-reset">Reset</button>
+              <button onClick={() => setMobileFiltersOpen(false)} className="mobile-sheet-apply">Apply</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MOBILE SORT BOTTOM SHEET ─────────────────────── */}
+      {mobileSortOpen && (
+        <div
+          className="mobile-sheet-overlay"
+          onClick={() => setMobileSortOpen(false)}
+        >
+          <div
+            className="mobile-sheet-panel mobile-sort-sheet"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag handle */}
+            <div className="mobile-sheet-handle" />
+
+            {/* Header */}
+            <div className="mobile-sheet-header">
+              <span className="mobile-sheet-title">Sort by</span>
+              <button onClick={() => setMobileSortOpen(false)} className="mobile-sheet-close">
+                <X className="w-5 h-5" />
               </button>
-              <button
-                onClick={() => setMobileFiltersOpen(false)}
-                className="flex-1 py-3 bg-black text-white font-bold text-xs uppercase rounded"
-              >
-                Apply
-              </button>
+            </div>
+
+            {/* Sort list */}
+            <div className="mobile-sort-list">
+              {SORT_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  className={`mobile-sort-option ${sortBy === option.value ? "is-active" : ""}`}
+                  onClick={() => {
+                    setSortBy(option.value);
+                    setMobileSortOpen(false);
+                  }}
+                >
+                  {option.label}
+                  {sortBy === option.value && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         </div>
