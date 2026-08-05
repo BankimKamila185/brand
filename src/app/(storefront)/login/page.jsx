@@ -215,34 +215,6 @@ function LoginForm() {
             )}
           </div>
 
-          {/* Animate Alert Messages */}
-          <div className="w-full">
-            <AnimatePresence mode="wait">
-              {error && (
-                <motion.div
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="bg-red-50 text-red-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-red-100"
-                >
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>{error}</span>
-                </motion.div>
-              )}
-              {success && (
-                <motion.div
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="bg-emerald-50 text-emerald-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-emerald-100"
-                >
-                  <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>{success}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
           {/* Form Actions */}
           <AnimatePresence mode="wait">
             {activeTab === 'register' ? (
@@ -344,6 +316,32 @@ function LoginForm() {
                   </span>
                 </label>
 
+                {/* Alert Messages for Register */}
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-red-50 text-red-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-red-100"
+                    >
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </motion.div>
+                  )}
+                  {success && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-emerald-50 text-emerald-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-emerald-100"
+                    >
+                      <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{success}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Submit button */}
                 <button
                   type="submit"
@@ -376,6 +374,32 @@ function LoginForm() {
                     className="tevar-login-input"
                   />
                 </div>
+
+                {/* Alert Messages for Forgot Password */}
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-red-50 text-red-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-red-100"
+                    >
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </motion.div>
+                  )}
+                  {success && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-emerald-50 text-emerald-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-emerald-100"
+                    >
+                      <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{success}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Submit button */}
                 <button
@@ -432,6 +456,32 @@ function LoginForm() {
                     </button>
                   </div>
                 </div>
+
+                {/* Animate Alert Messages (Invalid email or password) below Password */}
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-red-50 text-red-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-red-100"
+                    >
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </motion.div>
+                  )}
+                  {success && (
+                    <motion.div
+                      initial={shouldReduceMotion ? {} : { opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="bg-emerald-50 text-emerald-600 p-3 rounded-2xl flex items-start gap-2 text-xs font-semibold border border-emerald-100"
+                    >
+                      <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{success}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Options Row */}
                 <div className="flex items-center justify-between px-1 text-xs select-none">
