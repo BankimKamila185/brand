@@ -66,6 +66,7 @@ export default function CollectionPage({ params }) {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [outOfStockOnly, setOutOfStockOnly] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   // Accordion States
   const [openSections, setOpenSections] = useState({
@@ -451,17 +452,37 @@ export default function CollectionPage({ params }) {
                     <ChevronDown className="w-4 h-4" />
                   </button>
 
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="sort-select-custom"
-                  >
-                    {SORT_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="collection-sort-picker">
+                    <button
+                      type="button"
+                      className="collection-sort-trigger"
+                      aria-haspopup="listbox"
+                      aria-expanded={sortMenuOpen}
+                      onClick={() => setSortMenuOpen((open) => !open)}
+                    >
+                      {SORT_OPTIONS.find((option) => option.value === sortBy)?.label}
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                    {sortMenuOpen && (
+                      <div className="collection-sort-menu" role="listbox" aria-label="Sort products">
+                        {SORT_OPTIONS.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="option"
+                            aria-selected={sortBy === option.value}
+                            className={sortBy === option.value ? "is-selected" : ""}
+                            onClick={() => {
+                              setSortBy(option.value);
+                              setSortMenuOpen(false);
+                            }}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Grid Column Switcher (1, 2, 3, 4, 5) */}
@@ -587,7 +608,7 @@ export default function CollectionPage({ params }) {
       {/* Mobile Filter Drawer */}
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[999] flex justify-end bg-black/50 md:hidden">
-          <div className="w-80 bg-white h-full p-6 overflow-y-auto flex flex-col justify-between">
+          <div className="collection-mobile-filter-panel bg-white h-full overflow-y-auto flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-neutral-200 mb-6">
                 <h3 className="font-extrabold text-base text-neutral-900">Filters &amp; Refine</h3>
