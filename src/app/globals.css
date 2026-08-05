@@ -9167,6 +9167,8 @@ textarea.form-input {
 }
 
 .mobile-pill-btn:active {
+  background: #f5f5f5;
+}
 
 .mobile-pill-btn.is-active {
   font-weight: 700;
