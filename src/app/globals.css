@@ -8782,28 +8782,19 @@ textarea.form-input {
 }
 
 
-@media (max-width: 420px) {
+/* Mobile toolbar clean position & sticky behavior */
+@media (max-width: 768px) {
   .collection-top-toolbar {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-  }
-
-  .collection-top-toolbar .collection-sort-controls {
-    gap: 6px;
-  }
-
-  .collection-top-toolbar .collection-filter-trigger {
-    gap: 5px;
-    font-size: 14px;
-  }
-
-  .collection-top-toolbar .mobile-grid-switcher button {
-    width: 46px;
-    min-height: 48px;
-  }
-
-  .collection-top-toolbar .mobile-grid-switcher button + button {
-    margin-left: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #eeeeee;
   }
 }
 
@@ -9224,21 +9215,9 @@ textarea.form-input {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-/* Toolbar: pills on left, toggle on right */
-@media (max-width: 768px) {
-  .collection-top-toolbar {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-left: 4px;
-    padding-right: 4px;
-  }
-
-  .collection-sort-controls {
-    flex: 1;
-    min-width: 0;
-  }
+.collection-sort-controls {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ── Compact horizontal list-view card ───────────────────── */
