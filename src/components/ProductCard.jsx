@@ -436,14 +436,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
           )}
 
           {/* Image actions */}
-          <div className="product-card-hover-actions hidden md:flex">
-            <button
-              className="hover-action-btn mobile-card-action"
-              onClick={openQuickView}
-              aria-label={`Choose options for ${product.title}`}
-            >
-              <ShoppingBag size={18} />
-            </button>
+          <div className="product-card-hover-actions">
             <button
               className={`hover-action-btn wishlist-btn ${isWishlisted ? "active" : ""}`}
               onClick={(e) => {
@@ -492,15 +485,15 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
             {comparePriceNum > priceNum ? (
               <>
                 <span className="price-sale font-bold text-[#e84e4e] text-sm">
-                  ₹ {priceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                  ₹{Math.round(priceNum).toLocaleString("en-IN")}
                 </span>
                 <span className="price-compare line-through text-neutral-400 text-xs">
-                  ₹ {comparePriceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                  ₹{Math.round(comparePriceNum).toLocaleString("en-IN")}
                 </span>
               </>
             ) : (
               <span className="price-regular font-bold text-neutral-900 text-sm">
-                ₹ {priceNum.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                ₹{Math.round(priceNum).toLocaleString("en-IN")}
               </span>
             )}
           </div>

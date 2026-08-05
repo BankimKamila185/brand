@@ -3457,64 +3457,47 @@ html, body {
     transform: none !important;
   }
   .product-card-hover-actions {
-    display: none !important;
+    top: 8px;
+    right: 8px;
+    display: flex !important;
+    flex-direction: row;
+    gap: 0;
   }
-  .product-card-emi {
-    display: block;
-    margin: 2px 0 0;
-    color: var(--c-ink);
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.35;
-  }
-  .product-card-emi span {
-    display: inline-block;
-    margin-left: 4px;
-    padding: 3px 5px;
-    color: #fff;
-    font-size: 9px;
-    background: var(--c-ink);
-    border-radius: 3px;
+  .hover-action-btn {
+    width: 38px;
+    height: 38px;
+    opacity: 1;
+    transform: none;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
   .product-card-info {
-    gap: 7px;
-    padding: 13px 1px 4px;
+    gap: 4px;
+    padding: 10px 0 15px;
   }
   .product-card-title {
     color: var(--c-ink);
-    font-size: 17px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -.025em;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -.02em;
   }
-  .product-card-rating {
-    align-items: center;
-    gap: 7px;
-    min-height: 20px;
-  }
-  .product-card-stars {
-    padding: 4px 6px;
-    color: #fff;
-    font-size: 10px;
-    letter-spacing: .07em;
-    background: var(--c-ink);
-    border-radius: var(--r-pill);
-  }
-  .product-card-review-count {
-    font-size: 12px;
-  }
+  .product-card-rating,
+  .product-card-emi,
+  .product-card-discount { display: none; }
   .product-card-price-row {
-    gap: 8px;
-    margin-top: 1px;
+    margin-top: 0;
   }
   .price-regular,
   .price-sale {
-    font-size: 20px;
-    letter-spacing: -.03em;
+    color: var(--c-ink);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -.02em;
   }
-  .price-compare {
-    font-size: 13px;
-  }
+  .price-compare { display: none; }
   .product-card-bottom-action {
     display: none !important;
   }
