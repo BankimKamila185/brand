@@ -559,14 +559,14 @@ function LoginForm() {
         </div>
 
         {/* Footer toggle links */}
-        <div className="text-center mt-6 select-none">
-          <p className="text-xs text-neutral-400 font-medium">
+        <div className="text-center mt-8 mb-2 select-none">
+          <p className="text-sm md:text-base text-neutral-600 font-semibold">
             {activeTab === 'register' ? (
               <>
                 Already have an account?{' '}
                 <button 
                   onClick={() => { setActiveTab('login'); setError(''); setSuccess(''); }}
-                  className="text-neutral-900 hover:underline font-bold cursor-pointer ml-1"
+                  className="text-neutral-900 hover:underline font-extrabold cursor-pointer ml-1 text-sm md:text-base"
                 >
                   Login
                 </button>
@@ -576,7 +576,7 @@ function LoginForm() {
                 Remember your password?{' '}
                 <button 
                   onClick={() => { setActiveTab('login'); setError(''); setSuccess(''); }}
-                  className="text-neutral-900 hover:underline font-bold cursor-pointer ml-1"
+                  className="text-neutral-900 hover:underline font-extrabold cursor-pointer ml-1 text-sm md:text-base"
                 >
                   Back to Login
                 </button>
@@ -586,7 +586,7 @@ function LoginForm() {
                 Don&apos;t have an account?{' '}
                 <button 
                   onClick={() => { setActiveTab('register'); setError(''); setSuccess(''); }}
-                  className="text-neutral-900 hover:underline font-bold cursor-pointer ml-1"
+                  className="text-neutral-900 hover:underline font-extrabold cursor-pointer ml-1 text-sm md:text-base"
                 >
                   Sign up
                 </button>
