@@ -3446,33 +3446,7 @@ html, body {
 
 /* ── Disable product card hover effects on mobile & touch devices ── */
 @media (max-width: 768px), (hover: none) {
-  .product-card-list-view {
-    flex-direction: row !important;
-    gap: 12px !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-  }
-  .product-card-list-view > div:first-child {
-    width: 42% !important;
-    min-width: 0;
-  }
-  .product-card-list-view > div:nth-child(2) {
-    min-width: 0;
-    padding: 2px 0 !important;
-  }
-  .product-card-list-view .product-list-description,
-  .product-card-list-view .product-list-actions {
-    display: none !important;
-  }
-  .product-card-list-view h3 {
-    font-size: 16px !important;
-    line-height: 1.25;
-  }
-  .product-card-list-view .text-base {
-    font-size: 17px !important;
-  }
+
   .product-card:hover .product-card-img {
     transform: none !important;
   }
@@ -9224,6 +9198,8 @@ textarea.form-input {
 .product-card-list-view {
   display: flex;
   flex-direction: row;
+  align-items: stretch;
+  width: 100%;
   gap: 0;
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
