@@ -613,31 +613,6 @@ export default function CollectionPage({ params }) {
 
       </main>
 
-      {/* ── MOBILE STICKY BOTTOM BAR ─────────────────────── */}
-      <div className="mobile-filter-sort-bar md:hidden">
-        <button
-          className="mobile-bar-btn"
-          onClick={() => { setMobileFiltersOpen(true); setMobileSortOpen(false); }}
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="4" y1="6" x2="20" y2="6" />
-            <line x1="8" y1="12" x2="16" y2="12" />
-            <line x1="11" y1="18" x2="13" y2="18" />
-          </svg>
-          Filter
-          {isFilterActive && <span className="mobile-bar-badge" />}
-        </button>
-        <div className="mobile-bar-divider" />
-        <button
-          className="mobile-bar-btn"
-          onClick={() => { setMobileSortOpen(true); setMobileFiltersOpen(false); }}
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 6h18M7 12h10M11 18h2" />
-          </svg>
-          Sort by
-        </button>
-      </div>
 
       {/* ── MOBILE FILTER BOTTOM SHEET ───────────────────── */}
       {mobileFiltersOpen && (
