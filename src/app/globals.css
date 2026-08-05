@@ -3179,6 +3179,20 @@ html, body {
   transition: opacity 0.5s var(--ease-smooth);
 }
 
+.product-card-discount {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  padding: 6px 11px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--c-sale);
+  border-radius: var(--r-pill);
+}
+
 .product-card:hover .product-card-img {
   transform: scale(1.05);
 }
@@ -3413,6 +3427,10 @@ html, body {
   text-decoration: line-through;
 }
 
+.product-card-emi {
+  display: none;
+}
+
 /* ── Disable product card hover effects on mobile & touch devices ── */
 @media (max-width: 768px), (hover: none) {
   .product-card:hover .product-card-img {
@@ -3426,7 +3444,38 @@ html, body {
     transform: none !important;
   }
   .product-card-hover-actions {
-    display: none !important;
+    top: auto;
+    right: 50%;
+    bottom: 12px;
+    display: flex !important;
+    flex-direction: row;
+    gap: 8px;
+    transform: translateX(50%);
+  }
+  .hover-action-btn {
+    width: 46px;
+    height: 46px;
+    opacity: 1;
+    transform: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .96);
+  }
+  .product-card-emi {
+    display: block;
+    margin: 2px 0 0;
+    color: var(--c-ink);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .product-card-emi span {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 3px 5px;
+    color: #fff;
+    font-size: 9px;
+    background: var(--c-ink);
+    border-radius: 3px;
   }
   .product-card-bottom-action {
     display: none !important;
@@ -8233,6 +8282,19 @@ textarea.form-input {
   min-width: 0;
 }
 
+.collection-filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  color: var(--c-ink);
+  font-size: 15px;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .mobile-grid-switcher {
   display: none;
 }
@@ -8478,6 +8540,12 @@ textarea.form-input {
     min-width: 0;
     flex: 1;
     height: 42px;
+    padding: 0 24px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
   }
 
   .mobile-grid-switcher {
@@ -8494,8 +8562,8 @@ textarea.form-input {
     min-height: 42px;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 0 10px;
+    width: 58px;
+    padding: 0;
     color: #5f5f5f;
     font-size: 11px;
     font-weight: 700;

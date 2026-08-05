@@ -417,7 +417,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
         <div className="product-card-media relative overflow-hidden rounded-sm bg-neutral-100">
           {/* Top Left Discount Badge */}
           {discountPercent > 0 && (
-            <div className="absolute top-2.5 left-2.5 z-10 bg-[#e84e4e] text-white font-extrabold text-[11px] px-2 py-0.5 rounded-sm tracking-tight shadow-sm select-none">
+            <div className="product-card-discount">
               -{discountPercent}%
             </div>
           )}
@@ -438,8 +438,15 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
             />
           )}
 
-          {/* Hover action buttons (Heart & Eye) */}
+          {/* Image actions */}
           <div className="product-card-hover-actions">
+            <button
+              className="hover-action-btn mobile-card-action"
+              onClick={openQuickView}
+              aria-label={`Choose options for ${product.title}`}
+            >
+              <ShoppingBag size={18} />
+            </button>
             <button
               className={`hover-action-btn wishlist-btn ${isWishlisted ? "active" : ""}`}
               onClick={(e) => {
@@ -482,6 +489,14 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
             {product.title}
           </h3>
 
+          {/* Ratings & Reviews */}
+          <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-600">
+            <span className="text-[#111] text-[13px] tracking-tight">★★★★★</span>
+            <span className="text-[11px] text-neutral-500 font-medium">
+              {reviewsCount} reviews
+            </span>
+          </div>
+
           {/* Price Row */}
           <div className="product-card-price-row flex items-center gap-2">
             {comparePriceNum > priceNum ? (
@@ -500,13 +515,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
             )}
           </div>
 
-          {/* Ratings & Reviews */}
-          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
-            <span className="text-[#111] text-[13px] tracking-tight">★★★★★</span>
-            <span className="text-[11px] text-neutral-500 font-medium">
-              {reviewsCount} reviews
-            </span>
-          </div>
+          <p className="product-card-emi">or ₹{Math.round(priceNum / 3).toLocaleString("en-IN")}/Month <span>Buy on EMI ›</span></p>
         </div>
       </Link>
 

@@ -8,7 +8,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import { productsApi } from "@/lib/api";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 const COLLECTION_LABELS = {
   all: "All Products",
@@ -445,10 +445,10 @@ export default function CollectionPage({ params }) {
                 <div className="collection-sort-controls">
                   <button
                     onClick={() => setMobileFiltersOpen(true)}
-                    className="md:hidden inline-flex items-center gap-2 px-3.5 py-2 border border-neutral-300 rounded text-xs font-bold text-neutral-800"
+                    className="collection-filter-trigger md:hidden"
                   >
-                    <SlidersHorizontal className="w-3.5 h-3.5" />
                     Filters
+                    <ChevronDown className="w-4 h-4" />
                   </button>
 
                   <select
@@ -545,7 +545,6 @@ export default function CollectionPage({ params }) {
                       <line x1="8" y1="4" x2="8" y2="20" />
                       <line x1="16" y1="4" x2="16" y2="20" />
                     </svg>
-                    Grid
                   </button>
                   <button
                     type="button"
@@ -558,7 +557,6 @@ export default function CollectionPage({ params }) {
                       <line x1="3" y1="12" x2="21" y2="12" />
                       <line x1="3" y1="18" x2="21" y2="18" />
                     </svg>
-                    List
                   </button>
                 </div>
               </div>
