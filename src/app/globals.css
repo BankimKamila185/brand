@@ -9192,10 +9192,60 @@ textarea.form-input {
 }
 
 .mobile-pill-btn:active {
-  background: #f5f5f5;
-}
 
 .mobile-pill-btn.is-active {
   font-weight: 700;
   color: #000;
+}
+
+/* ── Mobile grid-view toggle (List | 2-col) ──────────────── */
+.mobile-grid-toggle {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.mobile-grid-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 38px;
+  border: 0;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.mobile-grid-toggle-btn + .mobile-grid-toggle-btn {
+  border-left: 1px solid #d4d4d4;
+}
+
+.mobile-grid-toggle-btn.active {
+  background: #111;
+  color: #fff;
+}
+
+.mobile-grid-toggle-btn:not(.active):active {
+  background: #f4f4f4;
+}
+
+/* Toolbar: pills on left, toggle on right */
+@media (max-width: 768px) {
+  .collection-top-toolbar {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .collection-sort-controls {
+    flex: 1;
+    min-width: 0;
+  }
 }

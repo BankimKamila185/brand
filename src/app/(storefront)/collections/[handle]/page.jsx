@@ -57,7 +57,7 @@ export default function CollectionPage({ params }) {
   // Filter States
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState("");
-  const [gridCols, setGridCols] = useState(4); // Default 4 columns
+  const [gridCols, setGridCols] = useState(2); // Default 2 columns (mobile-friendly)
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [priceMaxLimit, setPriceMaxLimit] = useState(5000);
   const [priceRange, setPriceRange] = useState(5000);
@@ -570,6 +570,30 @@ export default function CollectionPage({ params }) {
                   </button>
                 </div>
 
+                {/* Mobile Grid Switcher: List | 2-col */}
+                <div className="mobile-grid-toggle md:hidden">
+                  <button
+                    onClick={() => setGridCols(1)}
+                    className={`mobile-grid-toggle-btn ${gridCols === 1 ? "active" : ""}`}
+                    aria-label="List view"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setGridCols(2)}
+                    className={`mobile-grid-toggle-btn ${gridCols === 2 ? "active" : ""}`}
+                    aria-label="2 column grid"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <line x1="9" y1="4" x2="9" y2="20" />
+                      <line x1="15" y1="4" x2="15" y2="20" />
+                    </svg>
+                  </button>
+                </div>
 
               </div>
 
