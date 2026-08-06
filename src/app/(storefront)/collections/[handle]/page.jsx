@@ -57,7 +57,7 @@ export default function CollectionPage({ params }) {
   // Filter States
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState("");
-  const [gridCols, setGridCols] = useState(2); // Default 2 columns (mobile-friendly)
+  const [gridCols, setGridCols] = useState(3); // Default 3 columns
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [priceMaxLimit, setPriceMaxLimit] = useState(5000);
   const [priceRange, setPriceRange] = useState(5000);
