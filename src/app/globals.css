@@ -3640,28 +3640,28 @@ html, body {
 }
 
 .drawer-checkout-btn {
-  display: block;
+  display: flex;
   width: 100%;
-  padding: 16px;
+  height: 52px;
   background: var(--c-dark);
   color: var(--c-dark-text);
   font-family: var(--font-display);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-align: center;
-  border-radius: var(--r-sm);
-  display: flex;
+  border-radius: 12px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   transition: background-color var(--t-fast), transform var(--t-fast);
 }
 
 .drawer-checkout-btn:hover {
   background: var(--c-dark-2);
   transform: translateY(-1px);
+
   opacity: 1;
 }
 

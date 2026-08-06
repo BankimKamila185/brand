@@ -354,10 +354,12 @@ export default function CartPage() {
                   <button
                     type="button"
                     onClick={() => router.push("/checkout")}
-                    className="w-full py-4 px-6 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest rounded-2xl shadow-xl transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full h-13 sm:h-14 bg-black hover:bg-neutral-800 text-white font-extrabold text-xs sm:text-sm uppercase tracking-[0.15em] rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer group active:scale-[0.99]"
                   >
-                    Proceed to Checkout <ArrowRight size={16} />
+                    <span>Proceed to Checkout</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </button>
+
 
                   {/* Trust Badges */}
                   <div className={`flex flex-col gap-3 pt-2 text-xs text-neutral-500 ${styles.trustBadges}`}>
