@@ -170,24 +170,33 @@ export default function CartPage() {
                               >
                                 {item.product.title}
                               </Link>
-                              {/* Size Selector */}
-                              <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium my-1">
-                                <span>Size:</span>
-                                <select
-                                  value={item.selectedSize || "M"}
-                                  onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
-                                  className="h-7 px-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold text-xs rounded-md border border-neutral-200 outline-none cursor-pointer transition-colors"
-                                >
+                              {/* Size Selector Pills */}
+                              <div className="flex items-center gap-1.5 flex-wrap text-xs text-neutral-500 font-medium my-1.5">
+                                <span className="text-neutral-500 font-semibold">Size:</span>
+                                <div className="flex items-center gap-1 flex-wrap">
                                   {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
                                     ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
                                     : ["XS", "S", "M", "L", "XL", "XXL"]
-                                  )).map((sz) => (
-                                    <option key={sz} value={sz}>
-                                      {sz}
-                                    </option>
-                                  ))}
-                                </select>
+                                  )).map((sz) => {
+                                    const isSelected = (item.selectedSize || "M").toString().toUpperCase() === sz.toString().toUpperCase();
+                                    return (
+                                      <button
+                                        key={sz}
+                                        type="button"
+                                        onClick={() => updateItemSize(item.variantId, sz, item.product)}
+                                        className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                                          isSelected
+                                            ? "bg-neutral-900 text-white shadow-sm"
+                                            : "bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-200/60"
+                                        }`}
+                                      >
+                                        {sz}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
+
 
 
 
