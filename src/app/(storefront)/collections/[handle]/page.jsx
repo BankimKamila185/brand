@@ -78,19 +78,36 @@ export default function CollectionPage({ params }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Lock body scroll when any mobile sheet is open
+  // Lock body scroll when any mobile sheet is open (iOS-safe fix)
   useEffect(() => {
     const isAnySheetOpen = mobileFiltersOpen || mobileSortOpen;
     if (isAnySheetOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
+      document.body.dataset.scrollY = String(scrollY);
     } else {
+      const scrollY = parseInt(document.body.dataset.scrollY || "0", 10);
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
+      delete document.body.dataset.scrollY;
+      window.scrollTo(0, scrollY);
     }
     return () => {
+      const scrollY = parseInt(document.body.dataset.scrollY || "0", 10);
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
+      delete document.body.dataset.scrollY;
+      if (scrollY) window.scrollTo(0, scrollY);
     };
   }, [mobileFiltersOpen, mobileSortOpen]);
 
