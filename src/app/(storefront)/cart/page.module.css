@@ -19,7 +19,7 @@
 
 .cartGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(22rem, 28rem) !important;
   align-items: start;
   gap: clamp(2rem, 4vw, 4rem);
 }
@@ -30,9 +30,16 @@
 }
 
 .itemsColumn {
+  grid-column: auto !important;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.summaryColumn {
+  grid-column: auto !important;
+  width: min(100%, 28rem);
+  justify-self: end;
 }
 
 .shippingProgress {
@@ -68,6 +75,7 @@
 
 .summaryCard {
   width: 100%;
+  max-width: 28rem;
   min-width: 0;
   padding: clamp(1.5rem, 2.25vw, 2rem);
   gap: 1.5rem;
@@ -90,11 +98,17 @@
 
 @media (max-width: 1023px) {
   .cartGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 2rem;
   }
 
+  .summaryColumn {
+    width: 100%;
+    justify-self: stretch;
+  }
+
   .summaryCard {
+    max-width: none;
     position: static;
   }
 }
