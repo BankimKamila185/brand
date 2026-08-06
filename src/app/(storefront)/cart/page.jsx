@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { couponsApi } from "@/lib/api";
-import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown } from "lucide-react";
+import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown, Pencil, Check } from "lucide-react";
 import styles from "./page.module.css";
 
 export default function CartPage() {
@@ -170,32 +170,57 @@ export default function CartPage() {
                               >
                                 {item.product.title}
                               </Link>
-                              {/* Size Selector Pills */}
-                              <div className="flex items-center gap-1.5 flex-wrap text-xs text-neutral-500 font-medium my-1.5">
-                                <span className="text-neutral-500 font-semibold">Size:</span>
-                                <div className="flex items-center gap-1 flex-wrap">
-                                  {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                                    : ["XS", "S", "M", "L", "XL", "XXL"]
-                                  )).map((sz) => {
-                                    const isSelected = (item.selectedSize || "M").toString().toUpperCase() === sz.toString().toUpperCase();
-                                    return (
-                                      <button
-                                        key={sz}
-                                        type="button"
-                                        onClick={() => updateItemSize(item.variantId, sz, item.product)}
-                                        className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                                          isSelected
-                                            ? "bg-neutral-900 text-white shadow-sm"
-                                            : "bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-200/60"
-                                        }`}
-                                      >
-                                        {sz}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
+                              {/* Size Pill Control */}
+                              <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium my-1">
+                                <button
+                                  type="button"
+                                  className="cart-item-size-control"
+                                  aria-expanded={editingSizeVariantId === item.variantId}
+                                  onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
+                                >
+                                  <span>Size</span>
+                                  <strong>{item.selectedSize || "M"}</strong>
+                                  <Pencil size={12} aria-hidden="true" />
+                                </button>
                               </div>
+
+                              {/* Expandable Size Picker Box */}
+                              {editingSizeVariantId === item.variantId && (
+                                <div className="cart-size-picker-box my-2">
+                                  <div className="cart-size-picker-header">
+                                    <span>SELECT SIZE</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingSizeVariantId(null)}
+                                      className="cart-size-picker-done"
+                                    >
+                                      <Check size={13} aria-hidden="true" /> Done
+                                    </button>
+                                  </div>
+
+                                  <div className="cart-size-options flex items-center gap-1.5 flex-wrap">
+                                    {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                                      ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                                      : ["XS", "S", "M", "L", "XL", "2XL"]
+                                    )).map((sz) => {
+                                      const isCurrent = (item.selectedSize || "M").toString().toUpperCase() === sz.toString().toUpperCase();
+                                      return (
+                                        <button
+                                          key={sz}
+                                          type="button"
+                                          onClick={() => {
+                                            updateItemSize(item.variantId, sz, item.product);
+                                            setEditingSizeVariantId(null);
+                                          }}
+                                          className={`cart-size-option ${isCurrent ? "selected" : ""}`}
+                                        >
+                                          {sz}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
 
 
 
