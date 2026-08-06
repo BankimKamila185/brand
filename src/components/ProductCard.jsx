@@ -219,6 +219,8 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
               )}
             </div>
 
+            <p className="product-list-description">{cleanDescription}</p>
+
             <button
               className="product-list-select-btn"
               onClick={openQuickView}
