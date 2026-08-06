@@ -591,7 +591,7 @@ export default function CollectionPage({ params }) {
                     <button
                       onClick={() => setGridCols(1)}
                       className={`mobile-grid-toggle-btn ${gridCols === 1 ? "active" : ""}`}
-                      aria-label="List view"
+                      aria-label="One column view"
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                         <line x1="3" y1="6" x2="21" y2="6" />
@@ -647,7 +647,7 @@ export default function CollectionPage({ params }) {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      viewMode={gridCols === 1 ? "list" : "grid"}
+                      viewMode={isMobile ? "grid" : gridCols === 1 ? "list" : "grid"}
                     />
                   ))}
                 </div>

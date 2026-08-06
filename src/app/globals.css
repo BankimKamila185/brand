@@ -9223,31 +9223,60 @@ textarea.form-input {
   }
 
   .collection-top-toolbar {
-    height: 52px;
-    margin-bottom: 20px;
+    height: clamp(76px, 16vw, 110px);
+    margin-bottom: 18px;
     padding: 0;
+    border-bottom: 0;
   }
 
   .mobile-toolbar-pills {
-    gap: 22px;
+    gap: clamp(24px, 9vw, 64px);
   }
 
   .mobile-pill-btn {
-    min-height: 44px;
-    font-size: 16px;
-    font-weight: 600;
+    min-height: 48px;
+    font-size: clamp(16px, 4.7vw, 32px);
+    font-weight: 500;
+    gap: clamp(5px, 1.2vw, 10px);
+  }
+
+  .mobile-pill-btn svg {
+    width: clamp(16px, 3vw, 22px);
+    height: clamp(16px, 3vw, 22px);
   }
 
   .mobile-grid-toggle {
-    height: 38px;
-    padding: 3px;
-    border-radius: 10px;
+    height: auto;
+    gap: clamp(12px, 2.7vw, 18px);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .mobile-grid-toggle-btn {
-    width: 34px;
-    height: 30px;
+    width: clamp(56px, 10.5vw, 72px);
+    height: clamp(56px, 10.5vw, 72px);
     border-radius: 7px;
+    color: #202020;
+    background: #f1f1f1;
+    box-shadow: none;
+  }
+
+  .mobile-grid-toggle-btn + .mobile-grid-toggle-btn {
+    border-left: 0;
+  }
+
+  .mobile-grid-toggle-btn.active {
+    color: #fff;
+    background: #1d1d1d;
+    box-shadow: none;
+  }
+
+  .mobile-grid-toggle-btn:focus-visible {
+    outline: 4px solid #0878f9 !important;
+    outline-offset: 0;
+    box-shadow: none;
   }
 
   .dynamic-catalog-grid {
@@ -9296,10 +9325,9 @@ textarea.form-input {
     font-weight: 600;
   }
 
-  /* List view stays clearly distinct from the grid, without fixed desktop
-     dimensions that make the image and action area feel oversized. */
+  /* One-column mode retains the same card design as the two-column grid. */
   .dynamic-catalog-grid.cols-1 {
-    gap: 14px;
+    gap: 28px;
   }
 
 }
@@ -9310,7 +9338,7 @@ textarea.form-input {
   }
 
   .mobile-toolbar-pills {
-    gap: 14px;
+    gap: 20px;
   }
 }
 
@@ -9416,34 +9444,4 @@ textarea.form-input {
 .product-list-select-btn:hover {
   background: #111;
   color: #fff;
-}
-
-/* List-card rules must follow the shared list component styles above. */
-@media (max-width: 768px) {
-  .product-card-list-view {
-    min-height: 156px;
-    border: 1px solid #ededed;
-    border-radius: 12px;
-    background: #fff;
-  }
-
-  .product-list-img-wrap {
-    width: 42%;
-    height: auto;
-    min-height: 156px;
-  }
-
-  .product-list-info {
-    padding: 16px;
-    gap: 7px;
-  }
-
-  .product-list-title {
-    font-size: 15px;
-  }
-
-  .product-list-select-btn {
-    min-height: 38px;
-    margin-top: 2px;
-  }
 }
