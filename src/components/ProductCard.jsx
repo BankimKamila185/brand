@@ -175,7 +175,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
   if (viewMode === "list") {
     return (
       <>
-        <div className="product-card-list-view">
+        <div className="product-card-list-view" style={{borderRadius: '12px', overflow: 'hidden'}}>
           {/* Left: square image */}
           <Link href={`/products/${product.handle}`} className="product-list-img-wrap">
             <div className="relative w-full h-full">
@@ -221,12 +221,12 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
 
             <p className="product-list-description">{cleanDescription}</p>
 
-            <button
+            <Link
+              href={`/products/${product.handle}`}
               className="product-list-select-btn"
-              onClick={openQuickView}
             >
-              Select Options
-            </button>
+              View Details
+            </Link>
           </div>
         </div>
 
@@ -376,7 +376,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
         href={`/products/${product.handle}`}
         className="product-card cursor-pointer block text-current no-underline group"
       >
-        <div className="product-card-media relative overflow-hidden rounded-sm bg-neutral-100">
+        <div className="product-card-media relative overflow-hidden rounded-xl bg-neutral-100">
           {/* Top Left Discount Badge */}
           {discountPercent > 0 && (
             <div className="product-card-discount">
@@ -423,12 +423,13 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
 
           {/* Floating bottom action bar */}
           <div className="product-card-bottom-action">
-            <button
+            <Link
+              href={`/products/${product.handle}`}
               className="select-options-btn"
-              onClick={openQuickView}
+              onClick={(e) => e.stopPropagation()}
             >
-              Select Options
-            </button>
+              View Details
+            </Link>
           </div>
         </div>
 
