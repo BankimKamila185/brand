@@ -3786,26 +3786,33 @@ html, body {
 
 /* ── 16. Cart Items ──────────────────────────────────────── */
 .cart-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .cart-item {
   display: flex;
-  gap: 16px;
-  padding: 0 0 20px;
-  margin: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 0 16px;
   border-bottom: 1px solid var(--c-border);
 }
 
+/* Image wrapper — full width, relative for overlay remove btn */
+.cart-item-img-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
 .cart-item-img {
-  width: 118px;
+  width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
   background: var(--c-bg-2);
-  border-radius: 8px;
-  flex-shrink: 0;
+  display: block;
 }
 
 .cart-item-details {
@@ -3813,7 +3820,7 @@ html, body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 10px;
+  gap: 8px;
 }
 
 .cart-item-heading {
@@ -3825,46 +3832,56 @@ html, body {
 
 .cart-item-title {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 13px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
   color: var(--c-ink);
 }
 
+/* Remove button — overlaid top-right on image */
 .cart-item-remove-button {
-  width: 36px;
-  height: 36px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
-  margin: -8px -8px 0 0;
-  border: 1px solid transparent;
-  border-radius: var(--r-xs);
-  background: transparent;
-  color: var(--c-ink-3);
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  color: #888;
   cursor: pointer;
-  transition: background-color var(--t-fast), color var(--t-fast);
+  backdrop-filter: blur(4px);
+  transition: background var(--t-fast), color var(--t-fast);
 }
 
 .cart-item-remove-button:hover {
   background: #fff0f0;
   color: var(--c-sale);
-  border-color: #ffd7d7;
+}
+
+/* Size + price on one row */
+.cart-item-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
 }
 
 .cart-item-size-control {
   display: flex;
   align-items: center;
   align-self: flex-start;
-  gap: 8px;
-  min-height: 34px;
-  padding: 4px 8px 4px 10px;
+  gap: 5px;
+  min-height: 28px;
+  padding: 3px 7px 3px 8px;
   margin: 0;
   border: 1px solid var(--c-border);
   border-radius: var(--r-xs);
   background: var(--c-bg);
   color: var(--c-ink-3);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: border-color var(--t-fast), background-color var(--t-fast);
 }
@@ -3877,24 +3894,24 @@ html, body {
 .cart-item-size-control strong {
   display: inline-flex;
   align-items: center;
-  min-width: 24px;
+  min-width: 18px;
   justify-content: center;
-  padding: 2px 5px;
+  padding: 1px 4px;
   border-radius: 4px;
   background: var(--c-surface);
   color: var(--c-ink);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .cart-size-option {
-  min-width: 48px;
-  height: 40px;
-  padding: 0 12px;
+  min-width: 40px;
+  height: 36px;
+  padding: 0 10px;
   border: 1px solid var(--c-border);
   border-radius: 8px;
   background: var(--c-surface);
   color: var(--c-ink);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: background-color var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
@@ -3913,13 +3930,13 @@ html, body {
 
 .cart-item-meta,
 .cart-item-size {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--c-ink-3);
 }
 
 .cart-item-price {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--c-ink);
 }
@@ -3928,14 +3945,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .cart-item-quantity-label {
   color: var(--c-ink-2);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 

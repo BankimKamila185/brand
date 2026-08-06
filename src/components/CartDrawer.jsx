@@ -171,45 +171,53 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
                 return (
                   <div key={item.variantId} className="cart-item">
-                    <img
-                      src={image}
-                      alt={item.product.title}
-                      className="cart-item-img"
-                    />
-
-                    <div className="cart-item-details">
-                      <div className="cart-item-heading">
-                        <h4 className="cart-item-title">{item.product.title}</h4>
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(item.variantId)}
-                          className="cart-item-remove-button"
-                          title="Remove item"
-                          aria-label={`Remove ${item.product.title} from cart`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                      
+                    {/* Top: full-width image */}
+                    <div className="cart-item-img-wrap">
+                      <img
+                        src={image}
+                        alt={item.product.title}
+                        className="cart-item-img"
+                      />
+                      {/* Remove button top-right over image */}
                       <button
                         type="button"
-                        className="cart-item-size-control"
-                        aria-expanded={editingItemVariantId === item.variantId}
-                        onClick={() => {
-                          setEditingItemVariantId(
-                            editingItemVariantId === item.variantId ? null : item.variantId
-                          );
-                        }}
+                        onClick={() => removeFromCart(item.variantId)}
+                        className="cart-item-remove-button"
+                        title="Remove item"
+                        aria-label={`Remove ${item.product.title} from cart`}
                       >
-                        <span>Size</span>
-                        <strong>{item.selectedSize || variant.option1 || variant.size || "M"}</strong>
-                        <Pencil size={12} aria-hidden="true" />
+                        <Trash2 size={16} />
                       </button>
+                    </div>
 
-                      <span className="cart-item-price">
-                        ₹{price.toFixed(2)}
-                      </span>
+                    {/* Bottom: info stacked */}
+                    <div className="cart-item-details">
+                      <h4 className="cart-item-title">{item.product.title}</h4>
 
+                      <div className="cart-item-meta-row">
+                        {/* Size pill */}
+                        <button
+                          type="button"
+                          className="cart-item-size-control"
+                          aria-expanded={editingItemVariantId === item.variantId}
+                          onClick={() => {
+                            setEditingItemVariantId(
+                              editingItemVariantId === item.variantId ? null : item.variantId
+                            );
+                          }}
+                        >
+                          <span>Size</span>
+                          <strong>{item.selectedSize || variant.option1 || variant.size || "M"}</strong>
+                          <Pencil size={12} aria-hidden="true" />
+                        </button>
+
+                        {/* Price */}
+                        <span className="cart-item-price">
+                          ₹{price.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Qty row */}
                       <div className="cart-item-actions-row">
                         <span className="cart-item-quantity-label">Quantity</span>
                         <div className="cart-item-quantity" aria-label={`Quantity for ${item.product.title}`}>
