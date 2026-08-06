@@ -10,6 +10,7 @@ import CartDrawer from "@/components/CartDrawer";
 import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { couponsApi } from "@/lib/api";
 import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown } from "lucide-react";
+import styles from "./page.module.css";
 
 export default function CartPage() {
   const router = useRouter();
@@ -60,13 +61,13 @@ export default function CartPage() {
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - finalTotal);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafafa]">
+    <div className={`flex flex-col min-h-screen bg-[#fafafa] ${styles.cartPage}`}>
       <AnnouncementBar />
       <Header />
       
-      <main className="flex-grow">
+      <main className={`flex-grow ${styles.cartMain}`}>
         {/* Page Title & Breadcrumb */}
-        <div className="bg-white border-b border-neutral-200/80 py-10 px-4">
+        <div className={`bg-white border-b border-neutral-200/80 py-10 px-4 ${styles.cartHero}`}>
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight mb-2">
               Your Shopping Cart
@@ -81,7 +82,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${styles.cartShell}`}>
           {cart.length === 0 ? (
             <div className="bg-white rounded-3xl p-10 sm:p-16 border border-neutral-200/80 shadow-sm text-center max-w-md mx-auto flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-6 text-neutral-400">
@@ -91,7 +92,7 @@ export default function CartPage() {
                 Your cart is empty
               </h2>
               <p className="text-neutral-500 text-sm mb-8 leading-relaxed">
-                Looks like you haven't added any items to your cart yet. Explore our latest collection.
+                Looks like you haven&apos;t added any items to your cart yet. Explore our latest collection.
               </p>
               <Link
                 href="/collections/all"
@@ -101,13 +102,13 @@ export default function CartPage() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start ${styles.cartGrid}`}>
               
               {/* Left Column: Cart Items List */}
-              <div className="lg:col-span-8 flex flex-col gap-6">
+              <div className={`lg:col-span-8 flex flex-col gap-6 ${styles.itemsColumn}`}>
                 
                 {/* Free Shipping Progress */}
-                <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col gap-2">
+                <div className={`bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col gap-2 ${styles.shippingProgress}`}>
                   <div className="flex items-center justify-between text-xs font-bold text-neutral-800">
                     <span className="flex items-center gap-2">
                       <Truck className="size-4 text-neutral-600" />
@@ -126,8 +127,8 @@ export default function CartPage() {
                 </div>
 
                 {/* Items Table Container */}
-                <div className="bg-white rounded-3xl border border-neutral-200/80 shadow-sm overflow-hidden">
-                  <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-100 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                <div className={`bg-white rounded-3xl border border-neutral-200/80 shadow-sm overflow-hidden ${styles.itemsCard}`}>
+                  <div className={`hidden sm:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-100 text-[11px] font-bold uppercase tracking-wider text-neutral-400 ${styles.itemsHeader}`}>
                     <div className="col-span-6">Product</div>
                     <div className="col-span-2 text-center">Price</div>
                     <div className="col-span-2 text-center">Quantity</div>
@@ -144,11 +145,11 @@ export default function CartPage() {
                       const itemSubtotal = price * item.quantity;
 
                       return (
-                        <div key={item.variantId} className="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                        <div key={item.variantId} className={`p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center ${styles.cartLine}`}>
                           
                           {/* Product Info */}
-                          <div className="sm:col-span-6 flex items-center gap-4">
-                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl bg-neutral-100 overflow-hidden flex-shrink-0 border border-neutral-200/60">
+                          <div className={`sm:col-span-6 flex items-center gap-4 ${styles.productInfo}`}>
+                            <div className={`w-20 h-24 sm:w-24 sm:h-28 rounded-2xl bg-neutral-100 overflow-hidden flex-shrink-0 border border-neutral-200/60 ${styles.productImage}`}>
                               {image ? (
                                 <img
                                   src={image}
@@ -267,7 +268,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Table Footer / Controls */}
-                  <div className="p-5 bg-neutral-50 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-4">
+                  <div className={`p-5 bg-neutral-50 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-4 ${styles.cartControls}`}>
                     <Link
                       href="/collections/all"
                       className="text-xs font-bold text-neutral-700 hover:text-neutral-900 uppercase tracking-wider flex items-center gap-1.5 transition-colors"
@@ -287,19 +288,19 @@ export default function CartPage() {
               </div>
 
               {/* Right Column: Order Summary Card */}
-              <div className="lg:col-span-4 flex flex-col gap-6">
+              <div className={`lg:col-span-4 flex flex-col gap-6 ${styles.summaryColumn}`}>
                 
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/80 shadow-sm flex flex-col gap-6 sticky top-24">
+                <div className={`bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/80 shadow-sm flex flex-col gap-6 sticky top-24 ${styles.summaryCard}`}>
                   <h3 className="text-lg font-extrabold text-neutral-900 tracking-tight border-b border-neutral-100 pb-4">
                     Order Summary
                   </h3>
 
                   {/* Coupon Box */}
-                  <form onSubmit={handleApplyCoupon} className="flex flex-col gap-2">
+                  <form onSubmit={handleApplyCoupon} className={`flex flex-col gap-2 ${styles.couponForm}`}>
                     <label className="text-xs font-bold text-neutral-700 flex items-center gap-1.5">
                       <Tag size={13} /> Promo / Coupon Code
                     </label>
-                    <div className="flex gap-2">
+                    <div className={`flex gap-2 ${styles.couponRow}`}>
                       <input
                         type="text"
                         placeholder="ENTER CODE"
@@ -359,7 +360,7 @@ export default function CartPage() {
                   </button>
 
                   {/* Trust Badges */}
-                  <div className="flex flex-col gap-3 pt-2 text-xs text-neutral-500">
+                  <div className={`flex flex-col gap-3 pt-2 text-xs text-neutral-500 ${styles.trustBadges}`}>
                     <div className="flex items-center gap-2.5">
                       <ShieldCheck size={16} className="text-neutral-700" />
                       <span>100% Secure Checkout guaranteed</span>
