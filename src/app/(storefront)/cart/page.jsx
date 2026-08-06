@@ -82,25 +82,27 @@ export default function CartPage() {
           </div>
         </div>
 
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${styles.cartShell}`}>
+        <div className={`w-full flex justify-center items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 ${styles.cartShell}`}>
           {cart.length === 0 ? (
-            <div className="bg-white rounded-3xl p-10 sm:p-16 border border-neutral-200/80 shadow-sm text-center max-w-md mx-auto flex flex-col items-center">
+            <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-12 border border-neutral-200/80 shadow-sm text-center flex flex-col items-center mx-auto">
               <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-6 text-neutral-400">
                 <ShoppingBag className="w-10 h-10 stroke-[1.5]" />
               </div>
-              <h2 className="text-xl font-bold text-neutral-900 mb-2">
+              <h2 className="text-xl font-extrabold text-neutral-900 mb-2 uppercase tracking-wide">
                 Your cart is empty
               </h2>
-              <p className="text-neutral-500 text-sm mb-8 leading-relaxed">
+              <p className="text-neutral-500 text-sm mb-8 leading-relaxed max-w-xs">
                 Looks like you haven&apos;t added any items to your cart yet. Explore our latest collection.
               </p>
               <Link
                 href="/collections/all"
-                className="w-full inline-flex items-center justify-center gap-2 py-4 px-8 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest rounded-2xl shadow-lg transition-all duration-200"
+                className="w-full h-13 sm:h-14 bg-black hover:bg-neutral-800 text-white font-extrabold text-xs sm:text-sm uppercase tracking-[0.15em] rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer group active:scale-[0.99]"
               >
-                Start Shopping <ArrowRight size={14} />
+                <span>Start Shopping</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
+
           ) : (
             <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start ${styles.cartGrid}`}>
               
