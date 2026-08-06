@@ -199,26 +199,34 @@ export default function CartPage() {
                                   </div>
 
                                   <div className="cart-size-options flex items-center gap-1.5 flex-wrap">
-                                    {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                                      ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                                      : ["XS", "S", "M", "L", "XL", "2XL"]
-                                    )).map((sz) => {
-                                      const isCurrent = (item.selectedSize || "M").toString().toUpperCase() === sz.toString().toUpperCase();
-                                      return (
-                                        <button
-                                          key={sz}
-                                          type="button"
-                                          onClick={() => {
-                                            updateItemSize(item.variantId, sz, item.product);
-                                            setEditingSizeVariantId(null);
-                                          }}
-                                          className={`cart-size-option ${isCurrent ? "selected" : ""}`}
-                                        >
-                                          {sz}
-                                        </button>
-                                      );
-                                    })}
+                                    {(() => {
+                                      const rawSizes = (item.product?.variants || [])
+                                        .map((v) => v.option1 || v.size || v.title)
+                                        .filter(Boolean);
+                                      const foundSizes = Array.from(new Set(rawSizes));
+                                      const standardSizes = ["S", "M", "L", "XL", "XXL"];
+                                      const sizesToDisplay = Array.from(new Set([...foundSizes, ...standardSizes]));
+                                      const currentSize = (item.selectedSize || "M").toString().toUpperCase();
+
+                                      return sizesToDisplay.map((sz) => {
+                                        const isCurrent = currentSize === sz.toString().toUpperCase();
+                                        return (
+                                          <button
+                                            key={sz}
+                                            type="button"
+                                            onClick={() => {
+                                              updateItemSize(item.variantId, sz, item.product);
+                                              setEditingSizeVariantId(null);
+                                            }}
+                                            className={`cart-size-option ${isCurrent ? "selected" : ""}`}
+                                          >
+                                            {sz}
+                                          </button>
+                                        );
+                                      });
+                                    })()}
                                   </div>
+
                                 </div>
                               )}
 

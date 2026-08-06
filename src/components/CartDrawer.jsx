@@ -262,11 +262,12 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                           <div className="cart-size-options">
                             {(() => {
                               const rawSizes = (item.product?.variants || [])
-                                .map((v) => v.title || v.option1 || v.size)
+                                .map((v) => v.option1 || v.size || v.title)
                                 .filter(Boolean);
-                              const availableSizes = Array.from(new Set(rawSizes));
-                              const sizesToDisplay = availableSizes.length > 0 ? availableSizes : ["XS", "S", "M", "L", "XL", "2XL"];
-                              const currentSize = (item.selectedSize || variant.option1 || "M").toString().toUpperCase();
+                              const foundSizes = Array.from(new Set(rawSizes));
+                              const standardSizes = ["S", "M", "L", "XL", "XXL"];
+                              const sizesToDisplay = Array.from(new Set([...foundSizes, ...standardSizes]));
+                              const currentSize = (item.selectedSize || variant?.option1 || "M").toString().toUpperCase();
 
                               return sizesToDisplay.map((sizeOpt) => {
                                 const isCurrent = currentSize === sizeOpt.toString().toUpperCase();
@@ -288,6 +289,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                               });
                             })()}
                           </div>
+
                         </div>
                       )}
                     </div>
