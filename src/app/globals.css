@@ -8858,6 +8858,8 @@ textarea.form-input {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   animation: mobileSheetUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
@@ -8924,7 +8926,10 @@ textarea.form-input {
 .mobile-sheet-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   padding: 4px 0 8px;
 }
 
