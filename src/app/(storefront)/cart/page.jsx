@@ -170,47 +170,28 @@ export default function CartPage() {
                               >
                                 {item.product.title}
                               </Link>
-                              {/* Size Badge */}
+                              {/* Size Selector */}
                               <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium my-1">
                                 <span>Size:</span>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingSizeVariantId(editingSizeVariantId === item.variantId ? null : item.variantId)}
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-neutral-100 hover:bg-neutral-200 text-neutral-900 rounded border border-neutral-200 transition-colors cursor-pointer"
-                                >
-                                  {item.selectedSize || "M"} <ChevronDown size={11} className="opacity-60" />
-                                </button>
+                                <div className="relative inline-flex items-center">
+                                  <select
+                                    value={item.selectedSize || "M"}
+                                    onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
+                                    className="appearance-none bg-neutral-100 hover:bg-neutral-200/80 text-neutral-900 font-bold text-xs pl-2.5 pr-6 py-1 rounded-md border border-neutral-200 outline-none cursor-pointer transition-colors"
+                                  >
+                                    {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                                      ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                                      : ["XS", "S", "M", "L", "XL", "XXL"]
+                                    )).map((sz) => (
+                                      <option key={sz} value={sz}>
+                                        {sz}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown size={11} className="absolute right-2 pointer-events-none opacity-60 text-neutral-700" />
+                                </div>
                               </div>
 
-                              {/* Expandable Custom Size Picker Pills */}
-                              {editingSizeVariantId === item.variantId && (
-                                <div className="flex items-center gap-1.5 flex-wrap my-2 p-2 bg-neutral-50 border border-neutral-200 rounded-lg">
-                                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mr-1">Size:</span>
-                                  {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                                    : ["XS", "S", "M", "L", "XL", "XXL"]
-                                  )).map((sz) => {
-                                    const isSelected = (item.selectedSize || "").toString().toLowerCase() === sz.toString().toLowerCase();
-                                    return (
-                                      <button
-                                        key={sz}
-                                        type="button"
-                                        onClick={() => {
-                                          updateItemSize(item.variantId, sz, item.product);
-                                          setEditingSizeVariantId(null);
-                                        }}
-                                        className={`px-2 py-1 text-xs font-bold rounded transition-all cursor-pointer ${
-                                          isSelected
-                                            ? "bg-black text-white shadow-sm"
-                                            : "bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-100"
-                                        }`}
-                                      >
-                                        {sz}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              )}
 
                               <button
                                 type="button"
