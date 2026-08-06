@@ -87,26 +87,55 @@
 }
 
 .couponRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 6.75rem;
-  align-items: stretch;
-  gap: .75rem;
-}
-
-.couponRow input,
-.couponRow button {
-  min-width: 0;
-  height: 2.875rem;
-}
-
-.couponRow button {
-  display: inline-flex;
+  display: flex;
+  gap: 0.625rem;
   align-items: center;
-  justify-content: center;
-  padding: 0 1rem !important;
-  border-radius: .75rem !important;
+  width: 100%;
+}
+
+.couponRow input {
+  flex: 1;
+  min-width: 0;
+  height: 3rem !important;
+  padding-left: 1.125rem !important;
+  padding-right: 1rem !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid #e5e5e5 !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+}
+
+.couponRow input::placeholder {
+  color: #8e8e93 !important;
+}
+
+.couponRow input:focus {
+  border-color: #111111 !important;
+}
+
+.couponRow button {
+  height: 3rem !important;
+  padding: 0 1.25rem !important;
+  border-radius: 0.75rem !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
   line-height: 1;
   white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.couponRow button:hover {
+  background: #262626 !important;
 }
 
 .trustBadges {
@@ -161,13 +190,5 @@
     height: 6rem;
     border-radius: 1rem;
   }
-
-  .couponRow {
-    grid-template-columns: 1fr;
-  }
-
-  .couponRow button {
-    width: 100%;
-    height: 3rem;
-  }
 }
+
