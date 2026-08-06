@@ -9200,6 +9200,120 @@ textarea.form-input {
   min-width: 0;
 }
 
+/* ── Collection catalogue: final mobile layout ────────────────
+   Keep these rules together.  Earlier collection styles also support the
+   desktop switcher, and letting them leak into this breakpoint made the
+   mobile toolbar and cards look like two different layouts. */
+@media (max-width: 768px) {
+  .collection-hero-banner {
+    padding: 28px 16px;
+    margin-bottom: 16px;
+  }
+
+  .collection-hero-banner h1 {
+    font-size: 28px;
+  }
+
+  .collection-main-wrapper {
+    padding: 0 16px 40px;
+  }
+
+  .collection-flex-layout {
+    gap: 0;
+  }
+
+  .collection-top-toolbar {
+    height: 52px;
+    margin-bottom: 20px;
+    padding: 0;
+  }
+
+  .mobile-toolbar-pills {
+    gap: 22px;
+  }
+
+  .mobile-pill-btn {
+    min-height: 44px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .mobile-grid-toggle {
+    height: 38px;
+    padding: 3px;
+    border-radius: 10px;
+  }
+
+  .mobile-grid-toggle-btn {
+    width: 34px;
+    height: 30px;
+    border-radius: 7px;
+  }
+
+  .dynamic-catalog-grid {
+    gap: 28px 12px;
+  }
+
+  .dynamic-catalog-grid.cols-2,
+  .dynamic-catalog-grid.cols-3,
+  .dynamic-catalog-grid.cols-4,
+  .dynamic-catalog-grid.cols-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .product-card-media {
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+  }
+
+  .product-card-hover-actions {
+    top: 6px;
+    right: 6px;
+  }
+
+  .hover-action-btn {
+    width: 34px;
+    height: 34px;
+    color: #111;
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  .product-card-info {
+    padding: 9px 1px 0;
+    gap: 4px;
+  }
+
+  .product-card-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .price-regular,
+  .price-sale {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* List view stays clearly distinct from the grid, without fixed desktop
+     dimensions that make the image and action area feel oversized. */
+  .dynamic-catalog-grid.cols-1 {
+    gap: 14px;
+  }
+
+}
+
+@media (max-width: 374px) {
+  .collection-main-wrapper {
+    padding-inline: 12px;
+  }
+
+  .mobile-toolbar-pills {
+    gap: 14px;
+  }
+}
+
 /* ── Compact horizontal list-view card ───────────────────── */
 .product-card-list-view {
   display: flex;
@@ -9302,4 +9416,34 @@ textarea.form-input {
 .product-list-select-btn:hover {
   background: #111;
   color: #fff;
+}
+
+/* List-card rules must follow the shared list component styles above. */
+@media (max-width: 768px) {
+  .product-card-list-view {
+    min-height: 156px;
+    border: 1px solid #ededed;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .product-list-img-wrap {
+    width: 42%;
+    height: auto;
+    min-height: 156px;
+  }
+
+  .product-list-info {
+    padding: 16px;
+    gap: 7px;
+  }
+
+  .product-list-title {
+    font-size: 15px;
+  }
+
+  .product-list-select-btn {
+    min-height: 38px;
+    margin-top: 2px;
+  }
 }
