@@ -88,8 +88,25 @@
 
 .couponRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: .5rem;
+  grid-template-columns: minmax(0, 1fr) 6.75rem;
+  align-items: stretch;
+  gap: .75rem;
+}
+
+.couponRow input,
+.couponRow button {
+  min-width: 0;
+  height: 2.875rem;
+}
+
+.couponRow button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem !important;
+  border-radius: .75rem !important;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .trustBadges {
@@ -151,5 +168,6 @@
 
   .couponRow button {
     width: 100%;
+    height: 3rem;
   }
 }
