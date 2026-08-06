@@ -173,24 +173,22 @@ export default function CartPage() {
                               {/* Size Selector */}
                               <div className="flex items-center gap-1.5 text-xs text-neutral-500 font-medium my-1">
                                 <span>Size:</span>
-                                <div className="relative inline-flex items-center">
-                                  <select
-                                    value={item.selectedSize || "M"}
-                                    onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
-                                    className="appearance-none bg-neutral-100 hover:bg-neutral-200/80 text-neutral-900 font-bold text-xs pl-2.5 pr-6 py-1 rounded-md border border-neutral-200 outline-none cursor-pointer transition-colors"
-                                  >
-                                    {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
-                                      ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
-                                      : ["XS", "S", "M", "L", "XL", "XXL"]
-                                    )).map((sz) => (
-                                      <option key={sz} value={sz}>
-                                        {sz}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  <ChevronDown size={11} className="absolute right-2 pointer-events-none opacity-60 text-neutral-700" />
-                                </div>
+                                <select
+                                  value={item.selectedSize || "M"}
+                                  onChange={(e) => updateItemSize(item.variantId, e.target.value, item.product)}
+                                  className="h-7 px-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-bold text-xs rounded-md border border-neutral-200 outline-none cursor-pointer transition-colors"
+                                >
+                                  {((Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean))).length > 0
+                                    ? Array.from(new Set((item.product?.variants || []).map(v => v.option1 || v.size || v.title).filter(Boolean)))
+                                    : ["XS", "S", "M", "L", "XL", "XXL"]
+                                  )).map((sz) => (
+                                    <option key={sz} value={sz}>
+                                      {sz}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
+
 
 
                               <button
