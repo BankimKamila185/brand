@@ -1,6 +1,7 @@
 import "../globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import CountdownGate from "@/components/CountdownGate";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
 const BRAND_ICON_VERSION = "20260804_v4";
@@ -162,7 +163,9 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            <CountdownGate>{children}</CountdownGate>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
