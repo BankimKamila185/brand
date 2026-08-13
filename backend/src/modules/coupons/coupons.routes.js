@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "../../config/database";
 import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate, requireAdmin } from "../../middleware/auth";
+import { authenticate, optionalAuth, requireAdmin } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { sendSuccess, sendCreated } from "../../utils/response";
 
@@ -29,7 +29,7 @@ const validateCouponSchema = z.object({
 // POST /api/coupons/validate — check if a coupon is valid (public, for checkout UI)
 router.post(
   "/validate",
-  authenticate,
+  optionalAuth,
   validate(validateCouponSchema),
   asyncHandler(async (req, res) => {
     const { code, orderTotal } = req.body;
