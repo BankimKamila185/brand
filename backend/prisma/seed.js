@@ -198,6 +198,14 @@ async function main() {
       minOrderValue: 999,
     },
     {
+      code: "HACKOUT100",
+      description: "Flat ₹100 off (1 use per user, no min order value)",
+      discountType: "FLAT",
+      value: 100,
+      minOrderValue: null,
+      userLimit: 1,
+    },
+    {
       code: "TEVAR20",
       description: "20% off sitewide",
       discountType: "PERCENTAGE",

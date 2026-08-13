@@ -16,6 +16,7 @@ const createCouponSchema = z.object({
   minOrderValue: z.number().positive().optional(),
   maxDiscount: z.number().positive().optional(),
   usageLimit: z.number().int().positive().optional(),
+  userLimit: z.number().int().positive().optional(),
   startsAt: z.string().datetime().optional(),
   expiresAt: z.string().datetime().optional(),
 });
@@ -46,6 +47,19 @@ router.post(
 
     if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
       throw new AppError("Coupon usage limit reached", 400);
+    }
+
+    if (req.user?.id && coupon.userLimit) {
+      const userUsageCount = await db.order.count({
+        where: {
+          userId: req.user.id,
+          couponId: coupon.id,
+          status: { not: "CANCELLED" },
+        },
+      });
+      if (userUsageCount >= coupon.userLimit) {
+        throw new AppError("You have already used this coupon", 400);
+      }
     }
 
     if (coupon.minOrderValue && orderTotal < Number(coupon.minOrderValue)) {

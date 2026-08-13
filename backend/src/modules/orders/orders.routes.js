@@ -123,6 +123,18 @@ router.post(
         ) {
           throw new AppError("Coupon usage limit reached", 400);
         }
+        if (coupon.userLimit) {
+          const userUsageCount = await tx.order.count({
+            where: {
+              userId: req.user.id,
+              couponId: coupon.id,
+              status: { not: "CANCELLED" },
+            },
+          });
+          if (userUsageCount >= coupon.userLimit) {
+            throw new AppError("You have already used this coupon", 400);
+          }
+        }
         if (coupon.minOrderValue && subtotal < Number(coupon.minOrderValue)) {
           throw new AppError(
             `Minimum order value ₹${coupon.minOrderValue} required`,
