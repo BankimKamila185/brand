@@ -24,7 +24,7 @@ export default function CartPage() {
   } = useCart();
 
   const [couponCode, setCouponCode] = useState("");
-  const [activeDiscount, setActiveDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [editingSizeVariantId, setEditingSizeVariantId] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
@@ -40,22 +40,32 @@ export default function CartPage() {
     try {
       const res = await couponsApi.validate(normalized, cartTotal);
       if (res.success && res.data) {
-        const discountPct = res.data.discountPercent || res.data.value || 10;
-        setActiveDiscount(discountPct);
-        setCouponMessage(`Coupon ${normalized} applied! Saved ${discountPct}%`);
+        const coupon = res.data;
+        setAppliedCoupon(coupon);
+        const amount = Number(coupon.discount ?? (coupon.discountType === "FLAT" ? coupon.value : (cartTotal * coupon.value) / 100));
+        setCouponMessage(
+          coupon.discountType === "FLAT"
+            ? `Coupon ${normalized} applied! Saved ₹${amount.toFixed(2)}`
+            : `Coupon ${normalized} applied! Saved ${coupon.value}%`
+        );
       } else {
         setCouponMessage("Invalid or expired coupon code.");
-        setActiveDiscount(0);
+        setAppliedCoupon(null);
       }
     } catch (err) {
       setCouponMessage(err.message || "Failed to validate coupon code.");
-      setActiveDiscount(0);
+      setAppliedCoupon(null);
     } finally {
       setValidatingCoupon(false);
     }
   };
 
-  const discountAmount = (cartTotal * activeDiscount) / 100;
+  const discountAmount = appliedCoupon
+    ? Math.min(
+        cartTotal,
+        Number(appliedCoupon.discount ?? (appliedCoupon.discountType === "FLAT" ? appliedCoupon.value : (cartTotal * appliedCoupon.value) / 100))
+      )
+    : 0;
   const finalTotal = Math.max(0, cartTotal - discountAmount);
   const freeShippingThreshold = 1500;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - finalTotal);
@@ -353,9 +363,12 @@ export default function CartPage() {
                       <span className="font-bold text-neutral-900">₹{cartTotal.toFixed(2)}</span>
                     </div>
 
-                    {activeDiscount > 0 && (
+                    {appliedCoupon && discountAmount > 0 && (
                       <div className="flex items-center justify-between text-green-600 font-medium">
-                        <span>Discount ({activeDiscount}%)</span>
+                        <span>
+                          Discount ({appliedCoupon.code}
+                          {appliedCoupon.discountType === "PERCENTAGE" ? ` - ${appliedCoupon.value}%` : ""})
+                        </span>
                         <span className="font-bold">-₹{discountAmount.toFixed(2)}</span>
                       </div>
                     )}
