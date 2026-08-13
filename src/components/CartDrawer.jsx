@@ -14,13 +14,19 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     setCartOpen,
     updateQuantity,
     removeFromCart,
-    updateItemSize,
     cartTotal,
+    appliedCoupon,
+    setAppliedCoupon,
   } = useCart();
   const [editingItemVariantId, setEditingItemVariantId] = useState(null);
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
+
+  useEffect(() => {
+    if (appliedCoupon?.code) {
+      setCouponCode(appliedCoupon.code);
+    }
+  }, [appliedCoupon]);
 
   // Freeze background page scrolling when CartDrawer is open
   useEffect(() => {

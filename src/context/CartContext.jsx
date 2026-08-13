@@ -12,6 +12,37 @@ export const CartProvider = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [appliedCoupon, setAppliedCouponState] = useState(null);
+
+  // Load persisted coupon from sessionStorage/localStorage
+  useEffect(() => {
+    try {
+      const stored = typeof window !== "undefined" && (sessionStorage.getItem("hok_applied_coupon") || localStorage.getItem("hok_applied_coupon"));
+      if (stored) {
+        setAppliedCouponState(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Error loading stored coupon:", e);
+    }
+  }, []);
+
+  const setAppliedCoupon = (coupon) => {
+    setAppliedCouponState(coupon);
+    try {
+      if (typeof window !== "undefined") {
+        if (coupon) {
+          sessionStorage.setItem("hok_applied_coupon", JSON.stringify(coupon));
+          localStorage.setItem("hok_applied_coupon", JSON.stringify(coupon));
+        } else {
+          sessionStorage.removeItem("hok_applied_coupon");
+          localStorage.removeItem("hok_applied_coupon");
+        }
+      }
+    } catch (e) {
+      console.error("Error saving applied coupon:", e);
+    }
+  };
+
   const [cartOpen, setCartOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -417,6 +448,7 @@ export const CartProvider = ({ children }) => {
       }
     }
     setCart([]);
+    setAppliedCoupon(null);
   };
 
   const cartCount = cart.reduce((total, item) => total + (item?.quantity || 0), 0);
@@ -438,6 +470,8 @@ export const CartProvider = ({ children }) => {
         wishlist,
         cartOpen,
         setCartOpen,
+        appliedCoupon,
+        setAppliedCoupon,
         addToCart,
         removeFromCart,
         updateQuantity,

@@ -21,13 +21,20 @@ export default function CartPage() {
     removeFromCart,
     cartTotal,
     clearCart,
+    appliedCoupon,
+    setAppliedCoupon,
   } = useCart();
 
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [editingSizeVariantId, setEditingSizeVariantId] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  useEffect(() => {
+    if (appliedCoupon?.code) {
+      setCouponCode(appliedCoupon.code);
+    }
+  }, [appliedCoupon]);
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault();

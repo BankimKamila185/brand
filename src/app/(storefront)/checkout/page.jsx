@@ -54,7 +54,7 @@ const loadRazorpayScript = () =>
 export default function CheckoutPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
   const [step, setStep] = useState("shipping");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
@@ -62,13 +62,18 @@ export default function CheckoutPage() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState(EMPTY_ADDRESS);
   const [addressError, setAddressError] = useState("");
-  const [couponInput, setCouponInput] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponInput, setCouponInput] = useState(appliedCoupon?.code || "");
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
+
+  useEffect(() => {
+    if (appliedCoupon?.code) {
+      setCouponInput(appliedCoupon.code);
+    }
+  }, [appliedCoupon]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -96,7 +101,17 @@ export default function CheckoutPage() {
   }, [isAuthenticated]);
 
   const subtotal = cartTotal;
-  const discountAmount = appliedCoupon ? Number(appliedCoupon.discount) : 0;
+  const discountAmount = appliedCoupon
+    ? Math.min(
+        subtotal,
+        Number(
+          appliedCoupon.discount ??
+            (appliedCoupon.discountType === "FLAT"
+              ? appliedCoupon.value
+              : (subtotal * appliedCoupon.value) / 100)
+        )
+      )
+    : 0;
   const shippingCharge = subtotal >= 999 ? 0 : 99;
   const total = Math.max(0, subtotal - discountAmount + shippingCharge);
   const selectedAddress = useMemo(
@@ -511,11 +526,11 @@ export default function CheckoutPage() {
               {isAddressLoading ? <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div> : <div className="grid gap-3 md:grid-cols-2">{addresses.map((address) => <button key={address.id} onClick={() => setSelectedAddressId(address.id)} className={`checkout-address text-left ${selectedAddressId === address.id ? "is-selected" : ""}`}><div className="mb-4 flex justify-between"><span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{address.label}</span>{selectedAddressId === address.id && <Check size={17} />}</div><p className="font-bold">{address.name}</p><p className="mt-1 text-sm leading-relaxed text-neutral-500">{address.line1}{address.line2 ? `, ${address.line2}` : ""}<br />{address.city}, {address.state} — {address.pincode}<br />{address.phone}</p><span onClick={(event) => deleteAddress(address.id, event)} className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-red-600"><Trash2 size={13} /> Remove</span></button>)}</div>}
               {!isAddressLoading && !addresses.length && !showAddressForm && <div className="rounded-xl border border-dashed border-neutral-300 py-10 text-center text-sm text-neutral-500"><MapPin className="mx-auto mb-2 text-neutral-300" />Add your delivery address to continue.</div>}
               <button onClick={continueToPayment} className="checkout-v3-action checkout-v3-full"><span>Continue to payment</span><ChevronRight size={17} /></button>
-            </section><aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /><p className="checkout-v3-aside-note"><ShieldCheck size={15} /> Orders are secured with Razorpay.</p></aside></div>
+            </section><aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /><p className="checkout-v3-aside-note"><ShieldCheck size={15} /> Orders are secured with Razorpay.</p></aside></div>
           ) : (
             <div className="checkout-v3-stage">
               <section className="checkout-v3-panel checkout-v3-payment"><div className="checkout-v3-delivery"><div><p className="checkout-v3-eyebrow">Delivering to</p><p className="font-bold">{selectedAddress?.name}</p><p>{selectedAddress?.line1}, {selectedAddress?.city}, {selectedAddress?.state} {selectedAddress?.pincode}</p></div><button onClick={() => setStep("shipping")} className="checkout-v3-text-button">Change</button></div><div className="checkout-v3-payment-box"><div className="checkout-v3-icon"><CreditCard size={20} /></div><p className="checkout-v3-eyebrow">Step 02</p><h2>Pay using Razorpay</h2><p>Choose UPI, card, net banking, or a wallet in the secure Razorpay payment window.</p><button disabled={isProcessing} onClick={beginPayment} className="checkout-v3-action checkout-v3-full disabled:opacity-50">{isProcessing ? <Loader2 className="animate-spin" size={17} /> : <Lock size={16} />} {isProcessing ? "Opening Razorpay…" : `Pay ₹${total.toFixed(2)} securely`}</button><div className="checkout-v3-powered"><ShieldCheck size={15} /> Safe payment by Razorpay</div></div></section>
-              <aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /></aside>
+              <aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /></aside>
             </div>
           )}
         </div>
@@ -529,7 +544,7 @@ function Input({ label, name, value, onChange, full = false }) {
   return <label className={full ? "md:col-span-2" : ""}><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">{label}</span><input required={!name.includes("line2")} value={value} onChange={(event) => onChange((address) => ({ ...address, [name]: event.target.value }))} className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm outline-none focus:border-black" /></label>;
 }
 
-function OrderSummary({ cart, subtotal, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading }) {
+function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading }) {
   return (
     <section className="checkout-v3-order">
       <div className="checkout-v3-order-top">
@@ -568,6 +583,9 @@ function OrderSummary({ cart, subtotal, shippingCharge, total, couponInput, setC
       )}
       <div className="checkout-v3-totals">
         <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+        {appliedCoupon && discountAmount > 0 && (
+          <Row label={`Discount (${appliedCoupon.code})`} value={`-₹${discountAmount.toFixed(2)}`} />
+        )}
         <Row label="Shipping" value={shippingCharge ? `₹${shippingCharge.toFixed(2)}` : "Free"} />
         <div>
           <span>Total</span>
