@@ -219,7 +219,7 @@ async function main() {
   for (const coupon of coupons) {
     await db.coupon.upsert({
       where: { code: coupon.code },
-      update: {},
+      update: { ...coupon },
       create: { ...coupon, isActive: true },
     });
   }

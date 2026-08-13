@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/server.js",
     "build": "prisma generate",
-    "start": "prisma db push && tsx src/server.js",
+    "start": "prisma db push && node prisma/seed.js && tsx src/server.js",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "test": "jest --passWithNoTests",
