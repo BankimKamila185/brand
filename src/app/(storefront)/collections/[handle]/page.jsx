@@ -8,7 +8,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import { productsApi } from "@/lib/api";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { ChevronDown, ChevronUp, RotateCcw, SearchX, X } from "lucide-react";
 
 const COLLECTION_LABELS = {
   all: "All Products",
@@ -659,18 +659,21 @@ export default function CollectionPage({ params }) {
                   ))}
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="text-center py-20 bg-neutral-50 rounded-xl border border-neutral-200 px-4">
-                  <p className="text-4xl mb-3">🔍</p>
-                  <h3 className="text-lg font-bold text-neutral-900 mb-1">
+                <div className="flex flex-col items-center justify-center text-center py-16 px-6 md:py-24 bg-neutral-50/80 rounded-2xl border border-neutral-200/80 shadow-sm my-4">
+                  <div className="w-14 h-14 bg-white border border-neutral-200 flex items-center justify-center rounded-full mb-4 text-neutral-500 shadow-sm">
+                    <SearchX size={26} strokeWidth={1.5} />
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-neutral-900 mb-2">
                     No matching products found
                   </h3>
-                  <p className="text-xs text-neutral-500 mb-6">
+                  <p className="text-sm text-neutral-500 max-w-md mb-8 leading-relaxed">
                     Try adjusting your filters or price range to find what you&apos;re looking for.
                   </p>
                   <button
                     onClick={clearAllFilters}
-                    className="bg-black text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 cursor-pointer"
+                    className="inline-flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg active:scale-95"
                   >
+                    <RotateCcw size={14} />
                     Reset All Filters
                   </button>
                 </div>
