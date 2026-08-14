@@ -8,24 +8,8 @@ import { categoriesApi, collectionsApi } from "../lib/api";
 import Logo from "./Logo";
 import { ChevronRight, X, User, Heart, ShoppingBag, Search, Grid, Tag, Sparkles, LogOut } from "lucide-react";
 
-const DEFAULT_CATEGORIES = [
-  { name: "Cargo Trousers", path: "/collections/cargo-trousers-for-men" },
-  { name: "Co-Ord Sets", path: "/collections/co-ord-sets" },
-  { name: "Textured / Printed Casual Shirts", path: "/collections/textured-co-ord-sets" },
-  { name: "Korean Pants", path: "/collections/korean-pants" },
-  { name: "Linen Shirts", path: "/collections/linen-shirts" },
-  { name: "Cuban Shirts", path: "/collections/cuban-shirts" },
-  { name: "Crochet Shirts", path: "/collections/crochet-shirts" },
-  { name: "Korean Shirts", path: "/collections/shirts" },
-  { name: "Oversized T-Shirts", path: "/collections/oversized-t-shirts" },
-  { name: "Parachute Cargo Trousers", path: "/collections/parachute-cargos" },
-];
-
-const DEFAULT_COLLECTIONS = [
-  { name: "Retro Clothing", path: "/collections/retro-clothing" },
-  { name: "Outliers K-aracter", path: "/collections/outliers-k-aracter" },
-  { name: "Outliers Recommends", path: "/collections/outliers-recommends" },
-];
+const DEFAULT_CATEGORIES = [];
+const DEFAULT_COLLECTIONS = [];
 
 const Header = ({ onSearch }) => {
   const { cartCount, wishlist, setCartOpen } = useCart();
@@ -71,10 +55,10 @@ const Header = ({ onSearch }) => {
           collectionsApi.list(),
         ]);
         if (!isMounted) return;
-        if (catRes.status === "fulfilled" && catRes.value?.data?.length > 0) {
+        if (catRes.status === "fulfilled" && Array.isArray(catRes.value?.data)) {
           setCategoriesList(catRes.value.data.map((c) => ({ name: c.name, path: `/collections/${c.slug}` })));
         }
-        if (colRes.status === "fulfilled" && colRes.value?.data?.length > 0) {
+        if (colRes.status === "fulfilled" && Array.isArray(colRes.value?.data)) {
           setCollectionsList(colRes.value.data.map((c) => ({ name: c.name, path: `/collections/${c.handle}` })));
         }
       } catch (_) { }

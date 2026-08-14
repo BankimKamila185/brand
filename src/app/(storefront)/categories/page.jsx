@@ -9,64 +9,7 @@ import CartDrawer from "@/components/CartDrawer";
 import { categoriesApi } from "@/lib/api";
 import { ArrowRight, Layers } from "lucide-react";
 
-const DEFAULT_CATEGORIES = [
-  {
-    id: "cat-1",
-    name: "Cargo Trousers",
-    slug: "cargo-trousers-for-men",
-    description: "Baggy, tactical, and relaxed utility cargo trousers crafted for modern silhouettes.",
-    imageUrl: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-2",
-    name: "Co-Ord Sets",
-    slug: "co-ord-sets",
-    description: "Effortlessly matched upper and lower sets for elevated, relaxed everyday style.",
-    imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-3",
-    name: "Korean Pants",
-    slug: "korean-pants",
-    description: "Pleated, wide-leg, and tapered trousers inspired by contemporary East Asian streetwear.",
-    imageUrl: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-4",
-    name: "Linen Shirts",
-    slug: "linen-shirts",
-    description: "Lightweight, breathable pure linen shirts designed for warm climate luxury.",
-    imageUrl: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-5",
-    name: "Cuban Shirts",
-    slug: "cuban-shirts",
-    description: "Camp-collar boxy vacation shirts featuring distinct collar tailoring and rich textures.",
-    imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-6",
-    name: "Crochet Shirts",
-    slug: "crochet-shirts",
-    description: "Artisanal open-knit and textured crochet shirts for a refined resort look.",
-    imageUrl: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-7",
-    name: "Oversized T-Shirts",
-    slug: "oversized-t-shirts",
-    description: "Heavyweight cotton dropped-shoulder graphic and minimal oversized tees.",
-    imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "cat-8",
-    name: "Parachute Cargo Trousers",
-    slug: "parachute-cargos",
-    description: "Ultra-lightweight nylon parachute trousers with adjustable toggle hem details.",
-    imageUrl: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?q=80&w=800&auto=format&fit=crop",
-  },
-];
+const DEFAULT_CATEGORIES = [];
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
@@ -76,11 +19,11 @@ export default function CategoriesPage() {
     const loadCategories = async () => {
       try {
         const res = await categoriesApi.list();
-        if (res.success && res.data && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           setCategories(res.data);
         }
       } catch (_) {
-        // Fallback to default categories
+        setCategories([]);
       } finally {
         setLoading(false);
       }
