@@ -92,8 +92,6 @@ export function Overview() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [simulating, setSimulating] = useState(false);
-  const [simMessage, setSimMessage] = useState("");
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -143,23 +141,6 @@ export function Overview() {
     return () => clearInterval(interval);
   }, [loadAnalytics]);
 
-  const handleSimulateCheckout = async () => {
-    setSimulating(true);
-    setSimMessage("");
-    try {
-      const res = await adminApi.orders.simulate();
-      if (res.success) {
-        setSimMessage("Simulated order created! Refreshing stats…");
-        await loadAnalytics();
-        setTimeout(() => setSimMessage(""), 5000);
-      }
-    } catch (err) {
-      setSimMessage(`Simulation failed: ${err.message}`);
-    } finally {
-      setSimulating(false);
-    }
-  };
-
   // ── Derived values ──────────────────────────────────────────────────────────
   const stats = data
     ? [
@@ -204,22 +185,6 @@ export function Overview() {
         </div>
         <div className="admin-hero-orbit" />
       </section>
-
-      {/* ── Live Checkout Simulator ── */}
-      <div className="admin-simulator-bar">
-        <div>
-          <h3>Live Checkout Simulator</h3>
-          <p>Mock a customer purchase of a random inventory item to test the real-time data sync pipeline.</p>
-          {simMessage && (
-            <p className={simMessage.includes("failed") ? "sim-error" : "sim-success"}>
-              {simMessage}
-            </p>
-          )}
-        </div>
-        <button onClick={handleSimulateCheckout} disabled={simulating} className="admin-sim-btn">
-          {simulating ? "Simulating…" : "Simulate Random Checkout"}
-        </button>
-      </div>
 
       {error && <div className="admin-error-message">{error}</div>}
 
