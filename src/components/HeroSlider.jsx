@@ -19,20 +19,6 @@ const HERO_SLIDES = [
     desktopImg: "/tendencias-hero-banner.jpg",
     mobileImg: "/tendencias-hero-banner-mobile.png",
   },
-  {
-    title: "THE OUTLIERS STUDIO",
-    subtitle: "Premium Streetwear & Oversized Apparel",
-    link: "/collections/all",
-    desktopImg: "/hero-light.jpg",
-    mobileImg: "/outliers-hero-banner-mobile.jpg",
-  },
-  {
-    title: "LIMITED EDITION DROPS",
-    subtitle: "For Those Who Refuse to Blend In",
-    link: "/collections/all",
-    desktopImg: "/hero-dark.png",
-    mobileImg: "/hero-dark.png",
-  },
 ];
 
 const HeroSlider = () => {
