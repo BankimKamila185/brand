@@ -6,7 +6,7 @@ import Image from "next/image";
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
 // Change this to your actual launch date/time (ISO 8601 with timezone).
 // Once this date passes, the storefront renders normally.
-const LAUNCH_DATE = "2026-08-17T06:00:00+05:30";
+const LAUNCH_DATE = "2026-08-19T06:00:00+05:30";
 
 // Secret preview key: visit ?preview=outliers to bypass the countdown.
 // Visit ?preview=exit to go back to the countdown view.
