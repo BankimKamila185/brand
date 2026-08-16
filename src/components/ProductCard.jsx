@@ -179,9 +179,6 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
           {/* Left: square image */}
           <Link href={`/products/${product.handle}`} className="product-list-img-wrap">
             <div className="relative w-full h-full">
-              {discountPercent > 0 && (
-                <div className="product-card-discount">-{discountPercent}%</div>
-              )}
               <img
                 src={firstImg}
                 alt={product.title}
@@ -377,13 +374,6 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
         className="product-card cursor-pointer block text-current no-underline group"
       >
         <div className="product-card-media relative overflow-hidden rounded-xl bg-neutral-100">
-          {/* Top Left Discount Badge */}
-          {discountPercent > 0 && (
-            <div className="product-card-discount">
-              -{discountPercent}%
-            </div>
-          )}
-
           <img
             src={firstImg}
             alt={product.title}
