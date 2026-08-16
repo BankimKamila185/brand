@@ -60,8 +60,8 @@ const envSchema = z.object({
     .transform((val) => val || "rzp_test_TQZvzQsU4iZMFt"),
   RAZORPAY_KEY_SECRET: z
     .string()
-    .default("qJNk3pITvok3MjIFqIr9gYRm")
-    .transform((val) => val || "qJNk3pITvok3MjIFqIr9gYRm"),
+    .default("VFCBr3eJCltnqDb0LxdxdElg")
+    .transform((val) => val || "VFCBr3eJCltnqDb0LxdxdElg"),
 
   // Frontend
   FRONTEND_URL: z.string().default("http://localhost:3000"),
