@@ -178,8 +178,11 @@ export const ordersApi = {
 };
 
 export const paymentsApi = {
-  createOrder: (orderId) => api.post("/api/payments/create-order", { orderId }),
-  verify: (data) => api.post("/api/payments/verify", data),
+  createOrder: (payload) =>
+    typeof payload === "object"
+      ? api.post("/api/create-order", payload)
+      : api.post("/api/create-order", { orderId: payload }),
+  verify: (data) => api.post("/api/verify-payment", data),
 };
 
 export const couponsApi = {

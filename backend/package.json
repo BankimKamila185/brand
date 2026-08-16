@@ -41,7 +41,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "rate-limit-redis": "^4.2.0",
-    "razorpay": "^2.9.6",
+    "razorpay": "^2.9.8",
     "tsx": "^4.23.1",
     "uuid": "^11.1.0",
     "winston": "^3.17.0",

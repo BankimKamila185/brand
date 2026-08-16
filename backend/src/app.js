@@ -16,7 +16,8 @@ import categoriesRoutes from "./modules/categories/categories.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 import ordersRoutes from "./modules/orders/orders.routes";
-import paymentsRoutes from "./modules/payments/payments.routes";
+import paymentsRoutes, { createOrderHandler, verifyPaymentHandler } from "./modules/payments/payments.routes";
+import { optionalAuth } from "./middleware/auth";
 import couponsRoutes from "./modules/coupons/coupons.routes";
 import reviewsRoutes from "./modules/reviews/reviews.routes";
 import usersRoutes from "./modules/users/users.routes";
@@ -115,6 +116,8 @@ const createApp = () => {
   app.use("/api/wishlist", wishlistRoutes);
   app.use("/api/orders", ordersRoutes);
   app.use("/api/payments", paymentsRoutes);
+  app.post("/api/create-order", generalLimiter, optionalAuth, createOrderHandler);
+  app.post("/api/verify-payment", optionalAuth, verifyPaymentHandler);
   app.use("/api/coupons", couponsRoutes);
   app.use("/api/reviews", reviewsRoutes);
   app.use("/api/users", usersRoutes);

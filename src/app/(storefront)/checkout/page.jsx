@@ -337,7 +337,7 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     try {
       const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) throw new Error("Razorpay could not load. Please check your connection.");
+      if (!scriptLoaded) throw new Error("Razorpay SDK could not be loaded. Please check your internet connection.");
 
       const orderResponse = await ordersApi.create({
         addressId: selectedAddressId,
@@ -347,11 +347,16 @@ export default function CheckoutPage() {
 
       const order = orderResponse.data;
       const paymentResponse = await paymentsApi.createOrder(order.id);
-      if (!paymentResponse.success || !paymentResponse.data) {
+      
+      const razorpayOrderId = paymentResponse.order_id || paymentResponse.data?.order_id || paymentResponse.data?.razorpayOrderId;
+      const amount = paymentResponse.amount || paymentResponse.data?.amount;
+      const currency = paymentResponse.currency || paymentResponse.data?.currency || "INR";
+      const keyId = paymentResponse.keyId || paymentResponse.data?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      if (!razorpayOrderId) {
         throw new Error("Could not start the Razorpay payment.");
       }
 
-      const { razorpayOrderId, amount, currency, keyId } = paymentResponse.data;
       const razorpay = new window.Razorpay({
         key: keyId,
         amount,
@@ -361,16 +366,25 @@ export default function CheckoutPage() {
         order_id: razorpayOrderId,
         prefill: { name: user?.name || "", email: user?.email || "", contact: user?.phone || "" },
         theme: { color: "#0E0D0B" },
-        modal: { ondismiss: () => setIsProcessing(false) },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+            setCheckoutError("Payment cancelled by user.");
+          },
+        },
         handler: async (response) => {
           try {
             const verification = await paymentsApi.verify({
               orderId: order.id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
+              order_id: response.razorpay_order_id,
+              payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
             });
-            if (!verification.success) throw new Error("Payment verification failed.");
+            if (!verification.success && verification.status !== "success") {
+              throw new Error("Payment verification failed.");
+            }
             await clearCart();
             setCompletedOrder({ id: order.id, total, address: selectedAddress });
           } catch (error) {
@@ -380,6 +394,13 @@ export default function CheckoutPage() {
           }
         },
       });
+
+      razorpay.on("payment.failed", (response) => {
+        setIsProcessing(false);
+        const reason = response.error?.description || "Payment failed. Please try again.";
+        setCheckoutError(reason);
+      });
+
       razorpay.open();
     } catch (error) {
       setCheckoutError(error?.message || "We could not start your payment.");
