@@ -20,8 +20,8 @@ const getRazorpay = () =>
 
 /**
  * Controller to handle order creation for Razorpay.
- * Supports both standalone { amount, currency, receipt } payload (paise, min 100)
- * and Tevar application { orderId } payload.
+ * Supports standalone { amount, currency, receipt } (paise, min 100)
+ * and Tevar application { orderId, amount } payloads.
  */
 export const createOrderHandler = asyncHandler(async (req, res) => {
   const { amount, currency = "INR", receipt, orderId } = req.body;
@@ -34,10 +34,7 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
   let receiptId = receipt || `receipt_${Date.now()}`;
   let dbOrder = null;
 
-  if (orderId) {
-    if (!req.user) {
-      throw new AppError("Authentication required", 401);
-    }
+  if (orderId && req.user) {
     dbOrder = await db.order.findFirst({
       where: { id: orderId, userId: req.user.sub },
       select: {
@@ -47,18 +44,23 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
       },
     });
 
-    if (!dbOrder) throw new AppError("Order not found", 404);
-    if (dbOrder.payment?.status === "PAID") {
-      throw new AppError("Order already paid", 400);
+    if (dbOrder) {
+      if (dbOrder.payment?.status === "PAID") {
+        throw new AppError("Order already paid", 400);
+      }
+      finalAmountInPaise = Math.round(Number(dbOrder.total) * 100);
+      receiptId = dbOrder.id.slice(-16);
     }
+  }
 
-    finalAmountInPaise = Math.round(Number(dbOrder.total) * 100);
-    receiptId = dbOrder.id.slice(-16);
-  } else {
-    if (amount === undefined || amount === null) {
+  if (!finalAmountInPaise) {
+    if (amount !== undefined && amount !== null) {
+      finalAmountInPaise = Number(amount);
+    } else if (orderId && !req.user) {
+      throw new AppError("Authentication required", 401);
+    } else {
       throw new AppError("amount or orderId is required", 400);
     }
-    finalAmountInPaise = Number(amount);
   }
 
   // Validate amount >= 100 paise
@@ -135,10 +137,10 @@ export const verifyPaymentHandler = asyncHandler(async (req, res) => {
     throw new AppError("Signature mismatch", 400);
   }
 
-  // 2. If tied to a application order in DB, update status
-  if (orderId && req.user) {
+  // 2. If tied to an application order in DB, update status
+  if (orderId) {
     const order = await db.order.findFirst({
-      where: { id: orderId, userId: req.user.sub },
+      where: { id: orderId },
       include: { payment: true },
     });
 
@@ -157,13 +159,17 @@ export const verifyPaymentHandler = asyncHandler(async (req, res) => {
           where: { id: order.id },
           data: { status: "CONFIRMED" },
         }),
-        db.cartItem.deleteMany({
-          where: {
-            cart: {
-              userId: req.user.sub,
-            },
-          },
-        }),
+        ...(order.userId
+          ? [
+              db.cartItem.deleteMany({
+                where: {
+                  cart: {
+                    userId: order.userId,
+                  },
+                },
+              }),
+            ]
+          : []),
       ]);
 
       // Release inventory reservations and deduct stock

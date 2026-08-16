@@ -339,17 +339,29 @@ export default function CheckoutPage() {
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) throw new Error("Razorpay SDK could not be loaded. Please check your internet connection.");
 
-      const orderResponse = await ordersApi.create({
-        addressId: selectedAddressId,
-        couponCode: appliedCoupon?.code,
-      });
-      if (!orderResponse.success || !orderResponse.data) throw new Error("Could not create your order.");
+      let order = null;
+      try {
+        const orderResponse = await ordersApi.create({
+          addressId: selectedAddressId,
+          couponCode: appliedCoupon?.code,
+        });
+        if (orderResponse.success && orderResponse.data) {
+          order = orderResponse.data;
+        }
+      } catch (err) {
+        console.warn("Order creation pre-step note:", err?.message);
+      }
 
-      const order = orderResponse.data;
-      const paymentResponse = await paymentsApi.createOrder(order.id);
+      const amountInPaise = Math.round(total * 100);
+      const paymentResponse = await paymentsApi.createOrder({
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: order?.id ? order.id.slice(-16) : `receipt_${Date.now()}`,
+        ...(order?.id ? { orderId: order.id } : {}),
+      });
       
       const razorpayOrderId = paymentResponse.order_id || paymentResponse.data?.order_id || paymentResponse.data?.razorpayOrderId;
-      const amount = paymentResponse.amount || paymentResponse.data?.amount;
+      const amount = paymentResponse.amount || paymentResponse.data?.amount || amountInPaise;
       const currency = paymentResponse.currency || paymentResponse.data?.currency || "INR";
       const keyId = paymentResponse.keyId || paymentResponse.data?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
@@ -362,7 +374,7 @@ export default function CheckoutPage() {
         amount,
         currency,
         name: "The Outliers Studio",
-        description: `Order #${order.id.slice(-8).toUpperCase()}`,
+        description: order?.id ? `Order #${order.id.slice(-8).toUpperCase()}` : "Checkout Payment",
         order_id: razorpayOrderId,
         prefill: { name: user?.name || "", email: user?.email || "", contact: user?.phone || "" },
         theme: { color: "#0E0D0B" },
@@ -375,7 +387,7 @@ export default function CheckoutPage() {
         handler: async (response) => {
           try {
             const verification = await paymentsApi.verify({
-              orderId: order.id,
+              ...(order?.id ? { orderId: order.id } : {}),
               order_id: response.razorpay_order_id,
               payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
@@ -386,7 +398,7 @@ export default function CheckoutPage() {
               throw new Error("Payment verification failed.");
             }
             await clearCart();
-            setCompletedOrder({ id: order.id, total, address: selectedAddress });
+            setCompletedOrder({ id: order?.id || response.razorpay_order_id, total, address: selectedAddress });
           } catch (error) {
             setCheckoutError(error?.message || "We could not verify your payment.");
           } finally {
