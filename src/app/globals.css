@@ -2731,11 +2731,11 @@ html, body {
 /* ── 10. Hero Carousel ───────────────────────────────────── */
 .hero-slider {
   position: relative;
-  height: calc(100svh - var(--header-h) - var(--announce-h));
-  min-height: 520px;
   width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - var(--header-h) - var(--announce-h));
   overflow: hidden;
-  background: var(--c-dark);
+  background: #0e0d0b;
 }
 
 @media (max-width: 768px) {
@@ -2744,7 +2744,7 @@ html, body {
     width: 100%;
     aspect-ratio: 9 / 16;
     min-height: 480px;
-    max-height: 90vh;
+    max-height: 85vh;
   }
 }
 
@@ -2764,15 +2764,18 @@ html, body {
 .hero-slide-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center center;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
 }
 
 @media (max-width: 768px) {
   .hero-slide-img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: cover;
     object-position: center center;
   }
 }
