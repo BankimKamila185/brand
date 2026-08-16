@@ -93,6 +93,18 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
   } catch (error) {
     logger.error("Razorpay API order creation failed:", error);
     if (error instanceof AppError) throw error;
+
+    // Detect Razorpay API credentials authentication error
+    if (
+      error?.statusCode === 401 ||
+      error?.error?.description === "Authentication failed"
+    ) {
+      throw new AppError(
+        `Razorpay API Authentication Failed: The Key ID (${env.RAZORPAY_KEY_ID}) or Key Secret is invalid or expired. Please generate a new key pair from https://dashboard.razorpay.com/app/keys.`,
+        502,
+      );
+    }
+
     throw new AppError(
       error.message || "Failed to create Razorpay order",
       error.statusCode || 500,
