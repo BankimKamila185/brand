@@ -34,9 +34,9 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
   let receiptId = receipt || `receipt_${Date.now()}`;
   let dbOrder = null;
 
-  if (orderId && req.user) {
-    dbOrder = await db.order.findFirst({
-      where: { id: orderId, userId: req.user.sub },
+  if (orderId) {
+    dbOrder = await db.order.findUnique({
+      where: { id: orderId },
       select: {
         id: true,
         total: true,
@@ -56,10 +56,8 @@ export const createOrderHandler = asyncHandler(async (req, res) => {
   if (!finalAmountInPaise) {
     if (amount !== undefined && amount !== null) {
       finalAmountInPaise = Number(amount);
-    } else if (orderId && !req.user) {
-      throw new AppError("Authentication required", 401);
     } else {
-      throw new AppError("amount or orderId is required", 400);
+      throw new AppError("Valid orderId or amount is required", 400);
     }
   }
 
