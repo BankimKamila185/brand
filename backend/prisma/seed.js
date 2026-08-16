@@ -210,9 +210,23 @@ async function main() {
       description: "20% off sitewide",
       discountType: "PERCENTAGE",
       value: 20,
-      minOrderValue: 1499,
+      minOrderValue: null,
       maxDiscount: 500,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    },
+    {
+      code: "OUTLIERS10",
+      description: "10% off (No minimum order value required)",
+      discountType: "PERCENTAGE",
+      value: 10,
+      minOrderValue: null,
+    },
+    {
+      code: "OUTLIERS21",
+      description: "21% off (No minimum order value required)",
+      discountType: "PERCENTAGE",
+      value: 21,
+      minOrderValue: null,
     },
   ];
 

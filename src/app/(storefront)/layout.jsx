@@ -1,33 +1,56 @@
 import "../globals.css";
+import Script from "next/script";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import CountdownGate from "@/components/CountdownGate";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
 const BRAND_ICON_VERSION = "20260804_v4";
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "./",
+  },
   title: {
-    default: "The Outliers Studio | Premium Streetwear & Urban Clothing",
+    default: "The Outliers Studio | Premium Streetwear & Urban Clothing India",
     template: "%s | The Outliers Studio",
   },
   description:
-    "The Outliers Studio is for those who refuse to blend in. We create premium streetwear that celebrates individuality, confidence, and the courage to choose your own path.",
+    "Discover The Outliers Studio — India's premier luxury streetwear brand. Shop oversized t-shirts, graphic tees, cargos, co-ords & hoodies crafted for those who refuse to blend in.",
   keywords: [
     "The Outliers Studio",
     "Outliers Studio",
+    "Outliers Clothing",
+    "Tevar Fashion",
+    "Tevar Streetwear",
     "streetwear india",
-    "urban clothing",
-    "oversized t-shirts",
-    "cargos",
-    "co-ords",
-    "premium streetwear",
+    "urban clothing india",
+    "oversized t-shirts india",
+    "oversized t shirts for men",
+    "oversized t shirts for women",
+    "luxury streetwear india",
+    "premium streetwear brand",
+    "graphic tees india",
+    "oversized hoodies",
+    "cargos india",
+    "co-ord sets men",
+    "aesthetic streetwear",
+    "unisex streetwear",
+    "baggy t-shirts",
+    "trending streetwear brands",
+    "buy oversized t-shirts online",
+    "streetwear online store",
   ],
   authors: [{ name: "The Outliers Studio" }],
   creator: "The Outliers Studio",
   publisher: "The Outliers Studio",
   manifest: "/site.webmanifest",
+  verification: {
+    google: GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: [
       { url: `/favicon-96x96.png?v=${BRAND_ICON_VERSION}`, sizes: "96x96", type: "image/png" },
@@ -162,6 +185,24 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body suppressHydrationWarning>
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
         <AuthProvider>
           <CartProvider>
             <CountdownGate>{children}</CountdownGate>

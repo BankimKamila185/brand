@@ -68,21 +68,11 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
       }
     } catch (err) {
       if (normalized === "OUTLIERS10") {
-        if (cartTotal >= 2499) {
-          setAppliedCoupon({ code: "OUTLIERS10", discountType: "PERCENTAGE", value: 10, discount: Math.round(cartTotal * 0.1) });
-          setCouponMessage("Coupon OUTLIERS10 applied: 10% discount!");
-        } else {
-          setAppliedCoupon(null);
-          setCouponMessage("OUTLIERS10 requires order above ₹2499!");
-        }
+        setAppliedCoupon({ code: "OUTLIERS10", discountType: "PERCENTAGE", value: 10, discount: Math.round(cartTotal * 0.1) });
+        setCouponMessage("Coupon OUTLIERS10 applied: 10% discount!");
       } else if (normalized === "OUTLIERS21") {
-        if (cartTotal >= 5999) {
-          setAppliedCoupon({ code: "OUTLIERS21", discountType: "PERCENTAGE", value: 21, discount: Math.round(cartTotal * 0.21) });
-          setCouponMessage("Coupon OUTLIERS21 applied: 21% discount!");
-        } else {
-          setAppliedCoupon(null);
-          setCouponMessage("OUTLIERS21 requires order above ₹5999!");
-        }
+        setAppliedCoupon({ code: "OUTLIERS21", discountType: "PERCENTAGE", value: 21, discount: Math.round(cartTotal * 0.21) });
+        setCouponMessage("Coupon OUTLIERS21 applied: 21% discount!");
       } else {
         setAppliedCoupon(null);
         setCouponMessage(err?.message || "Invalid coupon code!");

@@ -222,4 +222,38 @@ router.patch(
   }),
 );
 
+// PATCH /api/users/admin/:id — update user details/role/status
+router.patch(
+  "/admin/:id",
+  asyncHandler(async (req, res) => {
+    const { name, email, phone, role, isActive } = req.body;
+    const data = {};
+    if (name) data.name = name;
+    if (email) data.email = email.toLowerCase().trim();
+    if (phone !== undefined) data.phone = phone;
+    if (role) data.role = role;
+    if (isActive !== undefined) data.isActive = isActive;
+
+    const user = await db.user.update({
+      where: { id: req.params["id"] },
+      data,
+      select: { id: true, name: true, email: true, phone: true, role: true, isActive: true },
+    });
+    sendSuccess(res, user, "User updated successfully");
+  }),
+);
+
+// DELETE /api/users/admin/:id — delete user
+router.delete(
+  "/admin/:id",
+  asyncHandler(async (req, res) => {
+    // Prevent admin from deleting themselves
+    if (req.params["id"] === req.user.sub) {
+      throw new AppError("You cannot delete your own account", 400);
+    }
+    await db.user.delete({ where: { id: req.params["id"] } });
+    sendSuccess(res, null, "User deleted successfully");
+  }),
+);
+
 export default router;

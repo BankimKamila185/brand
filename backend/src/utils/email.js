@@ -21,13 +21,7 @@ const getTransporter = () => {
 
 const getBrevoApiKey = () => {
   if (env.BREVO_API_KEY) return env.BREVO_API_KEY;
-  try {
-    const p1 = "eGtleXNpYi0zODE4Mjg1Zjc5M2U5YzRjNzQ4NjgyOTBlNWE1NzZmZDZhMGRhNTE0Y2M5MDc0N2M4YjI5ZTY5";
-    const p2 = "ZGY4ZDU1NTQ3LWNCOGhSQmxkVmY1TXMxTEc=";
-    return Buffer.from(p1 + p2, "base64").toString("utf-8");
-  } catch (e) {
-    return null;
-  }
+  return null;
 };
 
 export const verifyEmailConnection = async () => {

@@ -6,15 +6,22 @@ import Link from "next/link";
 
 const HERO_SLIDES = [
   {
-    title: "",
-    subtitle: "",
+    title: "BUILT DIFFERENT. WORN BY FEW.",
+    subtitle: "Rooted in Strength. Designed to Stand Out.",
     link: "/collections/all",
-    desktopImg: "/hero-light.jpg",
-    mobileImg: "/hero-light.jpg",
+    desktopImg: "/outliers-hero-banner.jpg",
+    mobileImg: "/outliers-hero-banner-mobile.jpg",
   },
   {
-    title: "",
-    subtitle: "",
+    title: "THE OUTLIERS STUDIO",
+    subtitle: "Premium Streetwear & Oversized Apparel",
+    link: "/collections/all",
+    desktopImg: "/hero-light.jpg",
+    mobileImg: "/outliers-hero-banner-mobile.jpg",
+  },
+  {
+    title: "LIMITED EDITION DROPS",
+    subtitle: "For Those Who Refuse to Blend In",
     link: "/collections/all",
     desktopImg: "/hero-dark.png",
     mobileImg: "/hero-dark.png",

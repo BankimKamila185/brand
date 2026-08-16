@@ -243,6 +243,8 @@ export const adminApi = {
   users: {
     list: () => api.get("/api/users/admin?limit=100"),
     updateRole: (id, role) => api.patch(`/api/users/admin/${id}/role`, { role }),
+    update: (id, data) => api.patch(`/api/users/admin/${id}`, data),
+    remove: (id) => api.delete(`/api/users/admin/${id}`),
     createAdmin: (data) => api.post("/api/users/admin", data),
   },
   reviews: {

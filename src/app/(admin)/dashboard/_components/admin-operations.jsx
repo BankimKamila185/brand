@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, RefreshCw, ShieldCheck, Trash2, MapPin, Truck, ShoppingBag, Phone, ArrowLeft, Save, CreditCard, User, Mail, Calendar, X } from "lucide-react";
+import { Check, RefreshCw, ShieldCheck, Trash2, MapPin, Truck, ShoppingBag, Phone, ArrowLeft, Save, CreditCard, User, Mail, Calendar, X, Edit } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 const currency = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
@@ -30,6 +30,15 @@ export function AdminOperations({ type }) {
   const [adminRole, setAdminRole] = useState("ADMIN");
   const [addingAdmin, setAddingAdmin] = useState(false);
   const [adminMsg, setAdminMsg] = useState("");
+
+  // Edit User Modal State
+  const [editingUser, setEditingUser] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editRole, setEditRole] = useState("USER");
+  const [savingUser, setSavingUser] = useState(false);
+  const [editUserMsg, setEditUserMsg] = useState("");
   
   const api = adminApi[type];
   const title = type[0].toUpperCase() + type.slice(1);
@@ -92,11 +101,32 @@ export function AdminOperations({ type }) {
     }
   };
 
+  const handleSaveUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setSavingUser(true);
+    setEditUserMsg("");
+    try {
+      await adminApi.users.update(editingUser.id, {
+        name: editName,
+        email: editEmail,
+        phone: editPhone || undefined,
+        role: editRole,
+      });
+      setEditingUser(null);
+      void load();
+    } catch (err) {
+      setEditUserMsg(err.message || "Failed to update user details.");
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
   const headers =
     type === "orders"
       ? ["Order ID", "Customer", "Date", "Total", "Status", "Tracking"]
       : type === "users"
-      ? ["Member", "Email address", "Phone Number", "Role", "Joined"]
+      ? ["Member", "Email address", "Phone Number", "Role", "Joined", "Actions"]
       : ["Product", "Review", "Rating", "State", "Moderate"];
 
   return (
@@ -218,11 +248,59 @@ export function AdminOperations({ type }) {
                         <td className="text-neutral-600 font-medium">{item.email}</td>
                         <td className="admin-mono text-xs font-semibold text-neutral-700">{phoneNum}</td>
                         <td>
-                          <span className={`admin-status-badge status-${item.role.toLowerCase()}`}>
-                            {item.role}
-                          </span>
+                          <select
+                            value={item.role}
+                            onChange={async (e) => {
+                              const newRole = e.target.value;
+                              try {
+                                await adminApi.users.updateRole(item.id, newRole);
+                                void load();
+                              } catch (err) {
+                                alert(err.message || "Failed to update role");
+                              }
+                            }}
+                            className={`admin-status-badge status-${item.role.toLowerCase()} cursor-pointer outline-none border-0 font-bold`}
+                          >
+                            <option value="USER">USER</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                          </select>
                         </td>
                         <td className="text-xs text-neutral-500">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—"}</td>
+                        <td>
+                          <div className="admin-operation-actions">
+                            <button
+                              className="admin-table-action"
+                              onClick={() => {
+                                setEditingUser(item);
+                                setEditName(item.name || "");
+                                setEditEmail(item.email || "");
+                                setEditPhone(item.phone || "");
+                                setEditRole(item.role || "USER");
+                                setEditUserMsg("");
+                              }}
+                              title="Edit User Access & Info"
+                            >
+                              <Edit className="size-4" />
+                            </button>
+                            <button
+                              className="admin-table-action delete"
+                              onClick={async () => {
+                                if (window.confirm(`Delete user account "${item.email}"?`)) {
+                                  try {
+                                    await adminApi.users.remove(item.id);
+                                    void load();
+                                  } catch (err) {
+                                    alert(err.message || "Failed to delete user");
+                                  }
+                                }
+                              }}
+                              title="Delete User"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   }
@@ -408,6 +486,114 @@ export function AdminOperations({ type }) {
                   className="flex-1 py-3 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer disabled:opacity-50"
                 >
                   {addingAdmin ? "Creating…" : "Create Account"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Details & Access Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-100 flex flex-col gap-5 relative">
+            <button
+              type="button"
+              onClick={() => {
+                setEditingUser(null);
+                setEditUserMsg("");
+              }}
+              className="absolute top-5 right-5 p-2 text-neutral-400 hover:text-neutral-700 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer"
+            >
+              <X className="size-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shadow-md">
+                <Edit className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-neutral-900">
+                  Edit User Access
+                </h3>
+                <p className="text-xs text-neutral-500 font-medium">
+                  Update account info, email, phone & role level.
+                </p>
+              </div>
+            </div>
+
+            {editUserMsg && (
+              <p className="text-xs font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
+                {editUserMsg}
+              </p>
+            )}
+
+            <form onSubmit={handleSaveUser} className="flex flex-col gap-4">
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Full Name
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Full Name"
+                  required
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Email Address
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  placeholder="user@example.com"
+                  required
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Phone Number
+                <input
+                  type="tel"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="Phone Number"
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
+                Role Access Level
+                <select
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value)}
+                  className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors cursor-pointer"
+                >
+                  <option value="USER">USER (Customer)</option>
+                  <option value="ADMIN">ADMIN (Operations & Dashboard)</option>
+                  <option value="SUPER_ADMIN">SUPER_ADMIN (Full Privileges)</option>
+                </select>
+              </label>
+
+              <div className="flex items-center gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingUser(null);
+                    setEditUserMsg("");
+                  }}
+                  className="flex-1 py-3 px-4 rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingUser}
+                  className="flex-1 py-3 px-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {savingUser ? "Saving…" : "Save Changes"}
                 </button>
               </div>
             </form>

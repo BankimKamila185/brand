@@ -5,11 +5,11 @@ import React from "react";
 import Link from "next/link";
 
 const ImageBanner = ({
-  desktopImg = "/linen-banner.png",
-  mobileImg = "/linen-banner.png",
-  title = "LINEN COTTON WEAVES",
-  subtitle = "Elevate your summer wardrobe with premium coordinates and shirts.",
-  buttonText = "SHOP THE COLLECTION",
+  desktopImg = "/outliers-hero-banner.jpg",
+  mobileImg = "/outliers-hero-banner-mobile.jpg",
+  title = "BUILT DIFFERENT. WORN BY FEW.",
+  subtitle = "Rooted in strength. Designed to stand out.",
+  buttonText = "EXPLORE COLLECTION",
   link = "/collections/all",
 }) => {
   return (
