@@ -363,7 +363,7 @@ export default function CheckoutPage() {
       const razorpayOrderId = paymentResponse.order_id || paymentResponse.data?.order_id || paymentResponse.data?.razorpayOrderId;
       const amount = paymentResponse.amount || paymentResponse.data?.amount || amountInPaise;
       const currency = paymentResponse.currency || paymentResponse.data?.currency || "INR";
-      const keyId = paymentResponse.keyId || paymentResponse.data?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const keyId = paymentResponse.keyId || paymentResponse.data?.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TQZvzQsU4iZMFt";
 
       if (!razorpayOrderId) {
         throw new Error("Could not start the Razorpay payment.");

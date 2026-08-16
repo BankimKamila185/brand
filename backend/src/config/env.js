@@ -54,8 +54,14 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z.string().default(""),
 
   // Razorpay
-  RAZORPAY_KEY_ID: z.string().default(""),
-  RAZORPAY_KEY_SECRET: z.string().default(""),
+  RAZORPAY_KEY_ID: z
+    .string()
+    .default("rzp_test_TQZvzQsU4iZMFt")
+    .transform((val) => val || "rzp_test_TQZvzQsU4iZMFt"),
+  RAZORPAY_KEY_SECRET: z
+    .string()
+    .default("qJNk3pITvok3MjIFqIr9gYRm")
+    .transform((val) => val || "qJNk3pITvok3MjIFqIr9gYRm"),
 
   // Frontend
   FRONTEND_URL: z.string().default("http://localhost:3000"),
