@@ -5,7 +5,8 @@ import { ImagePlus, Plus, Trash2, Warehouse, X, Save, Printer, Zap } from "lucid
 import { adminApi } from "@/lib/api";
 import { BarcodePrintModal, BarcodeSVG, generateTOSSKUCode } from "./barcode-print-modal";
 
-const blankVariant = (size = "M") => ({ size, price: "", stock: "0", sku: "" });
+const blankVariant = (size = "M") => ({ size, price: "", comparePrice: "", stock: "0", sku: "" });
+
 const slugify = (value) =>
   value
     .toLowerCase()
@@ -147,6 +148,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
           data.variants.map((v, idx) => ({
             size: v.option1 || v.title,
             price: String(v.price),
+            comparePrice: v.comparePrice ? String(v.comparePrice) : "",
             stock: String(v.inventory?.quantity || 0),
             sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(data.title, v.option1 || v.title, 3432 + idx),
           }))
@@ -304,6 +306,7 @@ function formatError(err) {
         option1: variant.size || "Default",
         sku: (variant.sku && variant.sku.trim()) || generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + idx),
         price: Number(variant.price) || 0,
+        comparePrice: variant.comparePrice ? Number(variant.comparePrice) : null,
         stock: Number(variant.stock) || 0,
         warehouseStocks: [
           { warehouseId, quantity: Number(variant.stock) || 0 },
@@ -776,7 +779,8 @@ function formatError(err) {
             <div>
               <span>Size</span>
               <span>SKU / Code</span>
-              <span>Price (₹)</span>
+              <span>Selling Price (₹)</span>
+              <span>MRP (₹)</span>
               <span>Quantity</span>
               <span />
             </div>
@@ -785,6 +789,7 @@ function formatError(err) {
                 <input
                   value={variant.size}
                   onChange={(e) => updateVariant(index, "size", e.target.value)}
+                  placeholder="Size"
                   required
                 />
                 <div className="flex flex-col gap-1">
@@ -814,16 +819,25 @@ function formatError(err) {
                 </div>
                 <input
                   type="number"
-                  min="1"
+                  min="0"
                   value={variant.price}
                   onChange={(e) => updateVariant(index, "price", e.target.value)}
+                  placeholder="Selling Price"
                   required
+                />
+                <input
+                  type="number"
+                  min="0"
+                  value={variant.comparePrice}
+                  onChange={(e) => updateVariant(index, "comparePrice", e.target.value)}
+                  placeholder="MRP (Original)"
                 />
                 <input
                   type="number"
                   min="0"
                   value={variant.stock}
                   onChange={(e) => updateVariant(index, "stock", e.target.value)}
+                  placeholder="Qty"
                   required
                 />
                 <button
