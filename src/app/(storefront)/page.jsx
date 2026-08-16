@@ -284,9 +284,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* ⑥.5 Campaign Image Banner */}
-        {loading ? <SkCampaignBanner /> : <ImageBanner />}
-
         {/* ⑦ New Arrivals */}
         {loading ? (
           <SkProductRow count={5} />
