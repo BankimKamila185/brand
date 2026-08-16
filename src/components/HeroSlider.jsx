@@ -13,6 +13,13 @@ const HERO_SLIDES = [
     mobileImg: "/outliers-hero-banner-mobile.jpg",
   },
   {
+    title: "TENDENCIAS — OUR T-SHIRTS",
+    subtitle: "Cute designs. Premium comfort. Made for you.",
+    link: "/collections/all",
+    desktopImg: "/tendencias-hero-banner.jpg",
+    mobileImg: "/tendencias-hero-banner-mobile.png",
+  },
+  {
     title: "THE OUTLIERS STUDIO",
     subtitle: "Premium Streetwear & Oversized Apparel",
     link: "/collections/all",
