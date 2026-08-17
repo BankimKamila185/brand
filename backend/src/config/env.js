@@ -38,7 +38,7 @@ const envSchema = z.object({
   SMTP_PASS: z.string().default(""),
   SMTP_FROM: z
     .string()
-    .default("Tevar <support@theoutliersstudio.com>"),
+    .default("The Outliers Studio <hello@theoutliersstudio.com>"),
 
   // Velocity Shipping API
   VELOCITY_BASE_URL: z.string().default("https://shazam.velocity.in"),
