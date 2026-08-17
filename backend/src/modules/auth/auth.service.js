@@ -1,18 +1,18 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { db } from "../../config/database";
-import { env } from "../../config/env";
-import { AppError } from "../../middleware/errorHandler";
+import { db } from "../../config/database.js";
+import { env } from "../../config/env.js";
+import { AppError } from "../../middleware/errorHandler.js";
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from "../../utils/tokens";
+} from "../../utils/tokens.js";
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
-} from "../../utils/email";
-import { logger } from "../../utils/logger";
+} from "../../utils/email.js";
+import { logger } from "../../utils/logger.js";
 import { adminAuth } from "../../config/firebase.js";
 
 export const authService = {

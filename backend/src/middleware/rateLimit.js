@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 // General API rate limit: 100 req / 15 min
 export const generalLimiter = rateLimit({

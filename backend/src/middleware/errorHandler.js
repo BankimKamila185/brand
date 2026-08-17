@@ -2,8 +2,8 @@ import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
 const { JsonWebTokenError, TokenExpiredError } = jwt;
 import { Prisma } from "@prisma/client";
-import { logger } from "../utils/logger";
-import { env } from "../config/env";
+import { logger } from "../utils/logger.js";
+import { env } from "../config/env.js";
 
 export class AppError extends Error {
   constructor(message, statusCode = 500, isOperational = true) {

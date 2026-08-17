@@ -1,14 +1,14 @@
 import { Router } from "express";
 import crypto from "crypto";
 import Razorpay from "razorpay";
-import { db } from "../../config/database";
-import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { optionalAuth } from "../../middleware/auth";
-import { paymentLimiter } from "../../middleware/rateLimit";
-import { sendSuccess } from "../../utils/response";
-import { env } from "../../config/env";
-import { logger } from "../../utils/logger";
-import { sendOrderConfirmationEmail } from "../../utils/email";
+import { db } from "../../config/database.js";
+import { asyncHandler, AppError } from "../../middleware/errorHandler.js";
+import { optionalAuth } from "../../middleware/auth.js";
+import { paymentLimiter } from "../../middleware/rateLimit.js";
+import { sendSuccess } from "../../utils/response.js";
+import { env } from "../../config/env.js";
+import { logger } from "../../utils/logger.js";
+import { sendOrderConfirmationEmail } from "../../utils/email.js";
 
 const router = Router();
 

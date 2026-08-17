@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { env } from "./env";
-import { logger } from "../utils/logger";
+import { env } from "./env.js";
+import { logger } from "../utils/logger.js";
 import crypto from "crypto";
 
 // Initialize S3 Client configured for Cloudflare R2
