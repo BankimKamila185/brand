@@ -460,12 +460,12 @@ export default function ProfilePage() {
   const [settingsError, setSettingsError] = useState("");
   const [settingsSuccess, setSettingsSuccess] = useState("");
 
-  // ── Redirect if not authenticated ─────────────────────────────────────────
+  // ── Redirect strictly if not authenticated ───────────────────────────────
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push("/login?redirect=/profile");
+    if (!authLoading && (!isAuthenticated || !user || (!user.email && !user.phone))) {
+      router.replace("/login?redirect=/profile");
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, user, router]);
 
   // ── Read active tab and order ID from URL on mount ────────────────────────
   useEffect(() => {
@@ -628,46 +628,13 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  // ── Guard ─────────────────────────────────────────────────────────────────
-  if (authLoading) {
+  // ── Guard: Never show profile page to unauthenticated visitors ────────────
+  if (authLoading || !isAuthenticated || !user || (!user.email && !user.phone)) {
     return (
-      <div className="profile-page-loading">
+      <div className="profile-page-loading min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <span className="profile-spinner profile-spinner--lg" />
+        <p className="text-xs text-neutral-400 font-semibold tracking-wide">Redirecting to login…</p>
       </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <>
-        <AnnouncementBar />
-        <Header />
-        <CartDrawer />
-        <main className="min-h-[60vh] flex items-center justify-center px-4 py-16 bg-[#fafafa]">
-          <div className="max-w-md w-full text-center p-8 bg-white border border-neutral-200 rounded-3xl shadow-sm">
-            <div className="w-16 h-16 bg-neutral-100 text-neutral-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <User className="size-8" />
-            </div>
-            <h1 className="text-xl font-extrabold text-neutral-900 mb-2">Sign in to your account</h1>
-            <p className="text-xs text-neutral-500 mb-6">Please log in to view your orders, saved addresses, and profile details.</p>
-            <div className="flex flex-col gap-2.5">
-              <Link
-                href="/login?redirect=/profile"
-                className="w-full py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-colors"
-              >
-                Sign In / Register
-              </Link>
-              <Link
-                href="/"
-                className="w-full py-3 bg-neutral-100 text-neutral-700 rounded-xl text-xs font-bold hover:bg-neutral-200 transition-colors"
-              >
-                Continue Shopping
-              </Link>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </>
     );
   }
 

@@ -21,7 +21,11 @@ export const AuthProvider = ({ children }) => {
   const refreshUser = useCallback(async () => {
     try {
       const res = await authApi.me();
-      if (res.data) setUser(res.data);
+      if (res.data && (res.data.email || res.data.phone)) {
+        setUser(res.data);
+      } else {
+        setUser(null);
+      }
     } catch {
       // No valid session — user is a guest
       setUser(null);
