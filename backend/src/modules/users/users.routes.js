@@ -222,11 +222,19 @@ router.patch(
   }),
 );
 
-// PATCH /api/users/admin/:id — update user details/role/status
+// PATCH /api/users/admin/:id — update user details/role/status (Admin only edits Admin data)
 router.patch(
   "/admin/:id",
   asyncHandler(async (req, res) => {
     const { name, email, phone, role, isActive } = req.body;
+    const targetUser = await db.user.findUnique({ where: { id: req.params["id"] } });
+    if (!targetUser) throw new AppError("User not found", 404);
+
+    // If target user is a customer (USER) and not an admin, block editing their personal details
+    if (targetUser.role === "USER" && (name || email || phone !== undefined) && !role) {
+      throw new AppError("Customer personal details cannot be edited by administrators.", 403);
+    }
+
     const data = {};
     if (name) data.name = name;
     if (email) data.email = email.toLowerCase().trim();

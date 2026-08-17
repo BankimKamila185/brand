@@ -196,6 +196,7 @@ export default function ProductDetailPage({ params }) {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewBody, setReviewBody] = useState("");
+  const [reviewAuthorName, setReviewAuthorName] = useState("");
   const [reviewImages, setReviewImages] = useState([]);
   const [reviewModalImg, setReviewModalImg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -558,7 +559,7 @@ export default function ProductDetailPage({ params }) {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!reviewTitle.trim() || !reviewBody.trim()) {
-      setReviewMsg({ type: "error", text: "Please fill in all fields." });
+      setReviewMsg({ type: "error", text: "Please fill in all required fields." });
       return;
     }
     setSubmitting(true);
@@ -570,14 +571,23 @@ export default function ProductDetailPage({ params }) {
         title: reviewTitle,
         body: reviewBody,
         images: reviewImages,
+        authorName: reviewAuthorName || "Verified Buyer",
       });
-      setReviewMsg({ type: "success", text: "Review submitted! Thank you." });
+      setReviewMsg({ type: "success", text: "Review published live!" });
       setReviewTitle("");
       setReviewBody("");
+      setReviewAuthorName("");
       setReviewRating(5);
       setReviewImages([]);
+      // Reload live reviews immediately in real-time
+      const refreshed = await reviewsApi.list(String(product.id));
+      if (refreshed.success && refreshed.data) {
+        setReviews(refreshed.data.reviews || []);
+        setAvgRating(refreshed.data.avgRating || 0);
+        setTotalReviews(refreshed.data.totalReviews || 0);
+      }
     } catch (err) {
-      setReviewMsg({ type: "error", text: err.message || "Failed to submit." });
+      setReviewMsg({ type: "error", text: err.message || "Failed to submit review." });
     } finally {
       setSubmitting(false);
     }
@@ -821,9 +831,15 @@ export default function ProductDetailPage({ params }) {
 
               {/* Rating */}
               <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 4px 0" }}>
-                <Stars rating={avgRating || 5} size={15} color="#111" />
+                <Stars rating={avgRating || 0} size={15} color="#111" />
                 <span style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>
-                  {totalReviews > 0 ? `${totalReviews} reviews` : "14 reviews"}
+                  {totalReviews > 0 ? (
+                    `${Number(avgRating || 0).toFixed(1)} (${totalReviews} ${totalReviews === 1 ? "review" : "reviews"})`
+                  ) : (
+                    <a href="#reviews" style={{ color: "#888", textDecoration: "underline", fontSize: 12 }}>
+                      No reviews yet • Be the first to review
+                    </a>
+                  )}
                 </span>
               </div>
 
@@ -1168,87 +1184,97 @@ export default function ProductDetailPage({ params }) {
             {/* Write a Review */}
             <div style={{ border: "1px solid #f0f0f0", borderRadius: 8, padding: 28, background: "#fff" }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, textTransform: "uppercase", color: "#111", marginBottom: 20, letterSpacing: "0.04em" }}>Write a Review</h3>
-              {!isAuthenticated ? (
-                <div style={{ textAlign: "center", padding: "20px 0" }}>
-                  <p style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>Log in to share your experience.</p>
-                  <Link href="/login" style={{ display: "inline-block", padding: "10px 24px", background: "#111", color: "#fff", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", borderRadius: 4 }}>
-                    Log In / Sign Up
-                  </Link>
-                </div>
-              ) : (
-                <form onSubmit={handleReviewSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {reviewMsg.text && (
-                    <div style={{ padding: "10px 14px", borderRadius: 4, fontSize: 13, background: reviewMsg.type === "error" ? "#fff0f0" : "#f0fff4", color: reviewMsg.type === "error" ? "#c00" : "#0a6", border: `1px solid ${reviewMsg.type === "error" ? "#fcc" : "#b2f5c8"}` }}>
-                      {reviewMsg.text}
-                    </div>
-                  )}
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>Your Rating</label>
-                    <div style={{ display: "flex", gap: 4, fontSize: 28 }}>
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <button key={s} type="button" style={{ background: "none", border: "none", cursor: "pointer", color: s <= reviewRating ? "#F5A623" : "#e0e0e0", padding: 0, lineHeight: 1, transition: "color 0.1s" }} onClick={() => setReviewRating(s)}>★</button>
-                      ))}
-                    </div>
+              
+              <form onSubmit={handleReviewSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {reviewMsg.text && (
+                  <div style={{ padding: "10px 14px", borderRadius: 4, fontSize: 13, background: reviewMsg.type === "error" ? "#fff0f0" : "#f0fff4", color: reviewMsg.type === "error" ? "#c00" : "#0a6", border: `1px solid ${reviewMsg.type === "error" ? "#fcc" : "#b2f5c8"}` }}>
+                    {reviewMsg.text}
                   </div>
+                )}
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>Your Rating</label>
+                  <div style={{ display: "flex", gap: 4, fontSize: 28 }}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button key={s} type="button" style={{ background: "none", border: "none", cursor: "pointer", color: s <= reviewRating ? "#F5A623" : "#e0e0e0", padding: 0, lineHeight: 1, transition: "color 0.1s" }} onClick={() => setReviewRating(s)}>★</button>
+                    ))}
+                  </div>
+                </div>
+
+                {!isAuthenticated && (
                   <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 6 }}>Title</label>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 6 }}>Your Name</label>
                     <input
                       type="text"
-                      placeholder="Great quality, fits perfectly"
-                      value={reviewTitle}
-                      onChange={(e) => setReviewTitle(e.target.value)}
+                      placeholder="e.g. Rahul Sharma"
+                      value={reviewAuthorName}
+                      onChange={(e) => setReviewAuthorName(e.target.value)}
                       style={{ width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 4, padding: "10px 12px", fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color 0.15s" }}
                       onFocus={(e) => e.currentTarget.style.borderColor = "#111"}
                       onBlur={(e) => e.currentTarget.style.borderColor = "#e8e8e8"}
                     />
                   </div>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 6 }}>Comments</label>
-                    <textarea
-                      rows={4}
-                      placeholder="Share your experience with the product..."
-                      value={reviewBody}
-                      onChange={(e) => setReviewBody(e.target.value)}
-                      style={{ width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 4, padding: "10px 12px", fontSize: 13, outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color 0.15s" }}
-                      onFocus={(e) => e.currentTarget.style.borderColor = "#111"}
-                      onBlur={(e) => e.currentTarget.style.borderColor = "#e8e8e8"}
-                    />
+                )}
+
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 6 }}>Review Headline</label>
+                  <input
+                    type="text"
+                    placeholder="Great quality, fits perfectly"
+                    value={reviewTitle}
+                    onChange={(e) => setReviewTitle(e.target.value)}
+                    required
+                    style={{ width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 4, padding: "10px 12px", fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color 0.15s" }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = "#111"}
+                    onBlur={(e) => e.currentTarget.style.borderColor = "#e8e8e8"}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 6 }}>Comments</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Share your experience with the product..."
+                    value={reviewBody}
+                    onChange={(e) => setReviewBody(e.target.value)}
+                    required
+                    style={{ width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 4, padding: "10px 12px", fontSize: 13, outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color 0.15s" }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = "#111"}
+                    onBlur={(e) => e.currentTarget.style.borderColor = "#e8e8e8"}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>
+                    Upload Photos (Optional - Max 4)
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+                    {reviewImages.map((imgSrc, idx) => (
+                      <div key={idx} style={{ position: "relative", width: 64, height: 64, borderRadius: 6, overflow: "hidden", border: "1px solid #e8e8e8" }}>
+                        <img src={imgSrc} alt={`Review upload ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <button
+                          type="button"
+                          onClick={() => removeReviewImage(idx)}
+                          style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.65)", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                    {reviewImages.length < 4 && (
+                      <label style={{ width: 64, height: 64, borderRadius: 6, border: "1.5px dashed #ccc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#fafafa", color: "#666", fontSize: 11, transition: "all 0.15s" }}>
+                        <span style={{ fontSize: 18, lineHeight: 1 }}>📷</span>
+                        <span style={{ fontSize: 10, marginTop: 4, fontWeight: 600 }}>Add Photo</span>
+                        <input type="file" accept="image/*" multiple onChange={handleReviewImageUpload} style={{ display: "none" }} />
+                      </label>
+                    )}
                   </div>
-                  <div>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 8 }}>
-                      Upload Photos (Optional - Max 4)
-                    </label>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-                      {reviewImages.map((imgSrc, idx) => (
-                        <div key={idx} style={{ position: "relative", width: 64, height: 64, borderRadius: 6, overflow: "hidden", border: "1px solid #e8e8e8" }}>
-                          <img src={imgSrc} alt={`Review upload ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          <button
-                            type="button"
-                            onClick={() => removeReviewImage(idx)}
-                            style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.65)", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                      {reviewImages.length < 4 && (
-                        <label style={{ width: 64, height: 64, borderRadius: 6, border: "1.5px dashed #ccc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#fafafa", color: "#666", fontSize: 11, transition: "all 0.15s" }}>
-                          <span style={{ fontSize: 18, lineHeight: 1 }}>📷</span>
-                          <span style={{ fontSize: 10, marginTop: 4, fontWeight: 600 }}>Add Photo</span>
-                          <input type="file" accept="image/*" multiple onChange={handleReviewImageUpload} style={{ display: "none" }} />
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    style={{ width: "100%", background: "#111", color: "#fff", border: "none", padding: "13px 0", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", cursor: submitting ? "not-allowed" : "pointer", borderRadius: 4, opacity: submitting ? 0.6 : 1, transition: "opacity 0.2s" }}
-                  >
-                    {submitting ? "Submitting…" : "Submit Review"}
-                  </button>
-                </form>
-              )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{ width: "100%", background: "#111", color: "#fff", border: "none", padding: "13px 0", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", cursor: submitting ? "not-allowed" : "pointer", borderRadius: 4, opacity: submitting ? 0.6 : 1, transition: "opacity 0.2s" }}
+                >
+                  {submitting ? "Publishing…" : "Submit Review"}
+                </button>
+              </form>
             </div>
           </div>
 

@@ -168,8 +168,9 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
     : "-Color : Yellow -Casual shirt -Button down collar with placket -Single pocket, long regular sleeves, curved hem...";
 
   const reviewsCount =
-    product.reviewsCount ||
-    Math.floor((product.id ? String(product.id).charCodeAt(0) : 7) % 15 + 5);
+    product.reviewsCount ??
+    product._count?.reviews ??
+    0;
 
   /* ── 1. LIST VIEW CARD ── */
   if (viewMode === "list") {
@@ -429,12 +430,18 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
           </h3>
 
           {/* Ratings & Reviews */}
-          <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-600">
-            <span className="product-card-stars">★★★★★</span>
-            <span className="product-card-review-count">
-              {reviewsCount} reviews
-            </span>
-          </div>
+          {reviewsCount > 0 ? (
+            <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-600">
+              <span className="product-card-stars">★★★★★</span>
+              <span className="product-card-review-count">
+                {reviewsCount} {reviewsCount === 1 ? "review" : "reviews"}
+              </span>
+            </div>
+          ) : (
+            <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-400">
+              <span className="product-card-review-count italic">No reviews yet</span>
+            </div>
+          )}
 
           {/* Price Row */}
           <div className="product-card-price-row flex items-center gap-2">

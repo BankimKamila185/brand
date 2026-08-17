@@ -36,9 +36,12 @@ export function AdminOperations({ type }) {
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
-  const [editRole, setEditRole] = useState("USER");
+  const [editRole, setEditRole] = useState("ADMIN");
   const [savingUser, setSavingUser] = useState(false);
   const [editUserMsg, setEditUserMsg] = useState("");
+
+  // Tabs for Users (Customers vs Administrators)
+  const [userTab, setUserTab] = useState("customers"); // "customers" | "admins"
   
   const api = adminApi[type];
   const title = type[0].toUpperCase() + type.slice(1);
@@ -122,11 +125,23 @@ export function AdminOperations({ type }) {
     }
   };
 
+  const customerUsers = type === "users" ? items.filter((u) => (u.role || "USER") === "USER") : [];
+  const adminUsers = type === "users" ? items.filter((u) => u.role === "ADMIN" || u.role === "SUPER_ADMIN") : [];
+
+  const displayItems =
+    type === "users"
+      ? userTab === "customers"
+        ? customerUsers
+        : adminUsers
+      : items;
+
   const headers =
     type === "orders"
       ? ["Order ID", "Customer", "Date", "Total", "Status", "Tracking"]
       : type === "users"
-      ? ["Member", "Email address", "Phone Number", "Role", "Joined", "Actions"]
+      ? userTab === "customers"
+        ? ["Customer", "Email address", "Phone Number", "Role", "Joined", "Actions"]
+        : ["Administrator", "Email address", "Phone Number", "Admin Role", "Joined", "Actions"]
       : ["Product", "Review", "Rating", "State", "Moderate"];
 
   return (
@@ -153,18 +168,59 @@ export function AdminOperations({ type }) {
         </div>
       </header>
 
+      {/* Users Tabs Sheet Selector */}
+      {type === "users" && (
+        <div className="flex items-center gap-2 p-1.5 bg-neutral-100 rounded-2xl w-fit mb-5 border border-neutral-200/80 shadow-xs">
+          <button
+            type="button"
+            onClick={() => setUserTab("customers")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              userTab === "customers"
+                ? "bg-white text-neutral-900 shadow-sm"
+                : "text-neutral-500 hover:text-neutral-800"
+            }`}
+          >
+            <User className="size-3.5" /> Customers ({customerUsers.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setUserTab("admins")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              userTab === "admins"
+                ? "bg-white text-neutral-900 shadow-sm"
+                : "text-neutral-500 hover:text-neutral-800"
+            }`}
+          >
+            <ShieldCheck className="size-3.5" /> Administrators & Team ({adminUsers.length})
+          </button>
+        </div>
+      )}
+
       <section className="admin-operations-card">
         <header>
           <div>
             <p className="admin-eyebrow">Live queue</p>
-            <h2>{title} queue</h2>
+            <h2>
+              {type === "users"
+                ? userTab === "customers"
+                  ? "Customers Directory"
+                  : "Administrators & Staff"
+                : `${title} queue`}
+            </h2>
           </div>
           <span>
-            <ShieldCheck /> {loading ? "Syncing" : `${items.length} records`}
+            <ShieldCheck /> {loading ? "Syncing" : `${displayItems.length} records`}
           </span>
         </header>
 
         {error && <div className="admin-error-message">{error}</div>}
+
+        {type === "users" && userTab === "customers" && (
+          <div className="bg-[#f0f9ff] border border-[#bae6fd] text-[#0369a1] text-xs font-medium px-4 py-3 rounded-xl mb-5 flex items-center gap-2">
+            <span>🔒</span>
+            <span>Customer personal data is protected and cannot be edited by administrators.</span>
+          </div>
+        )}
 
         {type === "orders" && (
           <div className="bg-[#fff4d8] border border-[#bd7410]/20 text-[#bd7410] text-xs font-semibold px-4 py-3 rounded-xl mb-5 flex items-center gap-2">
@@ -189,8 +245,8 @@ export function AdminOperations({ type }) {
                     Loading {title.toLowerCase()}…
                   </td>
                 </tr>
-              ) : items.length ? (
-                items.map((item) => {
+              ) : displayItems.length ? (
+                displayItems.map((item) => {
                   if (type === "orders") {
                     const trInfo = parseTracking(item.trackingNumber);
                     return (
@@ -237,65 +293,74 @@ export function AdminOperations({ type }) {
 
                   if (type === "users") {
                     const phoneNum = item.phone || item.addresses?.[0]?.phone || "—";
+                    const isCustomer = (item.role || "USER") === "USER";
+
                     return (
                       <tr key={item.id}>
                         <td>
                           <div className="admin-member font-bold text-neutral-900">
-                            <i>{item.name?.slice(0, 1) || "U"}</i>
-                            {item.name || "User"}
+                            <i>{item.name?.slice(0, 1) || (isCustomer ? "C" : "A")}</i>
+                            {item.name || (isCustomer ? "Customer" : "Admin")}
                           </div>
                         </td>
                         <td className="text-neutral-600 font-medium">{item.email}</td>
                         <td className="admin-mono text-xs font-semibold text-neutral-700">{phoneNum}</td>
                         <td>
-                          <select
-                            value={item.role}
-                            onChange={async (e) => {
-                              const newRole = e.target.value;
-                              try {
-                                await adminApi.users.updateRole(item.id, newRole);
-                                void load();
-                              } catch (err) {
-                                alert(err.message || "Failed to update role");
-                              }
-                            }}
-                            className={`admin-status-badge status-${item.role.toLowerCase()} cursor-pointer outline-none border-0 font-bold`}
-                          >
-                            <option value="USER">USER</option>
-                            <option value="ADMIN">ADMIN</option>
-                            <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                          </select>
+                          {isCustomer ? (
+                            <span className="admin-status-badge status-user font-bold">
+                              CUSTOMER
+                            </span>
+                          ) : (
+                            <select
+                              value={item.role}
+                              onChange={async (e) => {
+                                const newRole = e.target.value;
+                                try {
+                                  await adminApi.users.updateRole(item.id, newRole);
+                                  void load();
+                                } catch (err) {
+                                  alert(err.message || "Failed to update role");
+                                }
+                              }}
+                              className={`admin-status-badge status-${item.role.toLowerCase()} cursor-pointer outline-none border-0 font-bold`}
+                            >
+                              <option value="ADMIN">ADMIN</option>
+                              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                            </select>
+                          )}
                         </td>
                         <td className="text-xs text-neutral-500">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "—"}</td>
                         <td>
                           <div className="admin-operation-actions">
-                            <button
-                              className="admin-table-action"
-                              onClick={() => {
-                                setEditingUser(item);
-                                setEditName(item.name || "");
-                                setEditEmail(item.email || "");
-                                setEditPhone(item.phone || "");
-                                setEditRole(item.role || "USER");
-                                setEditUserMsg("");
-                              }}
-                              title="Edit User Access & Info"
-                            >
-                              <Edit className="size-4" />
-                            </button>
+                            {!isCustomer && (
+                              <button
+                                className="admin-table-action"
+                                onClick={() => {
+                                  setEditingUser(item);
+                                  setEditName(item.name || "");
+                                  setEditEmail(item.email || "");
+                                  setEditPhone(item.phone || "");
+                                  setEditRole(item.role || "ADMIN");
+                                  setEditUserMsg("");
+                                }}
+                                title="Edit Admin Profile & Access"
+                              >
+                                <Edit className="size-4" />
+                              </button>
+                            )}
                             <button
                               className="admin-table-action delete"
                               onClick={async () => {
-                                if (window.confirm(`Delete user account "${item.email}"?`)) {
+                                if (window.confirm(`Delete ${isCustomer ? "customer" : "admin"} account "${item.email}"?`)) {
                                   try {
                                     await adminApi.users.remove(item.id);
                                     void load();
                                   } catch (err) {
-                                    alert(err.message || "Failed to delete user");
+                                    alert(err.message || "Failed to delete account");
                                   }
                                 }
                               }}
-                              title="Delete User"
+                              title={`Delete ${isCustomer ? "Customer" : "Admin"}`}
                             >
                               <Trash2 className="size-4" />
                             </button>
@@ -514,10 +579,10 @@ export function AdminOperations({ type }) {
               </div>
               <div>
                 <h3 className="text-lg font-extrabold text-neutral-900">
-                  Edit User Access
+                  Edit Administrator Account
                 </h3>
                 <p className="text-xs text-neutral-500 font-medium">
-                  Update account info, email, phone & role level.
+                  Update admin info, email, phone & privilege level.
                 </p>
               </div>
             </div>
@@ -547,7 +612,7 @@ export function AdminOperations({ type }) {
                   type="email"
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
-                  placeholder="user@example.com"
+                  placeholder="admin@theoutliersstudio.com"
                   required
                   className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors"
                 />
@@ -565,13 +630,12 @@ export function AdminOperations({ type }) {
               </label>
 
               <label className="flex flex-col gap-1 text-xs font-bold text-neutral-700">
-                Role Access Level
+                Admin Role Level
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value)}
                   className="p-3 rounded-xl border border-neutral-300 text-sm outline-none focus:border-neutral-900 transition-colors cursor-pointer"
                 >
-                  <option value="USER">USER (Customer)</option>
                   <option value="ADMIN">ADMIN (Operations & Dashboard)</option>
                   <option value="SUPER_ADMIN">SUPER_ADMIN (Full Privileges)</option>
                 </select>

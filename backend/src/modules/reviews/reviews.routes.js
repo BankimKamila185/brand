@@ -33,10 +33,18 @@ router.get(
 
     if (!productId) throw new AppError("productId query param required", 400);
 
+    // Support looking up by either ID or handle
+    let targetProductId = productId;
+    const foundProd = await db.product.findFirst({
+      where: { OR: [{ id: productId }, { handle: productId }] },
+      select: { id: true },
+    });
+    if (foundProd) targetProductId = foundProd.id;
+
     const [total, reviews] = await Promise.all([
-      db.review.count({ where: { productId, approved: true } }),
+      db.review.count({ where: { productId: targetProductId, approved: true } }),
       db.review.findMany({
-        where: { productId, approved: true },
+        where: { productId: targetProductId, approved: true },
         select: {
           id: true,
           rating: true,
@@ -54,14 +62,18 @@ router.get(
 
     // Compute aggregate rating
     const agg = await db.review.aggregate({
-      where: { productId, approved: true },
+      where: { productId: targetProductId, approved: true },
       _avg: { rating: true },
       _count: { rating: true },
     });
 
     sendSuccess(
       res,
-      { reviews, avgRating: agg._avg.rating, totalReviews: agg._count.rating },
+      {
+        reviews,
+        avgRating: agg._avg.rating || 0,
+        totalReviews: agg._count.rating || 0,
+      },
       "Reviews fetched",
       200,
       buildPaginationMeta(total, page, limit),
@@ -69,43 +81,60 @@ router.get(
   }),
 );
 
-// POST /api/reviews — create (one per product per user)
+// POST /api/reviews — create real-time live review
 router.post(
   "/",
-  authenticate,
-  validate(createReviewSchema),
   asyncHandler(async (req, res) => {
-    const { productId, rating, title, body, images } = req.body;
-    const userId = req.user.sub;
+    const { productId, rating, title, body, images, authorName } = req.body;
+    if (!productId) throw new AppError("Product ID is required", 400);
 
-    const product = await db.product.findUnique({
-      where: { id: productId },
+    // Resolve product by ID or handle
+    const product = await db.product.findFirst({
+      where: { OR: [{ id: productId }, { handle: productId }] },
       select: { id: true },
     });
     if (!product) throw new AppError("Product not found", 404);
 
-    // Check user purchased this product
-    const hasPurchased = await db.orderItem.findFirst({
-      where: {
-        variantId: {
-          in: await db.productVariant
-            .findMany({ where: { productId }, select: { id: true } })
-            .then((v) => v.map((x) => x.id)),
+    // Try finding user if authenticated
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const jwt = (await import("jsonwebtoken")).default;
+        const { env } = await import("../../config/env");
+        const payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
+        userId = payload.sub;
+      } catch (e) {}
+    }
+
+    if (!userId) {
+      const defaultUser = await db.user.findFirst({ select: { id: true } });
+      userId = defaultUser?.id;
+    }
+
+    if (!userId) {
+      // Create guest user record
+      const guest = await db.user.create({
+        data: {
+          name: authorName || "Verified Buyer",
+          email: `buyer_${Date.now()}@theoutliersstudio.com`,
+          passwordHash: "N/A",
+          role: "USER",
         },
-        order: { userId, status: { in: ["DELIVERED", "CONFIRMED"] } },
-      },
-    });
-    // Allow review even without purchase but flag it (optional enforcement)
+      });
+      userId = guest.id;
+    }
 
     const review = await db.review.create({
       data: {
-        productId,
+        productId: product.id,
         userId,
-        rating,
+        rating: Number(rating) || 5,
         title: title || null,
         body: body || null,
         images: Array.isArray(images) ? images : [],
-        approved: !hasPurchased ? false : true, // Auto-approve verified buyers
+        approved: true, // Live immediately in real time!
       },
       select: {
         id: true,
@@ -115,16 +144,11 @@ router.post(
         images: true,
         createdAt: true,
         approved: true,
+        user: { select: { name: true, avatar: true } },
       },
     });
 
-    sendCreated(
-      res,
-      review,
-      review.approved
-        ? "Review submitted successfully"
-        : "Review submitted and pending approval",
-    );
+    sendCreated(res, review, "Review submitted and published live!");
   }),
 );
 
