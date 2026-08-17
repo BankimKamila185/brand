@@ -22,12 +22,12 @@ const envSchema = z.object({
     .string()
     .default("tevar_production_default_jwt_secret_key_32_characters_long_min")
     .transform((val) => val || "tevar_production_default_jwt_secret_key_32_characters_long_min"),
-  JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
+  JWT_ACCESS_EXPIRES_IN: z.string().default("365d").transform((val) => val || "365d"),
   JWT_REFRESH_SECRET: z
     .string()
     .default("tevar_production_default_jwt_refresh_key_32_characters_long_min")
     .transform((val) => val || "tevar_production_default_jwt_refresh_key_32_characters_long_min"),
-  JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+  JWT_REFRESH_EXPIRES_IN: z.string().default("365d").transform((val) => val || "365d"),
 
   // Email (Brevo API Key or SMTP)
   BREVO_API_KEY: z.string().optional(),
