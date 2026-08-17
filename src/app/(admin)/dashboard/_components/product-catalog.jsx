@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PackagePlus, Plus, Printer, QrCode } from "lucide-react";
+import { PackagePlus, Plus, Printer, QrCode, Search, X, AlertCircle } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { ProductBuilder } from "./product-builder";
 import { BarcodePrintModal } from "./barcode-print-modal";
@@ -10,6 +10,8 @@ export function ProductCatalog() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [adding, setAdding] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [printProduct, setPrintProduct] = useState(null);
@@ -47,14 +49,43 @@ export function ProductCatalog() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const visible =
-    selectedCategory === "all"
-      ? products
-      : products.filter(
-          (product) =>
-            product.categoryId === selectedCategory ||
-            product.category?.id === selectedCategory
-        );
+  const visible = products.filter((product) => {
+    // 1. Category filter
+    if (selectedCategory !== "all") {
+      const matchCat =
+        product.categoryId === selectedCategory ||
+        product.category?.id === selectedCategory ||
+        product.category?.name?.toLowerCase() === selectedCategory.toLowerCase() ||
+        product.category?.slug?.toLowerCase() === selectedCategory.toLowerCase();
+      if (!matchCat) return false;
+    }
+
+    // 2. Status filter
+    if (statusFilter === "active" && product.isActive === false) return false;
+    if (statusFilter === "inactive" && product.isActive !== false) return false;
+    if (statusFilter === "out_of_stock") {
+      const totalUnits =
+        product.variants?.reduce(
+          (sum, v) => sum + Number(v.inventory?.quantity || 0),
+          0
+        ) || 0;
+      if (totalUnits > 0) return false;
+    }
+
+    // 3. Search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const matchTitle = (product.title || "").toLowerCase().includes(q);
+      const matchHandle = (product.handle || "").toLowerCase().includes(q);
+      const matchType = (product.productType || "").toLowerCase().includes(q);
+      const matchSku = product.variants?.some((v) =>
+        (v.sku || "").toLowerCase().includes(q)
+      );
+      if (!matchTitle && !matchHandle && !matchType && !matchSku) return false;
+    }
+
+    return true;
+  });
 
   if (adding) {
     return (
@@ -94,6 +125,73 @@ export function ProductCatalog() {
         </button>
       </header>
 
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between my-4">
+        {/* Search Bar */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+          <input
+            type="text"
+            placeholder="Search products by title, SKU, handle..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-9 py-2 rounded-xl border border-neutral-200 bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+            >
+              <X className="size-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Status Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          <button
+            onClick={() => setStatusFilter("all")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === "all"
+                ? "bg-neutral-900 text-white"
+                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            }`}
+          >
+            All Status
+          </button>
+          <button
+            onClick={() => setStatusFilter("active")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === "active"
+                ? "bg-emerald-600 text-white"
+                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setStatusFilter("out_of_stock")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === "out_of_stock"
+                ? "bg-amber-600 text-white"
+                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            }`}
+          >
+            0 Stock
+          </button>
+          <button
+            onClick={() => setStatusFilter("inactive")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === "inactive"
+                ? "bg-neutral-700 text-white"
+                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            }`}
+          >
+            Draft / Inactive
+          </button>
+        </div>
+      </div>
+
       <div className="product-catalog-toolbar">
         <div>
           {["all", ...categories.map((category) => category.id)].map((categoryId) => {
@@ -104,7 +202,7 @@ export function ProductCatalog() {
                 key={categoryId}
                 onClick={() => setSelectedCategory(categoryId)}
               >
-                {categoryId === "all" ? "All products" : category.name}
+                {categoryId === "all" ? "All products" : category?.name || categoryId}
               </button>
             );
           })}
@@ -151,14 +249,21 @@ export function ProductCatalog() {
                 </div>
                 <div className="p-3.5">
                   <h2>{product.title}</h2>
-                  <p>
-                    {product.variants?.length || 0} sizes ·{" "}
-                    {product.variants?.reduce(
-                      (total, variant) => total + Number(variant.inventory?.quantity || 0),
-                      0
-                    ) || 0}{" "}
-                    units
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p>
+                      {product.variants?.length || 0} sizes ·{" "}
+                      {product.variants?.reduce(
+                        (total, variant) => total + Number(variant.inventory?.quantity || 0),
+                        0
+                      ) || 0}{" "}
+                      units
+                    </p>
+                    {(product.variants?.reduce((t, v) => t + Number(v.inventory?.quantity || 0), 0) || 0) <= 0 && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">
+                        0 Stock
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
