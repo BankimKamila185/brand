@@ -45,11 +45,13 @@ export const verifyEmailConnection = async () => {
 
 export const sendEmail = async (options) => {
   const apiKey = getBrevoApiKey();
+  let lastError = null;
+
   // Option 1: Brevo REST API v3 (if Brevo API key is available)
   if (apiKey) {
     try {
       const fromMatch = env.SMTP_FROM.match(/^(.*?)\s*<([^>]+)>$/);
-      const senderName = fromMatch ? fromMatch[1].trim() : "Tevar";
+      const senderName = fromMatch ? fromMatch[1].trim() : "The Outliers Studio";
       const senderEmail = fromMatch ? fromMatch[2].trim() : env.SMTP_FROM;
 
       const response = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -76,8 +78,8 @@ export const sendEmail = async (options) => {
       logger.info(`Email sent via Brevo API to ${options.to}: ${options.subject} (ID: ${data.messageId || "ok"})`);
       return { messageId: data.messageId };
     } catch (error) {
-      logger.error("Failed to send email via Brevo API:", error);
-      throw new Error(`Email delivery failed: ${error.message}`);
+      lastError = error;
+      logger.warn(`Brevo API send failed (${error.message}). Attempting SMTP fallback...`);
     }
   }
 
@@ -93,8 +95,8 @@ export const sendEmail = async (options) => {
     logger.info(`Email sent via SMTP to ${options.to}: ${options.subject} (ID: ${info.messageId || "ok"})`);
     return info;
   } catch (error) {
-    logger.error("Failed to send email via Brevo/SMTP:", error);
-    throw new Error(`Email delivery failed: ${error.message}`);
+    logger.error("Failed to send email via Brevo SMTP:", error);
+    throw new Error(`Email delivery failed: ${lastError ? `${lastError.message} | SMTP: ${error.message}` : error.message}`);
   }
 };
 
