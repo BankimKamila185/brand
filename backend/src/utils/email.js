@@ -43,6 +43,35 @@ export const verifyEmailConnection = async () => {
   return mailer.verify();
 };
 
+let cachedVerifiedSender = null;
+const getVerifiedSender = async (apiKey, preferredSender) => {
+  if (cachedVerifiedSender) return cachedVerifiedSender;
+  try {
+    const res = await fetch("https://api.brevo.com/v3/senders", {
+      headers: { accept: "application/json", "api-key": apiKey },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const senders = data.senders || [];
+      const activeSenders = senders.filter((s) => s.active);
+      const preferred = activeSenders.find(
+        (s) => s.email.toLowerCase() === preferredSender.email.toLowerCase()
+      );
+      if (preferred) {
+        cachedVerifiedSender = { name: preferredSender.name || preferred.name, email: preferred.email };
+        return cachedVerifiedSender;
+      }
+      if (activeSenders.length > 0) {
+        cachedVerifiedSender = { name: preferredSender.name || "The Outliers Studio", email: activeSenders[0].email };
+        return cachedVerifiedSender;
+      }
+    }
+  } catch (err) {
+    logger.warn("Could not fetch Brevo senders list:", err.message);
+  }
+  return preferredSender;
+};
+
 export const sendEmail = async (options) => {
   const apiKey = getBrevoApiKey();
   let lastError = null;
@@ -51,8 +80,13 @@ export const sendEmail = async (options) => {
   if (apiKey) {
     try {
       const fromMatch = env.SMTP_FROM.match(/^(.*?)\s*<([^>]+)>$/);
-      const senderName = fromMatch ? fromMatch[1].trim() : "The Outliers Studio";
-      const senderEmail = fromMatch ? fromMatch[2].trim() : env.SMTP_FROM;
+      const rawSenderName = fromMatch ? fromMatch[1].trim() : "The Outliers Studio";
+      const rawSenderEmail = fromMatch ? fromMatch[2].trim() : env.SMTP_FROM;
+
+      const verifiedSender = await getVerifiedSender(apiKey, {
+        name: rawSenderName,
+        email: rawSenderEmail,
+      });
 
       const response = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
@@ -62,7 +96,7 @@ export const sendEmail = async (options) => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          sender: { name: senderName, email: senderEmail },
+          sender: { name: verifiedSender.name, email: verifiedSender.email },
           to: [{ email: options.to }],
           subject: options.subject,
           htmlContent: options.html,
@@ -75,7 +109,7 @@ export const sendEmail = async (options) => {
         throw new Error(data.message || `Brevo API error ${response.status}`);
       }
 
-      logger.info(`Email sent via Brevo API to ${options.to}: ${options.subject} (ID: ${data.messageId || "ok"})`);
+      logger.info(`Email sent via Brevo API to ${options.to}: ${options.subject} (From: ${verifiedSender.email}, ID: ${data.messageId || "ok"})`);
       return { messageId: data.messageId };
     } catch (error) {
       lastError = error;
