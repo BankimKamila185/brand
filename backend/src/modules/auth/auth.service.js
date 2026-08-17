@@ -268,9 +268,19 @@ export const authService = {
   },
 
   async forgotPassword(data) {
-    const user = await db.user.findUnique({ where: { email: data.email } });
-    // Always return success to prevent email enumeration
-    if (!user) return;
+    const rawEmail = (data.email || "").trim().toLowerCase();
+    if (!rawEmail) return;
+
+    const user = await db.user.findFirst({
+      where: {
+        email: { equals: rawEmail, mode: "insensitive" },
+      },
+    });
+
+    if (!user) {
+      logger.info(`Password reset requested for non-registered email: ${rawEmail}`);
+      return;
+    }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
     const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
@@ -283,9 +293,12 @@ export const authService = {
       },
     });
 
-    sendPasswordResetEmail(user.email, user.name, resetToken).catch((e) =>
-      logger.error("Failed to send password reset email:", e),
-    );
+    try {
+      await sendPasswordResetEmail(user.email, user.name || user.email.split("@")[0], resetToken);
+      logger.info(`Password reset email successfully sent to ${user.email}`);
+    } catch (e) {
+      logger.error(`Failed to send password reset email to ${user.email}:`, e);
+    }
   },
 
   async resetPassword(data) {
