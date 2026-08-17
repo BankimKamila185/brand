@@ -618,61 +618,121 @@ export default function CheckoutPage() {
                   <p className="text-xs text-neutral-500 mb-5">Choose your preferred payment method to complete this order.</p>
 
                   {/* Payment Options Grid */}
-                  <div className="grid grid-cols-1 gap-3.5 mb-6">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px", marginTop: "18px" }}>
                     {/* Option 1: Razorpay Online */}
                     <div
                       onClick={() => setPaymentMode("ONLINE")}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                        paymentMode === "ONLINE"
-                          ? "border-neutral-900 bg-neutral-50/80 shadow-sm"
-                          : "border-neutral-200 bg-white hover:border-neutral-300"
-                      }`}
+                      style={{
+                        padding: "16px 18px",
+                        borderRadius: "14px",
+                        border: paymentMode === "ONLINE" ? "2px solid #111" : "1.5px solid #e2e2e2",
+                        backgroundColor: paymentMode === "ONLINE" ? "#fafafa" : "#ffffff",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "14px",
+                        transition: "all 0.2s ease",
+                        boxShadow: paymentMode === "ONLINE" ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                      }}
                     >
-                      <div className="flex items-start gap-3.5">
-                        <div className={`p-2.5 rounded-xl ${paymentMode === "ONLINE" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700"}`}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            width: "42px",
+                            height: "42px",
+                            borderRadius: "10px",
+                            backgroundColor: paymentMode === "ONLINE" ? "#111" : "#f4f4f4",
+                            color: paymentMode === "ONLINE" ? "#fff" : "#333",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
                           <CreditCard size={20} />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-neutral-900">Pay Online (Razorpay)</h3>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-800">⚡ Instant</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: "14px", fontWeight: 700, color: "#111" }}>Pay Online (Razorpay)</span>
+                            <span style={{ fontSize: "10px", fontWeight: 700, padding: "2px 8px", borderRadius: "12px", backgroundColor: "#e6f9ed", color: "#16a34a" }}>
+                              ⚡ Instant
+                            </span>
                           </div>
-                          <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
-                            UPI (Google Pay, PhonePe, Paytm), Credit / Debit Cards, NetBanking, EMI & Wallets
+                          <p style={{ fontSize: "12px", color: "#666", margin: "3px 0 0", lineHeight: "1.4" }}>
+                            UPI (Google Pay, PhonePe, Paytm), Cards, NetBanking & Wallets
                           </p>
                         </div>
                       </div>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 shrink-0 ${paymentMode === "ONLINE" ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"}`}>
-                        {paymentMode === "ONLINE" && <span className="w-2 h-2 rounded-full bg-white" />}
-                      </div>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "50%",
+                          border: paymentMode === "ONLINE" ? "6px solid #111" : "2px solid #ccc",
+                          backgroundColor: "#fff",
+                          flexShrink: 0,
+                          transition: "border 0.2s ease",
+                        }}
+                      />
                     </div>
 
                     {/* Option 2: Cash on Delivery (COD) */}
                     <div
                       onClick={() => setPaymentMode("COD")}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                        paymentMode === "COD"
-                          ? "border-neutral-900 bg-neutral-50/80 shadow-sm"
-                          : "border-neutral-200 bg-white hover:border-neutral-300"
-                      }`}
+                      style={{
+                        padding: "16px 18px",
+                        borderRadius: "14px",
+                        border: paymentMode === "COD" ? "2px solid #111" : "1.5px solid #e2e2e2",
+                        backgroundColor: paymentMode === "COD" ? "#fafafa" : "#ffffff",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "14px",
+                        transition: "all 0.2s ease",
+                        boxShadow: paymentMode === "COD" ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                      }}
                     >
-                      <div className="flex items-start gap-3.5">
-                        <div className={`p-2.5 rounded-xl ${paymentMode === "COD" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700"}`}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            width: "42px",
+                            height: "42px",
+                            borderRadius: "10px",
+                            backgroundColor: paymentMode === "COD" ? "#111" : "#f4f4f4",
+                            color: paymentMode === "COD" ? "#fff" : "#333",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
                           <Banknote size={20} />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-neutral-900">Cash on Delivery (COD)</h3>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">🚚 Doorstep</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: "14px", fontWeight: 700, color: "#111" }}>Cash on Delivery (COD)</span>
+                            <span style={{ fontSize: "10px", fontWeight: 700, padding: "2px 8px", borderRadius: "12px", backgroundColor: "#eef2ff", color: "#4f46e5" }}>
+                              🚚 Doorstep
+                            </span>
                           </div>
-                          <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
-                            Pay with cash or scan delivery agent UPI QR code when your parcel arrives
+                          <p style={{ fontSize: "12px", color: "#666", margin: "3px 0 0", lineHeight: "1.4" }}>
+                            Pay in cash or scan delivery agent UPI QR code when parcel arrives
                           </p>
                         </div>
                       </div>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 shrink-0 ${paymentMode === "COD" ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"}`}>
-                        {paymentMode === "COD" && <span className="w-2 h-2 rounded-full bg-white" />}
-                      </div>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "50%",
+                          border: paymentMode === "COD" ? "6px solid #111" : "2px solid #ccc",
+                          backgroundColor: "#fff",
+                          flexShrink: 0,
+                          transition: "border 0.2s ease",
+                        }}
+                      />
                     </div>
                   </div>
 
