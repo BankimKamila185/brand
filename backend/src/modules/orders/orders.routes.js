@@ -1,16 +1,16 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../config/database";
-import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate, requireAdmin } from "../../middleware/auth";
-import { validate, validateQuery } from "../../middleware/validate";
+import { db } from "../../config/database.js";
+import { asyncHandler, AppError } from "../../middleware/errorHandler.js";
+import { authenticate, requireAdmin } from "../../middleware/auth.js";
+import { validate, validateQuery } from "../../middleware/validate.js";
 import {
   sendSuccess,
   sendCreated,
   buildPaginationMeta,
-} from "../../utils/response";
-import { sendOrderConfirmationEmail } from "../../utils/email";
-import { logger } from "../../utils/logger";
+} from "../../utils/response.js";
+import { sendOrderConfirmationEmail } from "../../utils/email.js";
+import { logger } from "../../utils/logger.js";
 
 const router = Router();
 router.use(authenticate);
@@ -18,6 +18,7 @@ router.use(authenticate);
 const createOrderSchema = z.object({
   addressId: z.string().min(1),
   couponCode: z.string().optional(),
+  paymentMethod: z.enum(["ONLINE", "COD"]).default("ONLINE").optional(),
   notes: z.string().max(500).optional(),
 });
 
@@ -41,7 +42,7 @@ router.post(
   "/",
   validate(createOrderSchema),
   asyncHandler(async (req, res) => {
-    const { addressId, couponCode, notes } = req.body;
+    const { addressId, couponCode, paymentMethod = "ONLINE", notes } = req.body;
     const userId = req.user.sub;
 
     const order = await db.$transaction(async (tx) => {
@@ -158,6 +159,7 @@ router.post(
       const total = subtotal - discount + shippingCharge;
 
       // Create order
+      const isCod = paymentMethod === "COD";
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -168,6 +170,7 @@ router.post(
           shippingCharge,
           total,
           notes,
+          status: isCod ? "CONFIRMED" : "PENDING",
           items: {
             create: cart.items.map((item) => ({
               variantId: item.variantId,
@@ -179,7 +182,11 @@ router.post(
             })),
           },
           payment: {
-            create: { amount: total, status: "PENDING" },
+            create: {
+              amount: total,
+              status: "PENDING",
+              method: isCod ? "COD" : "RAZORPAY",
+            },
           },
         },
         select: {
@@ -190,9 +197,12 @@ router.post(
           shippingCharge: true,
           total: true,
           createdAt: true,
-          payment: { select: { id: true, status: true } },
+          payment: { select: { id: true, status: true, method: true } },
         },
       });
+
+      // Clear cart items on order placement
+      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
       return newOrder;
     });

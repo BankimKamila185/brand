@@ -13,6 +13,7 @@ import CartDrawer from "@/components/CartDrawer";
 import {
   AlertCircle,
   ArrowLeft,
+  Banknote,
   Check,
   ChevronRight,
   CreditCard,
@@ -22,6 +23,7 @@ import {
   PackageCheck,
   Plus,
   ShieldCheck,
+  Sparkles,
   Tag,
   Trash2,
   Truck,
@@ -56,6 +58,7 @@ export default function CheckoutPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { cart, cartTotal, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
   const [step, setStep] = useState("shipping");
+  const [paymentMode, setPaymentMode] = useState("ONLINE"); // "ONLINE" | "COD"
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const [isAddressLoading, setIsAddressLoading] = useState(false);
@@ -420,9 +423,37 @@ export default function CheckoutPage() {
     }
   };
 
+  const handlePlaceCodOrder = async () => {
+    if (!selectedAddressId) return setStep("shipping");
+    setCheckoutError("");
+    setIsProcessing(true);
+    try {
+      const orderResponse = await ordersApi.create({
+        addressId: selectedAddressId,
+        couponCode: appliedCoupon?.code,
+        paymentMethod: "COD",
+      });
+      if (!orderResponse.success || !orderResponse.data) {
+        throw new Error(orderResponse.message || "Failed to place Cash on Delivery order.");
+      }
+      await clearCart();
+      setCompletedOrder({
+        id: orderResponse.data.id,
+        total,
+        address: selectedAddress,
+        paymentMethod: "COD",
+      });
+    } catch (error) {
+      setCheckoutError(error?.message || "Failed to place Cash on Delivery order. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (authLoading) return <CheckoutFrame><div className="flex flex-1 items-center justify-center py-32"><Loader2 className="animate-spin" /></div></CheckoutFrame>;
 
   if (completedOrder) {
+    const isCod = completedOrder.paymentMethod === "COD";
     return (
       <CheckoutFrame>
         <main className="checkout-v3-main flex-1 py-12 md:py-20">
@@ -431,10 +462,10 @@ export default function CheckoutPage() {
               <header className="checkout-success-header">
                 <PackageCheck className="checkout-success-icon h-16 w-16 text-[#1a9e5d]" />
                 <p className="checkout-v3-eyebrow text-xs font-bold uppercase tracking-wider text-[#1a9e5d] mb-2">
-                Thank you for your order!
+                  Thank you for your order!
                 </p>
                 <h1 className="font-display text-3xl font-extrabold text-neutral-900 tracking-tight leading-tight">
-                  Order placed successfully
+                  {isCod ? "Order Placed (Cash on Delivery)" : "Order placed successfully"}
                 </h1>
                 <p className="checkout-v3-copy text-sm text-neutral-500 mt-3 max-w-md mx-auto">
                   Your order <span className="font-mono font-bold text-neutral-800">#{completedOrder.id.slice(-8).toUpperCase()}</span> has been confirmed. We&apos;ve sent a confirmation email to your registered address.
@@ -473,7 +504,16 @@ export default function CheckoutPage() {
                   {completedOrder.address?.line1}, {completedOrder.address?.city}, {completedOrder.address?.state} {completedOrder.address?.pincode}
                 </p>
                 <p className="text-sm text-neutral-700 pt-2 border-t border-dashed border-neutral-200">
-                  <strong className="text-neutral-500 font-medium">Amount Paid:</strong> <span className="font-bold text-neutral-900">₹{completedOrder.total.toFixed(2)}</span> paid securely with Razorpay
+                  <strong className="text-neutral-500 font-medium">Payment Details:</strong>{" "}
+                  {isCod ? (
+                    <span className="font-bold text-neutral-900">
+                      Cash on Delivery (Pay ₹{completedOrder.total.toFixed(2)} to delivery agent upon arrival)
+                    </span>
+                  ) : (
+                    <span className="font-bold text-neutral-900">
+                      ₹{completedOrder.total.toFixed(2)} paid securely with Razorpay
+                    </span>
+                  )}
                 </p>
               </div>
 
@@ -562,8 +602,123 @@ export default function CheckoutPage() {
             </section><aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /><p className="checkout-v3-aside-note"><ShieldCheck size={15} /> Orders are secured with Razorpay.</p></aside></div>
           ) : (
             <div className="checkout-v3-stage">
-              <section className="checkout-v3-panel checkout-v3-payment"><div className="checkout-v3-delivery"><div><p className="checkout-v3-eyebrow">Delivering to</p><p className="font-bold">{selectedAddress?.name}</p><p>{selectedAddress?.line1}, {selectedAddress?.city}, {selectedAddress?.state} {selectedAddress?.pincode}</p></div><button onClick={() => setStep("shipping")} className="checkout-v3-text-button">Change</button></div><div className="checkout-v3-payment-box"><div className="checkout-v3-icon"><CreditCard size={20} /></div><p className="checkout-v3-eyebrow">Step 02</p><h2>Pay using Razorpay</h2><p>Choose UPI, card, net banking, or a wallet in the secure Razorpay payment window.</p><button disabled={isProcessing} onClick={beginPayment} className="checkout-v3-action checkout-v3-full disabled:opacity-50">{isProcessing ? <Loader2 className="animate-spin" size={17} /> : <Lock size={16} />} {isProcessing ? "Opening Razorpay…" : `Pay ₹${total.toFixed(2)} securely`}</button><div className="checkout-v3-powered"><ShieldCheck size={15} /> Safe payment by Razorpay</div></div></section>
-              <aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /></aside>
+              <section className="checkout-v3-panel checkout-v3-payment">
+                <div className="checkout-v3-delivery">
+                  <div>
+                    <p className="checkout-v3-eyebrow">Delivering to</p>
+                    <p className="font-bold">{selectedAddress?.name}</p>
+                    <p>{selectedAddress?.line1}, {selectedAddress?.city}, {selectedAddress?.state} {selectedAddress?.pincode}</p>
+                  </div>
+                  <button onClick={() => setStep("shipping")} className="checkout-v3-text-button">Change</button>
+                </div>
+
+                <div className="checkout-v3-payment-box text-left">
+                  <p className="checkout-v3-eyebrow">Step 02</p>
+                  <h2 className="text-xl font-extrabold text-neutral-900 mb-1">Select Payment Method</h2>
+                  <p className="text-xs text-neutral-500 mb-5">Choose your preferred payment method to complete this order.</p>
+
+                  {/* Payment Options Grid */}
+                  <div className="grid grid-cols-1 gap-3.5 mb-6">
+                    {/* Option 1: Razorpay Online */}
+                    <div
+                      onClick={() => setPaymentMode("ONLINE")}
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                        paymentMode === "ONLINE"
+                          ? "border-neutral-900 bg-neutral-50/80 shadow-sm"
+                          : "border-neutral-200 bg-white hover:border-neutral-300"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className={`p-2.5 rounded-xl ${paymentMode === "ONLINE" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700"}`}>
+                          <CreditCard size={20} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-neutral-900">Pay Online (Razorpay)</h3>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-800">⚡ Instant</span>
+                          </div>
+                          <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                            UPI (Google Pay, PhonePe, Paytm), Credit / Debit Cards, NetBanking, EMI & Wallets
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 shrink-0 ${paymentMode === "ONLINE" ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"}`}>
+                        {paymentMode === "ONLINE" && <span className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
+                    </div>
+
+                    {/* Option 2: Cash on Delivery (COD) */}
+                    <div
+                      onClick={() => setPaymentMode("COD")}
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                        paymentMode === "COD"
+                          ? "border-neutral-900 bg-neutral-50/80 shadow-sm"
+                          : "border-neutral-200 bg-white hover:border-neutral-300"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className={`p-2.5 rounded-xl ${paymentMode === "COD" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-700"}`}>
+                          <Banknote size={20} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-neutral-900">Cash on Delivery (COD)</h3>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">🚚 Doorstep</span>
+                          </div>
+                          <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                            Pay with cash or scan delivery agent UPI QR code when your parcel arrives
+                          </p>
+                        </div>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 shrink-0 ${paymentMode === "COD" ? "border-neutral-900 bg-neutral-900" : "border-neutral-300"}`}>
+                        {paymentMode === "COD" && <span className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submit CTA */}
+                  {paymentMode === "ONLINE" ? (
+                    <button
+                      disabled={isProcessing}
+                      onClick={beginPayment}
+                      className="checkout-v3-action checkout-v3-full disabled:opacity-50"
+                    >
+                      {isProcessing ? <Loader2 className="animate-spin" size={17} /> : <Lock size={16} />}
+                      {isProcessing ? "Opening Razorpay…" : `Pay ₹${total.toFixed(2)} securely with Razorpay`}
+                    </button>
+                  ) : (
+                    <button
+                      disabled={isProcessing}
+                      onClick={handlePlaceCodOrder}
+                      className="checkout-v3-action checkout-v3-full disabled:opacity-50"
+                      style={{ background: "#1a9e5d", borderColor: "#1a9e5d" }}
+                    >
+                      {isProcessing ? <Loader2 className="animate-spin" size={17} /> : <Check size={16} />}
+                      {isProcessing ? "Placing Order…" : `Confirm Cash on Delivery Order (₹${total.toFixed(2)})`}
+                    </button>
+                  )}
+
+                  <div className="checkout-v3-powered mt-4 text-center">
+                    <ShieldCheck size={15} /> 100% Encrypted & Safe Checkout · The Outliers Studio
+                  </div>
+                </div>
+              </section>
+              <aside className="checkout-v3-aside">
+                <OrderSummary
+                  cart={cart}
+                  subtotal={subtotal}
+                  discountAmount={discountAmount}
+                  shippingCharge={shippingCharge}
+                  total={total}
+                  couponInput={couponInput}
+                  setCouponInput={setCouponInput}
+                  applyCoupon={applyCoupon}
+                  appliedCoupon={appliedCoupon}
+                  removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }}
+                  couponError={couponError}
+                  couponLoading={couponLoading}
+                />
+              </aside>
             </div>
           )}
         </div>
