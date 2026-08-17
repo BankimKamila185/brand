@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { categoriesApi, collectionsApi } from "../lib/api";
+import { categoriesApi, collectionsApi, productsApi } from "../lib/api";
 import Logo from "./Logo";
 import { ChevronRight, X, User, Heart, ShoppingBag, Search, Grid, Tag, Sparkles, LogOut } from "lucide-react";
 
@@ -19,11 +19,51 @@ const Header = ({ onSearch }) => {
   const [drawerTop, setDrawerTop] = useState(78);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [liveResults, setLiveResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [shopExpanded, setShopExpanded] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [collectionsExpanded, setCollectionsExpanded] = useState(false);
   const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
   const [collectionsList, setCollectionsList] = useState(DEFAULT_COLLECTIONS);
+
+  // Debounced live real-time search
+  useEffect(() => {
+    if (!searchOpen || !searchQuery.trim()) {
+      setLiveResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const query = searchQuery.trim();
+        const res = await productsApi.list({ search: query, limit: 6 });
+        if (res.success && Array.isArray(res.data)) {
+          const formatted = res.data.map((p) => ({
+            id: p.id,
+            title: p.title,
+            handle: p.handle,
+            image: p.images?.[0]?.src || p.images?.[0]?.url || "",
+            price: p.variants?.[0]?.price ? Number(p.variants[0].price) : null,
+            comparePrice: p.variants?.[0]?.comparePrice ? Number(p.variants[0].comparePrice) : null,
+            type: p.productType || "Apparel",
+          }));
+          setLiveResults(formatted);
+        } else {
+          setLiveResults([]);
+        }
+      } catch (err) {
+        console.error("Live search error:", err);
+        setLiveResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchOpen]);
 
   // Dynamically calculate main header bottom edge to eliminate any gap above mobile drawer
   useEffect(() => {
@@ -306,6 +346,14 @@ const Header = ({ onSearch }) => {
                   <Link href="/" onClick={closeSearch} className="srch-logo flex-shrink-0">
                     <Logo className="h-10 md:h-12" />
                   </Link>
+                  <button
+                    type="button"
+                    onClick={closeSearch}
+                    className="md:hidden p-2 text-neutral-500 hover:text-neutral-900"
+                    aria-label="Close search"
+                  >
+                    <X className="size-6" />
+                  </button>
                 </div>
 
                 {/* Wide search form */}
@@ -328,46 +376,117 @@ const Header = ({ onSearch }) => {
 
                 {/* Desktop right icons */}
                 <div className="srch-icons hidden md:flex flex-shrink-0">
-                  {user ? (
-                    <Link href="/profile" onClick={closeSearch} className="srch-icon-btn" aria-label="Profile">
-                      <div className="relative">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />
-                      </div>
-                    </Link>
-                  ) : (
-                    <Link href="/login" onClick={closeSearch} className="srch-icon-btn" aria-label="Account">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                    </Link>
-                  )}
-
-                  <Link href="/wishlist" onClick={closeSearch} className="srch-icon-btn relative" aria-label="Wishlist">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                    {wishlist.length > 0 && <span className="badge-count">{wishlist.length}</span>}
-                  </Link>
-
                   <button
-                    className="srch-icon-btn relative"
-                    onClick={() => { closeSearch(); setCartOpen(true); }}
-                    aria-label="Cart"
+                    type="button"
+                    onClick={closeSearch}
+                    className="srch-close-btn cursor-pointer"
+                    aria-label="Close search"
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <path d="M16 10a4 4 0 0 1-8 0" />
-                    </svg>
-                    {cartCount > 0 && <span className="badge-count">{cartCount}</span>}
+                    <X className="size-5" />
                   </button>
                 </div>
 
+              </div>
+
+              {/* ── LIVE REAL-TIME SEARCH RESULTS CONTAINER ── */}
+              <div className="pb-6 max-w-2xl mx-auto w-full px-2">
+                {/* 1. Searching indicator */}
+                {isSearching && (
+                  <div className="py-6 flex items-center justify-center gap-2 text-xs font-semibold text-neutral-500">
+                    <span className="inline-block size-4 border-2 border-neutral-300 border-t-neutral-800 rounded-full animate-spin" />
+                    Searching live products…
+                  </div>
+                )}
+
+                {/* 2. Live Results List */}
+                {!isSearching && searchQuery.trim() !== "" && liveResults.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1 px-1">
+                      <span>Live Products ({liveResults.length})</span>
+                      <span className="text-[11px] text-neutral-400 font-normal lowercase">press Enter for all</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                      {liveResults.map((item) => (
+                        <Link
+                          key={item.id || item.handle}
+                          href={`/products/${item.handle}`}
+                          onClick={closeSearch}
+                          className="flex items-center gap-3 p-2.5 rounded-xl border border-neutral-100 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm transition-all group"
+                        >
+                          <div className="size-14 rounded-lg bg-neutral-200 overflow-hidden flex-shrink-0 border border-neutral-100">
+                            {item.image ? (
+                              <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs text-neutral-400 font-bold">TEVAR</div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-bold text-neutral-900 truncate group-hover:text-black transition-colors">
+                              {item.title}
+                            </h4>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              {item.price !== null && (
+                                <span className="text-xs font-extrabold text-neutral-900">
+                                  ₹{item.price.toLocaleString("en-IN")}.00
+                                </span>
+                              )}
+                              {item.comparePrice && item.comparePrice > item.price && (
+                                <span className="text-[11px] text-neutral-400 line-through">
+                                  ₹{item.comparePrice.toLocaleString("en-IN")}.00
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-neutral-400 font-medium">{item.type}</span>
+                          </div>
+                          <ChevronRight className="size-4 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+
+                    <div className="pt-2 text-center">
+                      <Link
+                        href={`/collections/all?q=${encodeURIComponent(searchQuery.trim())}`}
+                        onClick={closeSearch}
+                        className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-neutral-800 hover:text-black py-2 px-4 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-colors"
+                      >
+                        View all results for &ldquo;{searchQuery}&rdquo; →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Empty Results */}
+                {!isSearching && searchQuery.trim() !== "" && liveResults.length === 0 && (
+                  <div className="py-6 text-center">
+                    <p className="text-sm font-bold text-neutral-700">No products found for &ldquo;{searchQuery}&rdquo;</p>
+                    <p className="text-xs text-neutral-400 mt-1">Try searching for keywords like &ldquo;Tee&rdquo;, &ldquo;Rudra&rdquo;, &ldquo;Oversized&rdquo;, or &ldquo;Acid Wash&rdquo;.</p>
+                  </div>
+                )}
+
+                {/* 4. Trending / Popular Keywords (when input is empty) */}
+                {searchQuery.trim() === "" && (
+                  <div className="flex flex-col gap-2 pt-1">
+                    <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+                      🔥 Trending Searches
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {["Rudra Trishul", "Neel Rudra", "Oversized Tee", "Acid Wash", "Anime Graphics", "Vintage Black"].map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => {
+                            setSearchQuery(tag);
+                            if (onSearch) onSearch(tag);
+                          }}
+                          className="px-3 py-1.5 rounded-full text-xs font-semibold bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 transition-colors cursor-pointer"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
