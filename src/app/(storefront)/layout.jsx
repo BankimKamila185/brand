@@ -2,7 +2,6 @@ import "../globals.css";
 import Script from "next/script";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
-import CountdownGate from "@/components/CountdownGate";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://theoutliersstudio.com";
 const BRAND_ICON_VERSION = "20260804_v4";
@@ -205,7 +204,7 @@ export default function RootLayout({ children }) {
         )}
         <AuthProvider>
           <CartProvider>
-            <CountdownGate>{children}</CountdownGate>
+            {children}
           </CartProvider>
         </AuthProvider>
       </body>
