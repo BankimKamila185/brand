@@ -233,9 +233,9 @@ export default function CartPage() {
                                           <button
                                             key={sz}
                                             type="button"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                              e.stopPropagation();
                                               updateItemSize(item.variantId, sz, item.product);
-                                              setEditingSizeVariantId(null);
                                             }}
                                             className={`cart-size-option ${isCurrent ? "selected" : ""}`}
                                           >

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { db } from "../../config/database";
-import { asyncHandler } from "../../middleware/errorHandler";
-import { authenticate, requireAdmin } from "../../middleware/auth";
-import { sendSuccess } from "../../utils/response";
+import { db } from "../../config/database.js";
+import { asyncHandler } from "../../middleware/errorHandler.js";
+import { authenticate, requireAdmin } from "../../middleware/auth.js";
+import { sendSuccess } from "../../utils/response.js";
 
 const router = Router();
 router.use(authenticate, requireAdmin);

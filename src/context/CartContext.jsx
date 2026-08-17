@@ -307,51 +307,72 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateItemSize = async (oldVariantId, newSize, product) => {
+    if (!newSize) return;
+    const normalizedSize = String(newSize).toUpperCase();
     const variants = product?.variants || [];
-    const newVariant =
-      variants.find(
-        (v) => (v.option1 || v.size || v.title || "").toString().toLowerCase() === newSize.toString().toLowerCase()
-      ) || variants[0];
+    const matchedVariant = variants.find(
+      (v) => (v.option1 || v.size || v.title || "").toString().toUpperCase() === normalizedSize
+    );
 
-    const newVariantId = newVariant ? newVariant.id : oldVariantId;
+    const newVariantId = matchedVariant
+      ? matchedVariant.id
+      : product?.id
+        ? `${product.id}-${normalizedSize}`
+        : `${oldVariantId}-${normalizedSize}`;
 
     setCart((prevCart) => {
-      const existingIndex = prevCart.findIndex((item) => item.variantId === oldVariantId);
+      const existingIndex = prevCart.findIndex(
+        (item) => String(item.variantId) === String(oldVariantId)
+      );
       if (existingIndex === -1) return prevCart;
 
       const currentItem = prevCart[existingIndex];
       const targetQty = currentItem.quantity;
 
       const sameVariantIndex = prevCart.findIndex(
-        (item, idx) => item.variantId === newVariantId && idx !== existingIndex
+        (item, idx) =>
+          String(item.variantId) === String(newVariantId) && idx !== existingIndex
       );
 
-      if (sameVariantIndex > -1 && newVariantId !== oldVariantId) {
+      if (sameVariantIndex > -1 && String(newVariantId) !== String(oldVariantId)) {
         const updated = prevCart.filter((_, idx) => idx !== existingIndex);
         return updated.map((item) =>
-          item.variantId === newVariantId
-            ? { ...item, quantity: Math.min(item.quantity + targetQty, MAX_QTY_PER_ITEM) }
+          String(item.variantId) === String(newVariantId)
+            ? {
+                ...item,
+                selectedSize: normalizedSize,
+                quantity: Math.min(item.quantity + targetQty, MAX_QTY_PER_ITEM),
+              }
             : item
         );
       } else {
         return prevCart.map((item, idx) =>
           idx === existingIndex
-            ? { ...item, variantId: newVariantId, selectedSize: newSize }
+            ? {
+                ...item,
+                variantId: newVariantId,
+                selectedSize: normalizedSize,
+                ...(matchedVariant ? { variant: matchedVariant } : {}),
+              }
             : item
         );
       }
     });
 
-    if (isAuthenticated && newVariantId !== oldVariantId) {
+    if (isAuthenticated && String(newVariantId) !== String(oldVariantId)) {
       try {
         const backendCartRes = await cartApi.get();
         if (backendCartRes.success && backendCartRes.data) {
           const backendItems = backendCartRes.data.items || [];
-          const matchedBackendItem = backendItems.find((bi) => bi.variant.id === oldVariantId);
+          const matchedBackendItem = backendItems.find(
+            (bi) => String(bi.variant.id) === String(oldVariantId)
+          );
           if (matchedBackendItem) {
             await cartApi.removeItem(matchedBackendItem.id);
           }
-          await cartApi.addItem(String(newVariantId), 1);
+          if (matchedVariant?.id) {
+            await cartApi.addItem(String(matchedVariant.id), 1);
+          }
         }
       } catch (e) {
         console.error("Error updating size in backend cart:", e);

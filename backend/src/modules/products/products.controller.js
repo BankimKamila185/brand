@@ -1,10 +1,10 @@
-import { productsService } from "./products.service";
-import { asyncHandler } from "../../middleware/errorHandler";
+import { productsService } from "./products.service.js";
+import { asyncHandler } from "../../middleware/errorHandler.js";
 import {
   sendSuccess,
   sendCreated,
   sendSuccess as sendOk,
-} from "../../utils/response";
+} from "../../utils/response.js";
 
 export const productsController = {
   list: asyncHandler(async (req, res) => {

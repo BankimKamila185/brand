@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../config/database";
-import { optionalAuth } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
+import { db } from "../../config/database.js";
+import { optionalAuth } from "../../middleware/auth.js";
+import { validate } from "../../middleware/validate.js";
 
 const router = Router();
 const warehouseSchema = z.object({

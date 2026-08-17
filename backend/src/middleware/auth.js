@@ -1,6 +1,6 @@
-import { verifyAccessToken } from "../utils/tokens";
-import { AppError } from "./errorHandler";
-import { db } from "../config/database";
+import { verifyAccessToken } from "../utils/tokens.js";
+import { AppError } from "./errorHandler.js";
+import { db } from "../config/database.js";
 
 /**
  * Verifies the JWT access token from:

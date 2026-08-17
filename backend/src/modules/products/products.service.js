@@ -1,7 +1,7 @@
-import { db } from "../../config/database";
-import { AppError } from "../../middleware/errorHandler";
-import { buildPaginationMeta } from "../../utils/response";
-import { uploadBase64ToR2, normalizeR2Url } from "../../config/r2";
+import { db } from "../../config/database.js";
+import { AppError } from "../../middleware/errorHandler.js";
+import { buildPaginationMeta } from "../../utils/response.js";
+import { uploadBase64ToR2, normalizeR2Url } from "../../config/r2.js";
 
 function sanitizeProduct(product) {
   if (!product) return product;

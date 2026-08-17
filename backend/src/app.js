@@ -3,28 +3,28 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import { env } from "./config/env";
-import { logger } from "./utils/logger";
-import { generalLimiter } from "./middleware/rateLimit";
-import { errorHandler } from "./middleware/errorHandler";
+import { env } from "./config/env.js";
+import { logger } from "./utils/logger.js";
+import { generalLimiter } from "./middleware/rateLimit.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Route imports
-import authRoutes from "./modules/auth/auth.routes";
-import productsRoutes from "./modules/products/products.routes";
-import collectionsRoutes from "./modules/collections/collections.routes";
-import categoriesRoutes from "./modules/categories/categories.routes";
-import cartRoutes from "./modules/cart/cart.routes";
-import wishlistRoutes from "./modules/wishlist/wishlist.routes";
-import ordersRoutes from "./modules/orders/orders.routes";
-import paymentsRoutes, { createOrderHandler, verifyPaymentHandler } from "./modules/payments/payments.routes";
-import { optionalAuth } from "./middleware/auth";
-import couponsRoutes from "./modules/coupons/coupons.routes";
-import reviewsRoutes from "./modules/reviews/reviews.routes";
-import usersRoutes from "./modules/users/users.routes";
-import notificationsRoutes from "./modules/notifications/notifications.routes";
-import warehousesRoutes from "./modules/warehouses/warehouses.routes";
-import analyticsRoutes from "./modules/analytics/analytics.routes";
-import shippingRoutes from "./modules/shipping/shipping.routes";
+import authRoutes from "./modules/auth/auth.routes.js";
+import productsRoutes from "./modules/products/products.routes.js";
+import collectionsRoutes from "./modules/collections/collections.routes.js";
+import categoriesRoutes from "./modules/categories/categories.routes.js";
+import cartRoutes from "./modules/cart/cart.routes.js";
+import wishlistRoutes from "./modules/wishlist/wishlist.routes.js";
+import ordersRoutes from "./modules/orders/orders.routes.js";
+import paymentsRoutes, { createOrderHandler, verifyPaymentHandler } from "./modules/payments/payments.routes.js";
+import { optionalAuth } from "./middleware/auth.js";
+import couponsRoutes from "./modules/coupons/coupons.routes.js";
+import reviewsRoutes from "./modules/reviews/reviews.routes.js";
+import usersRoutes from "./modules/users/users.routes.js";
+import notificationsRoutes from "./modules/notifications/notifications.routes.js";
+import warehousesRoutes from "./modules/warehouses/warehouses.routes.js";
+import analyticsRoutes from "./modules/analytics/analytics.routes.js";
+import shippingRoutes from "./modules/shipping/shipping.routes.js";
 
 const createApp = () => {
   const app = express();

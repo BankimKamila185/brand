@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { db } from "../../config/database";
-import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate, requireAdmin } from "../../middleware/auth";
-import { validate, validateQuery } from "../../middleware/validate";
-import { sendSuccess, sendCreated, buildPaginationMeta } from "../../utils/response";
+import { db } from "../../config/database.js";
+import { asyncHandler, AppError } from "../../middleware/errorHandler.js";
+import { authenticate, requireAdmin } from "../../middleware/auth.js";
+import { validate, validateQuery } from "../../middleware/validate.js";
+import { sendSuccess, sendCreated, buildPaginationMeta } from "../../utils/response.js";
 
 const router = Router();
 router.use(authenticate);

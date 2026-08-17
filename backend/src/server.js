@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { env } from "./config/env";
-import createApp from "./app";
-import { db } from "./config/database";
-import { connectRedis, disconnectRedis } from "./config/redis";
-import { logger } from "./utils/logger";
+import { env } from "./config/env.js";
+import createApp from "./app.js";
+import { db } from "./config/database.js";
+import { connectRedis, disconnectRedis } from "./config/redis.js";
+import { logger } from "./utils/logger.js";
 
 const startServer = async () => {
   try {

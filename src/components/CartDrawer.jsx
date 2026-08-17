@@ -285,11 +285,11 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                   <button
                                     key={sizeOpt}
                                     type="button"
-                                    onClick={async () => {
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
                                       if (updateItemSize) {
                                         await updateItemSize(item.variantId, sizeOpt, item.product);
                                       }
-                                      setEditingItemVariantId(null);
                                     }}
                                     className={`cart-size-option ${isCurrent ? "selected" : ""}`}
                                   >

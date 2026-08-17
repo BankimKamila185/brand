@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../config/database";
-import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
-import { sendSuccess, sendCreated } from "../../utils/response";
+import { db } from "../../config/database.js";
+import { asyncHandler, AppError } from "../../middleware/errorHandler.js";
+import { authenticate } from "../../middleware/auth.js";
+import { validate } from "../../middleware/validate.js";
+import { sendSuccess, sendCreated } from "../../utils/response.js";
 
 const router = Router();
 

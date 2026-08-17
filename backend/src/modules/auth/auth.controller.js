@@ -1,10 +1,10 @@
-import { authService } from "./auth.service";
-import { asyncHandler } from "../../middleware/errorHandler";
-import { sendSuccess, sendCreated, sendError } from "../../utils/response";
+import { authService } from "./auth.service.js";
+import { asyncHandler } from "../../middleware/errorHandler.js";
+import { sendSuccess, sendCreated, sendError } from "../../utils/response.js";
 import {
   REFRESH_COOKIE_OPTIONS,
   ACCESS_COOKIE_OPTIONS,
-} from "../../utils/tokens";
+} from "../../utils/tokens.js";
 
 export const authController = {
   register: asyncHandler(async (req, res) => {

@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../config/database";
-import { asyncHandler, AppError } from "../../middleware/errorHandler";
-import { authenticate, requireAdmin } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
+import { db } from "../../config/database.js";
+import { asyncHandler, AppError } from "../../middleware/errorHandler.js";
+import { authenticate, requireAdmin } from "../../middleware/auth.js";
+import { validate } from "../../middleware/validate.js";
 import {
   sendSuccess,
   sendCreated,
   buildPaginationMeta,
-} from "../../utils/response";
+} from "../../utils/response.js";
 
 const router = Router();
 
@@ -102,7 +102,7 @@ router.post(
       try {
         const token = authHeader.split(" ")[1];
         const jwt = (await import("jsonwebtoken")).default;
-        const { env } = await import("../../config/env");
+        const { env } = await import("../../config/env.js");
         const payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
         userId = payload.sub;
       } catch (e) {}

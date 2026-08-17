@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { productsController } from "./products.controller";
-import { validate, validateQuery } from "../../middleware/validate";
-import { authenticate, requireAdmin } from "../../middleware/auth";
+import { productsController } from "./products.controller.js";
+import { validate, validateQuery } from "../../middleware/validate.js";
+import { authenticate, requireAdmin } from "../../middleware/auth.js";
 import {
   createProductSchema,
   updateProductSchema,
   productQuerySchema,
-} from "./products.schema";
+} from "./products.schema.js";
 
 const router = Router();
 
