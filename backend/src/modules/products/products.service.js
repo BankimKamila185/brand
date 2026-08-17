@@ -128,11 +128,12 @@ export const productsService = {
       maxPrice,
       search,
       available,
+      includeInactive,
     } = query;
     const skip = (page - 1) * limit;
 
     const where = {
-      isActive: true,
+      ...(includeInactive ? {} : { isActive: true }),
       ...(category && { category: { slug: category } }),
       ...(collection && {
         collections: { some: { collection: { handle: collection } } },

@@ -31,6 +31,10 @@ export const productQuerySchema = z.object({
     .string()
     .optional()
     .transform((v) => v === "true"),
+  includeInactive: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
 });
 
 export const createProductSchema = z.object({

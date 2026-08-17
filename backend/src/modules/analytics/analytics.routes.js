@@ -189,6 +189,7 @@ router.get(
     let lowStockCount = 0;
     let outOfStockCount = 0;
     for (const p of allProducts) {
+      if (!p.variants || p.variants.length === 0) continue;
       const minQty = Math.min(
         ...p.variants.map((v) => {
           const qty = v.inventory?.quantity ?? 0;

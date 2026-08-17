@@ -143,6 +143,11 @@ export function ProductCatalog() {
                     <PackagePlus />
                   )}
                   <span>{product.category?.name || "Uncategorized"}</span>
+                  {product.isActive === false && (
+                    <span style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Inactive
+                    </span>
+                  )}
                 </div>
                 <div className="p-3.5">
                   <h2>{product.title}</h2>
