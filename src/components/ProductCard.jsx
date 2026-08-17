@@ -274,7 +274,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
 
                 <div className="quickview-details">
                   <div className="quickview-header">
-                    <span className="quickview-vendor">{product.vendor || "TEVAR"}</span>
+                    <span className="quickview-vendor">{product.vendor || "THE OUTLIERS STUDIO"}</span>
                     <h2 className="quickview-title">{product.title}</h2>
 
                     <div className="quickview-price-row">
@@ -512,7 +512,7 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
               {/* Right details panel */}
               <div className="quickview-details">
                 <div className="quickview-header">
-                  <span className="quickview-vendor">{product.vendor || "TEVAR"}</span>
+                  <span className="quickview-vendor">{product.vendor || "THE OUTLIERS STUDIO"}</span>
                   <h2 className="quickview-title">{product.title}</h2>
 
                   <div className="quickview-price-row">

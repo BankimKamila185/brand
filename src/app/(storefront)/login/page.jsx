@@ -169,7 +169,7 @@ function LoginForm() {
       <div className="tevar-login-left hidden md:block">
         <img 
           src="/login-showcase.png" 
-          alt="Tevar Streetwear Showcase" 
+          alt="The Outliers Studio Showcase" 
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Subtle overlay gradient */}
@@ -184,7 +184,7 @@ function LoginForm() {
 
         {/* Slogan Description Overlay at the bottom */}
         <div className="absolute bottom-6 left-6 right-6 z-10 text-white text-[11px] md:text-xs leading-relaxed font-medium bg-black/35 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-lg">
-          Tevar is an online fashion store that provides a variety of clothes, shoes, bags, and accessories for men and women.
+          The Outliers Studio is an exclusive premium apparel house crafted for the bold, featuring limited-edition t-shirts and luxury streetwear.
         </div>
       </div>
 
