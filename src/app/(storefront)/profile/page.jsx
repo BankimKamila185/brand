@@ -97,11 +97,14 @@ function formatDate(dateString) {
 }
 
 function getInitials(name, email) {
-  if (name) {
+  if (name && name.trim()) {
     const parts = name.trim().split(" ");
     return (parts[0][0] + (parts[1]?.[0] || "")).toUpperCase();
   }
-  return email?.[0]?.toUpperCase() || "?";
+  if (email && email.trim()) {
+    return email.trim()[0].toUpperCase();
+  }
+  return "U";
 }
 
 function getTrackingSteps(status) {
@@ -460,7 +463,7 @@ export default function ProfilePage() {
   // ── Redirect if not authenticated ─────────────────────────────────────────
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/");
+      router.push("/login?redirect=/profile");
     }
   }, [authLoading, isAuthenticated, router]);
 
@@ -634,8 +637,41 @@ export default function ProfilePage() {
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated) {
+    return (
+      <>
+        <AnnouncementBar />
+        <Header />
+        <CartDrawer />
+        <main className="min-h-[60vh] flex items-center justify-center px-4 py-16 bg-[#fafafa]">
+          <div className="max-w-md w-full text-center p-8 bg-white border border-neutral-200 rounded-3xl shadow-sm">
+            <div className="w-16 h-16 bg-neutral-100 text-neutral-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <User className="size-8" />
+            </div>
+            <h1 className="text-xl font-extrabold text-neutral-900 mb-2">Sign in to your account</h1>
+            <p className="text-xs text-neutral-500 mb-6">Please log in to view your orders, saved addresses, and profile details.</p>
+            <div className="flex flex-col gap-2.5">
+              <Link
+                href="/login?redirect=/profile"
+                className="w-full py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-colors"
+              >
+                Sign In / Register
+              </Link>
+              <Link
+                href="/"
+                className="w-full py-3 bg-neutral-100 text-neutral-700 rounded-xl text-xs font-bold hover:bg-neutral-200 transition-colors"
+              >
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
+  const displayName = user?.name?.trim() || (user?.email ? user.email.split("@")[0] : "My Account");
   const initials = getInitials(user?.name, user?.email);
   const totalSpend = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
   const deliveredCount = orders.filter((o) => String(o.status).toLowerCase() === "delivered").length;
@@ -661,7 +697,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="profile-mobile-user-info">
                   <h2 className="profile-mobile-user-name">
-                    {user?.name || "My Account"}
+                    {displayName}
                   </h2>
                   <p className="profile-mobile-user-email">{user?.email}</p>
                 </div>
@@ -702,7 +738,7 @@ export default function ProfilePage() {
                 <span>{initials}</span>
               </div>
               <div className="profile-avatar-info">
-                <strong>{user?.name || "Hey there!"}</strong>
+                <strong>{displayName}</strong>
                 <span>{user?.email}</span>
                 {(user?.phone || settingsForm.phone) && (
                   <span className="profile-avatar-phone">
