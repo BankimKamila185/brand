@@ -76,20 +76,14 @@ router.post(
   asyncHandler(async (req, res) => {
     const { variantId, quantity } = req.body;
 
-    // Check variant exists and has stock
+    // Check variant exists
     const variant = await db.productVariant.findUnique({
       where: { id: variantId, isActive: true },
       select: {
         id: true,
-        inventory: { select: { quantity: true, reserved: true } },
       },
     });
     if (!variant) throw new AppError("Product variant not found", 404);
-
-    const available =
-      (variant.inventory?.quantity ?? 0) - (variant.inventory?.reserved ?? 0);
-    if (available < quantity)
-      throw new AppError(`Only ${available} units available`, 400);
 
     let cart = await db.cart.findUnique({ where: { userId: req.user.sub } });
     if (!cart) {
@@ -101,9 +95,7 @@ router.post(
     });
 
     if (existingItem) {
-      const newQty = existingItem.quantity + quantity;
-      if (newQty > available)
-        throw new AppError(`Only ${available} units available`, 400);
+      const newQty = Math.min(10, existingItem.quantity + quantity);
       const updated = await db.cartItem.update({
         where: { id: existingItem.id },
         data: { quantity: newQty },
@@ -112,7 +104,7 @@ router.post(
       sendSuccess(res, updated, "Cart updated");
     } else {
       const item = await db.cartItem.create({
-        data: { cartId: cart.id, variantId, quantity },
+        data: { cartId: cart.id, variantId, quantity: Math.min(10, quantity) },
         select: { id: true, quantity: true, variantId: true },
       });
       sendCreated(res, item, "Item added to cart");

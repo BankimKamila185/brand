@@ -203,97 +203,44 @@ export const CartProvider = ({ children }) => {
   }, [wishlist, isLoaded, isAuthenticated]);
 
   const addToCart = async (product, size, qty = 1) => {
+    if (!product) return;
+    const variants = product.variants || [];
     const variant =
-      product.variants.find((v) => v.title === size || v.option1 === size) ||
-      product.variants[0];
-    const variantId = variant.id;
+      variants.find((v) => v.title === size || v.option1 === size) ||
+      variants[0] ||
+      { id: `${product.id}-${size || "M"}`, title: size || "M", option1: size || "M", price: product.price || 0 };
+    const variantId = variant.id || `${product.id}-${size || "M"}`;
 
-    if (isAuthenticated) {
-      try {
-        await cartApi.addItem(String(variantId), qty);
-        // Refresh cart from backend to get fresh server state
-        const backendCartRes = await cartApi.get();
-        if (backendCartRes.success && backendCartRes.data) {
-          const backendItems = backendCartRes.data.items || [];
-          const formattedCart = backendItems.map((item) => ({
-            product: {
-              id: item.variant.product.id,
-              title: item.variant.product.title,
-              handle: item.variant.product.handle,
-              body_html: "",
-              published_at: "",
-              created_at: "",
-              updated_at: "",
-              vendor: "",
-              product_type: "",
-              tags: [],
-              variants: [
-                {
-                  id: item.variant.id,
-                  title: item.variant.title,
-                  price: item.variant.price,
-                  compare_at_price: item.variant.comparePrice,
-                  option1: item.variant.option1,
-                  option2: item.variant.option2,
-                  option3: null,
-                  sku: null,
-                  requires_shipping: true,
-                  taxable: true,
-                  featured_image: null,
-                  available: true,
-                  grams: 0,
-                  position: 1,
-                  product_id: item.variant.product.id,
-                  created_at: "",
-                  updated_at: "",
-                },
-              ],
-              images:
-                item.variant.product.images?.map((img) => ({
-                  id: img.id || "",
-                  src: img.src,
-                  width: img.width || 0,
-                  height: img.height || 0,
-                  position: img.position || 1,
-                  product_id: item.variant.product.id,
-                  created_at: "",
-                  updated_at: "",
-                  variant_ids: [],
-                })) || [],
-              options: [],
-            },
-            variantId: item.variant.id,
-            quantity: item.quantity,
-            selectedSize: item.variant.option1 || "M",
-          }));
-          setCart(formattedCart);
-        }
-      } catch (e) {
-        console.error("Error adding to backend cart:", e);
-      }
-    } else {
-      setCart((prevCart) => {
-        const existingItemIndex = prevCart.findIndex(
-          (item) => item.variantId === variantId,
+    // Always update local cart state first so UI responds immediately
+    setCart((prevCart) => {
+      const existingItemIndex = prevCart.findIndex(
+        (item) => item.variantId === variantId,
+      );
+
+      if (existingItemIndex > -1) {
+        const newCart = [...prevCart];
+        newCart[existingItemIndex].quantity = Math.min(
+          newCart[existingItemIndex].quantity + qty,
+          MAX_QTY_PER_ITEM,
         );
-
-        if (existingItemIndex > -1) {
-          const newCart = [...prevCart];
-          newCart[existingItemIndex].quantity = Math.min(
-            newCart[existingItemIndex].quantity + qty,
-            MAX_QTY_PER_ITEM,
-          );
-          return newCart;
-        } else {
-          return [
-            ...prevCart,
-            { product, variantId, quantity: Math.min(qty, MAX_QTY_PER_ITEM), selectedSize: size },
-          ];
-        }
-      });
-    }
+        return newCart;
+      } else {
+        return [
+          ...prevCart,
+          { product, variantId, quantity: Math.min(qty, MAX_QTY_PER_ITEM), selectedSize: size || variant.option1 || "M" },
+        ];
+      }
+    });
 
     setCartOpen(true);
+
+    if (isAuthenticated && variant.id && !variant.id.includes("-")) {
+      try {
+        await cartApi.addItem(String(variant.id), qty);
+      } catch (e) {
+        console.error("Error syncing to backend cart:", e);
+      }
+    }
   };
 
   const removeFromCart = async (variantId) => {

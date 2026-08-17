@@ -41,7 +41,7 @@ const mapProduct = (bp) => ({
       price: v.price,
       compare_at_price: v.comparePrice || null,
       available: v.inventory
-        ? (Number(v.inventory.quantity || 0) - Number(v.inventory.reserved || 0)) > 0
+        ? (Number(v.inventory.quantity ?? 1) - Number(v.inventory.reserved ?? 0)) >= 0
         : v.available !== false,
       position: v.position || 1,
       product_id: bp.id,
@@ -550,7 +550,6 @@ export default function ProductDetailPage({ params }) {
     product?.variants[0];
 
   const handleAddToCart = () => {
-    if (!getActiveVariant()?.available) return;
     addToCart(product, selectedSize, quantity);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
