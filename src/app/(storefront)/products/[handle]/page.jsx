@@ -201,6 +201,32 @@ export default function ProductDetailPage({ params }) {
   const [submitting, setSubmitting] = useState(false);
   const [reviewMsg, setReviewMsg] = useState({ type: "", text: "" });
 
+  // Notify Me States
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
+  const [notifyError, setNotifyError] = useState("");
+
+  const handleNotifySubmit = async (e) => {
+    e.preventDefault();
+    if (!notifyEmail.trim()) {
+      setNotifyError("Please enter your email or phone number.");
+      return;
+    }
+    setNotifySubmitting(true);
+    setNotifyError("");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      setNotifySuccess(true);
+      setNotifyEmail("");
+    } catch {
+      setNotifyError("Something went wrong. Please try again.");
+    } finally {
+      setNotifySubmitting(false);
+    }
+  };
+
   // Freeze background page scrolling when Lightbox, Size Guide, or Review photo modal is open
   useEffect(() => {
     if (lightboxOpen || sizeGuideOpen || reviewModalImg) {
@@ -890,7 +916,7 @@ export default function ProductDetailPage({ params }) {
                 </div>
               </div>
 
-              {/* Buy Now or Out of Stock Notice */}
+              {/* Buy Now or Out of Stock Notify */}
               {available ? (
                 <button
                   onClick={() => { addToCart(product, selectedSize, quantity); }}
@@ -907,13 +933,97 @@ export default function ProductDetailPage({ params }) {
                   Buy It Now
                 </button>
               ) : (
-                <div style={{
-                  width: "100%", padding: "12px 16px",
-                  background: "#fff1f0", border: "1px solid #ffccc7",
-                  borderRadius: 4, textAlign: "center",
-                  color: "#cf1322", fontSize: 13, fontWeight: 600
-                }}>
-                  ⚠️ Size {selectedSize} is currently Out of Stock
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
+                  <div style={{
+                    width: "100%", padding: "10px 14px",
+                    background: "#fff1f0", border: "1px solid #ffccc7",
+                    borderRadius: 4, textAlign: "center",
+                    color: "#cf1322", fontSize: 13, fontWeight: 600,
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                  }}>
+                    <span>⚠️</span>
+                    <span>Size {selectedSize} is currently Out of Stock</span>
+                  </div>
+
+                  {!notifyOpen && !notifySuccess && (
+                    <button
+                      type="button"
+                      onClick={() => setNotifyOpen(true)}
+                      style={{
+                        width: "100%", height: 48, fontSize: 13, fontWeight: 700,
+                        letterSpacing: "0.04em", textTransform: "uppercase",
+                        border: "1.5px solid #111", background: "#111", color: "#fff",
+                        cursor: "pointer", borderRadius: 4, transition: "all 0.2s",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#2a2a2a"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "#111"}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                      Notify Me When Available (Size {selectedSize})
+                    </button>
+                  )}
+
+                  {notifyOpen && !notifySuccess && (
+                    <form onSubmit={handleNotifySubmit} style={{
+                      padding: "16px", background: "#fafafa", border: "1.5px solid #111",
+                      borderRadius: 6, display: "flex", flexDirection: "column", gap: 10
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#111" }}>
+                          🔔 Get notified for Size {selectedSize}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setNotifyOpen(false)}
+                          style={{ border: "none", background: "none", cursor: "pointer", fontSize: 18, color: "#888", padding: 0 }}
+                        >×</button>
+                      </div>
+                      <p style={{ fontSize: 12, color: "#666", margin: 0, lineHeight: 1.4 }}>
+                        We will notify you immediately once Size {selectedSize} is restocked.
+                      </p>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input
+                          type="text"
+                          required
+                          value={notifyEmail}
+                          onChange={(e) => setNotifyEmail(e.target.value)}
+                          placeholder="Email or mobile number"
+                          style={{
+                            flex: 1, height: 42, padding: "0 12px", fontSize: 13,
+                            border: "1px solid #ccc", borderRadius: 4, outline: "none"
+                          }}
+                        />
+                        <button
+                          type="submit"
+                          disabled={notifySubmitting}
+                          style={{
+                            height: 42, padding: "0 18px", fontSize: 12, fontWeight: 700,
+                            letterSpacing: "0.05em", textTransform: "uppercase",
+                            background: "#111", color: "#fff", border: "none", borderRadius: 4,
+                            cursor: notifySubmitting ? "not-allowed" : "pointer"
+                          }}
+                        >
+                          {notifySubmitting ? "..." : "Notify Me"}
+                        </button>
+                      </div>
+                      {notifyError && (
+                        <span style={{ fontSize: 11, color: "#cf1322" }}>{notifyError}</span>
+                      )}
+                    </form>
+                  )}
+
+                  {notifySuccess && (
+                    <div style={{
+                      padding: "14px 16px", background: "#f6ffed", border: "1px solid #b7eb8f",
+                      borderRadius: 6, textAlign: "center", color: "#389e0d", fontSize: 13, fontWeight: 600
+                    }}>
+                      ✓ You&rsquo;re on the list! We&rsquo;ll notify you as soon as Size {selectedSize} is back in stock.
+                    </div>
+                  )}
                 </div>
               )}
 
