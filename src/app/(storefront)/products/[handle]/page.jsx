@@ -40,8 +40,9 @@ const mapProduct = (bp) => ({
       option2: v.option2 || null,
       price: v.price,
       compare_at_price: v.comparePrice || null,
-      sku: v.sku || null,
-      available: true,
+      available: v.inventory
+        ? (Number(v.inventory.quantity || 0) - Number(v.inventory.reserved || 0)) > 0
+        : v.available !== false,
       position: v.position || 1,
       product_id: bp.id,
     })) || [],
@@ -818,20 +819,27 @@ export default function ProductDetailPage({ params }) {
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {sizes.map((size) => {
+                      const v = product.variants.find((v) => v.option1 === size || v.title === size);
+                      const isSoldOut = v ? v.available === false : false;
                       const isActive = selectedSize === size;
                       return (
                         <button
-                          className={`pdp-size-option${isActive ? " active" : ""}`}
+                          className={`pdp-size-option${isActive ? " active" : ""}${isSoldOut ? " sold-out" : ""}`}
                           key={size}
                           onClick={() => setSelectedSize(size)}
                           style={{
                             minWidth: 44, height: 44, padding: "0 12px",
                             fontSize: 13, fontWeight: 600,
-                            border: isActive ? "2px solid #111" : "1.5px solid #ddd",
-                            background: isActive ? "#111" : "#fff",
-                            color: isActive ? "#fff" : "#333",
+                            border: isActive
+                              ? (isSoldOut ? "2px solid #555" : "2px solid #111")
+                              : isSoldOut ? "1.5px dashed #ccc" : "1.5px solid #ddd",
+                            background: isActive
+                              ? (isSoldOut ? "#222" : "#111")
+                              : isSoldOut ? "#f8f8f8" : "#fff",
+                            color: isActive ? "#fff" : isSoldOut ? "#aaa" : "#333",
                             cursor: "pointer",
                             borderRadius: 4,
+                            textDecoration: isSoldOut ? "line-through" : "none",
                             transition: "all 0.15s",
                           }}
                         >
@@ -851,13 +859,14 @@ export default function ProductDetailPage({ params }) {
                   <div className="pdp-quantity-control" style={{ display: "flex", alignItems: "center", border: "1.5px solid #ddd", borderRadius: 4, height: 48, overflow: "hidden", flexShrink: 0 }}>
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: "pointer", color: "#333" }}
+                      disabled={!available}
+                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: !available ? "not-allowed" : "pointer", color: !available ? "#ccc" : "#333" }}
                     >−</button>
-                    <span style={{ width: 36, textAlign: "center", fontSize: 14, fontWeight: 600, color: "#111" }}>{quantity}</span>
+                    <span style={{ width: 36, textAlign: "center", fontSize: 14, fontWeight: 600, color: !available ? "#999" : "#111" }}>{quantity}</span>
                     <button
                       onClick={() => setQuantity((prev) => Math.min(MAX_QTY_PER_ITEM, prev + 1))}
-                      disabled={quantity >= MAX_QTY_PER_ITEM}
-                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: quantity >= MAX_QTY_PER_ITEM ? "not-allowed" : "pointer", color: quantity >= MAX_QTY_PER_ITEM ? "#ccc" : "#333" }}
+                      disabled={!available || quantity >= MAX_QTY_PER_ITEM}
+                      style={{ width: 38, height: "100%", border: "none", background: "#fff", fontSize: 18, cursor: (!available || quantity >= MAX_QTY_PER_ITEM) ? "not-allowed" : "pointer", color: (!available || quantity >= MAX_QTY_PER_ITEM) ? "#ccc" : "#333" }}
                     >+</button>
                   </div>
 
@@ -869,20 +878,20 @@ export default function ProductDetailPage({ params }) {
                     style={{
                       flex: 1, height: 48, fontSize: 13, fontWeight: 700,
                       letterSpacing: "0.07em", textTransform: "uppercase",
-                      border: available ? "1.5px solid #111" : "1.5px solid #ccc",
-                      background: addedToCart ? "#1a9e5d" : "#fff",
-                      color: addedToCart ? "#fff" : available ? "#111" : "#bbb",
+                      border: available ? "1.5px solid #111" : "1.5px solid #e0e0e0",
+                      background: !available ? "#f5f5f5" : addedToCart ? "#1a9e5d" : "#fff",
+                      color: !available ? "#999" : addedToCart ? "#fff" : "#111",
                       cursor: available ? "pointer" : "not-allowed",
                       borderRadius: 4, transition: "all 0.2s",
                     }}
                   >
-                    {!available ? "Sold Out" : addedToCart ? "✓ Added!" : "Add to Cart"}
+                    {!available ? "OUT OF STOCK" : addedToCart ? "✓ Added!" : "Add to Cart"}
                   </button>
                 </div>
               </div>
 
-              {/* Buy Now */}
-              {available && (
+              {/* Buy Now or Out of Stock Notice */}
+              {available ? (
                 <button
                   onClick={() => { addToCart(product, selectedSize, quantity); }}
                   className="pdp-buy-now"
@@ -897,6 +906,15 @@ export default function ProductDetailPage({ params }) {
                 >
                   Buy It Now
                 </button>
+              ) : (
+                <div style={{
+                  width: "100%", padding: "12px 16px",
+                  background: "#fff1f0", border: "1px solid #ffccc7",
+                  borderRadius: 4, textAlign: "center",
+                  color: "#cf1322", fontSize: 13, fontWeight: 600
+                }}>
+                  ⚠️ Size {selectedSize} is currently Out of Stock
+                </div>
               )}
 
               {/* Delivery Info */}
