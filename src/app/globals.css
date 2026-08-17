@@ -2740,11 +2740,12 @@ html, body {
 
 @media (max-width: 768px) {
   .hero-slider {
-    height: auto;
     width: 100%;
     aspect-ratio: 9 / 16;
-    min-height: 480px;
-    max-height: 85vh;
+    height: auto;
+    min-height: unset;
+    max-height: unset;
+    overflow: hidden;
   }
 }
 
@@ -2778,6 +2779,7 @@ html, body {
     height: 100%;
     object-fit: cover;
     object-position: center center;
+    display: block;
   }
 }
 
