@@ -134,9 +134,20 @@ export const productsService = {
 
     const where = {
       ...(includeInactive ? {} : { isActive: true }),
-      ...(category && { category: { slug: category } }),
-      ...(collection && {
-        collections: { some: { collection: { handle: collection } } },
+      ...(category && {
+        OR: [
+          { category: { slug: category } },
+          { category: { name: { contains: category.replace(/-/g, " "), mode: "insensitive" } } },
+        ],
+      }),
+      ...(collection && collection !== "all" && {
+        OR: [
+          { collections: { some: { collection: { handle: collection } } } },
+          { category: { slug: collection } },
+          { category: { name: { contains: collection.replace(/-/g, " "), mode: "insensitive" } } },
+          { productType: { contains: collection.replace(/-/g, " "), mode: "insensitive" } },
+          { tags: { hasSome: [collection, collection.replace(/-/g, " ")] } },
+        ],
       }),
       ...(productType && {
         productType: { contains: productType, mode: "insensitive" },

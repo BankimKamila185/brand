@@ -227,9 +227,9 @@ export default function Home() {
         const recDb = extract(recRes);
         const newDb = extract(newRes);
 
-        setTrending(trendDb.length > 0 ? trendDb : (allDb.length > 0 ? allDb.slice(0, 8) : getLocalProductsByCollection("bestsellers", 8)));
-        setRecommends(recDb.length > 0 ? recDb : (allDb.length > 0 ? allDb.slice(8, 13) : getLocalProductsByCollection("outliers-recommends", 5)));
-        setNewArrivals(newDb.length > 0 ? newDb : (allDb.length > 0 ? allDb.slice(13, 18) : getLocalProductsByCollection("whats-new", 5)));
+        setTrending(trendDb.length > 0 ? trendDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("bestsellers", 8)));
+        setRecommends(recDb.length > 0 ? recDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("outliers-recommends", 5)));
+        setNewArrivals(newDb.length > 0 ? newDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("whats-new", 5)));
       } catch (e) {
         console.error("Error fetching backend products, using local data:", e);
         // Fallback to local products
