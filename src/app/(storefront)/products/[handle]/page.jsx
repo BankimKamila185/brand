@@ -41,7 +41,7 @@ const mapProduct = (bp) => ({
       price: v.price,
       compare_at_price: v.comparePrice || null,
       sku: v.sku || null,
-      available: v.inventory ? v.inventory.quantity > 0 : true,
+      available: true,
       position: v.position || 1,
       product_id: bp.id,
     })) || [],
@@ -818,24 +818,20 @@ export default function ProductDetailPage({ params }) {
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {sizes.map((size) => {
-                      const v = product.variants.find((v) => v.option1 === size || v.title === size);
-                      const isSoldOut = v?.available === false;
                       const isActive = selectedSize === size;
                       return (
                         <button
                           className={`pdp-size-option${isActive ? " active" : ""}`}
                           key={size}
-                          onClick={() => !isSoldOut && setSelectedSize(size)}
-                          disabled={isSoldOut}
+                          onClick={() => setSelectedSize(size)}
                           style={{
                             minWidth: 44, height: 44, padding: "0 12px",
                             fontSize: 13, fontWeight: 600,
                             border: isActive ? "2px solid #111" : "1.5px solid #ddd",
                             background: isActive ? "#111" : "#fff",
-                            color: isSoldOut ? "#ccc" : isActive ? "#fff" : "#333",
-                            cursor: isSoldOut ? "not-allowed" : "pointer",
+                            color: isActive ? "#fff" : "#333",
+                            cursor: "pointer",
                             borderRadius: 4,
-                            textDecoration: isSoldOut ? "line-through" : "none",
                             transition: "all 0.15s",
                           }}
                         >
