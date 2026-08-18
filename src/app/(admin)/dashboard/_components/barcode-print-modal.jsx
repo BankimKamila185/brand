@@ -387,7 +387,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
                     {/* ── Composition & Care ── */}
                     <div className="barcode-tag-details-row">
-                      <span className="barcode-tag-composition">100% Cotton · 240 GSM</span>
+                      <span className="barcode-tag-composition">100% Cotton · {/oversize/i.test(productTitle + " " + productType) ? "240" : "220"} GSM</span>
                     </div>
                     <div className="barcode-tag-care-row">
                       {/* Machine Wash */}
