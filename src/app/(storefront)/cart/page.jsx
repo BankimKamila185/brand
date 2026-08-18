@@ -31,15 +31,22 @@ export default function CartPage() {
   const [couponMessage, setCouponMessage] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
+  const [recommendedCoupons, setRecommendedCoupons] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
     const loadRecs = async () => {
       try {
-        const res = await productsApi.list({ limit: 4 });
-        if (res?.success && Array.isArray(res.data?.products || res.data)) {
-          const prods = res.data.products || res.data;
+        const [prodRes, couponRes] = await Promise.all([
+          productsApi.list({ limit: 4 }).catch(() => null),
+          couponsApi.getRecommendations().catch(() => null),
+        ]);
+        if (prodRes?.success && Array.isArray(prodRes.data?.products || prodRes.data)) {
+          const prods = prodRes.data.products || prodRes.data;
           if (isMounted) setRecommendations(prods);
+        }
+        if (couponRes?.success && Array.isArray(couponRes.data)) {
+          if (isMounted) setRecommendedCoupons(couponRes.data);
         }
       } catch (err) {
         console.warn("Could not load cart page recommendations:", err);
@@ -377,6 +384,71 @@ export default function CartPage() {
                       <p className={`text-xs font-medium ${couponMessage.includes("applied") ? "text-green-600" : "text-red-500"}`}>
                         {couponMessage}
                       </p>
+                    )}
+
+                    {/* Available Offers / Recommended Coupons */}
+                    {recommendedCoupons.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-neutral-100 flex flex-col gap-2">
+                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
+                          <Sparkles size={10} className="text-amber-500" /> Available Offers
+                        </span>
+                        <div className="flex flex-col gap-1.5">
+                          {recommendedCoupons.map((c) => {
+                            const isApplied = appliedCoupon?.code === c.code;
+                            return (
+                              <div
+                                key={c.id || c.code}
+                                className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all ${
+                                  isApplied
+                                    ? "bg-emerald-50 border-emerald-300 text-emerald-900"
+                                    : "bg-neutral-50/80 border-neutral-200/80 text-neutral-800 hover:border-neutral-400"
+                                }`}
+                              >
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-extrabold uppercase tracking-wide text-[11px] bg-white px-2 py-0.5 rounded border border-neutral-200">
+                                      {c.code}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-emerald-600">
+                                      {c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`}
+                                    </span>
+                                  </div>
+                                  {c.description && (
+                                    <p className="text-[10px] text-neutral-500 mt-0.5 max-w-[190px] truncate">
+                                      {c.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    setCouponCode(c.code);
+                                    setValidatingCoupon(true);
+                                    try {
+                                      const res = await couponsApi.validate(c.code, cartTotal);
+                                      if (res.success && res.data) {
+                                        setAppliedCoupon(res.data);
+                                        setCouponMessage(`Coupon "${c.code}" applied!`);
+                                      }
+                                    } catch (err) {
+                                      setCouponMessage(err.message || "Could not apply coupon");
+                                    } finally {
+                                      setValidatingCoupon(false);
+                                    }
+                                  }}
+                                  className={`text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                    isApplied
+                                      ? "bg-emerald-600 text-white"
+                                      : "bg-black text-white hover:bg-neutral-800"
+                                  }`}
+                                >
+                                  {isApplied ? "Applied ✓" : "Apply"}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
                   </form>
 

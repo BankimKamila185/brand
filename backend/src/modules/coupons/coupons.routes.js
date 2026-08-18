@@ -26,6 +26,34 @@ const validateCouponSchema = z.object({
   orderTotal: z.number().positive(),
 });
 
+// GET /api/coupons/recommendations — get active recommended coupons to display in the cart
+router.get(
+  "/recommendations",
+  asyncHandler(async (_req, res) => {
+    const coupons = await db.coupon.findMany({
+      where: {
+        isActive: true,
+        OR: [{ startsAt: null }, { startsAt: { lte: new Date() } }],
+        AND: [{ OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }],
+      },
+      select: {
+        id: true,
+        code: true,
+        description: true,
+        discountType: true,
+        value: true,
+        minOrderValue: true,
+        maxDiscount: true,
+        expiresAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+
+    sendSuccess(res, coupons, "Recommended coupons fetched");
+  }),
+);
+
 // POST /api/coupons/validate — check if a coupon is valid (public, for checkout UI)
 router.post(
   "/validate",

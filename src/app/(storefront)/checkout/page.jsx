@@ -68,9 +68,20 @@ export default function CheckoutPage() {
   const [couponInput, setCouponInput] = useState(appliedCoupon?.code || "");
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
+  const [recommendedCoupons, setRecommendedCoupons] = useState([]);
   const [checkoutError, setCheckoutError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    couponsApi.getRecommendations().then((res) => {
+      if (res?.success && Array.isArray(res.data)) {
+        if (isMounted) setRecommendedCoupons(res.data);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     if (appliedCoupon?.code) {
@@ -599,7 +610,7 @@ export default function CheckoutPage() {
               {isAddressLoading ? <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div> : <div className="grid gap-3 md:grid-cols-2">{addresses.map((address) => <button key={address.id} onClick={() => setSelectedAddressId(address.id)} className={`checkout-address text-left ${selectedAddressId === address.id ? "is-selected" : ""}`}><div className="mb-4 flex justify-between"><span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">{address.label}</span>{selectedAddressId === address.id && <Check size={17} />}</div><p className="font-bold">{address.name}</p><p className="mt-1 text-sm leading-relaxed text-neutral-500">{address.line1}{address.line2 ? `, ${address.line2}` : ""}<br />{address.city}, {address.state} — {address.pincode}<br />{address.phone}</p><span onClick={(event) => deleteAddress(address.id, event)} className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-red-600"><Trash2 size={13} /> Remove</span></button>)}</div>}
               {!isAddressLoading && !addresses.length && !showAddressForm && <div className="rounded-xl border border-dashed border-neutral-300 py-10 text-center text-sm text-neutral-500"><MapPin className="mx-auto mb-2 text-neutral-300" />Add your delivery address to continue.</div>}
               <button onClick={continueToPayment} className="checkout-v3-action checkout-v3-full"><span>Continue to payment</span><ChevronRight size={17} /></button>
-            </section><aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} /><p className="checkout-v3-aside-note"><ShieldCheck size={15} /> Orders are secured with Razorpay.</p></aside></div>
+            </section><aside className="checkout-v3-aside"><OrderSummary cart={cart} subtotal={subtotal} discountAmount={discountAmount} shippingCharge={shippingCharge} total={total} couponInput={couponInput} setCouponInput={setCouponInput} applyCoupon={applyCoupon} appliedCoupon={appliedCoupon} removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }} couponError={couponError} couponLoading={couponLoading} recommendedCoupons={recommendedCoupons} /><p className="checkout-v3-aside-note"><ShieldCheck size={15} /> Orders are secured with Razorpay.</p></aside></div>
           ) : (
             <div className="checkout-v3-stage">
               <section className="checkout-v3-panel checkout-v3-payment">
@@ -777,6 +788,7 @@ export default function CheckoutPage() {
                   removeCoupon={() => { setAppliedCoupon(null); setCouponInput(""); }}
                   couponError={couponError}
                   couponLoading={couponLoading}
+                  recommendedCoupons={recommendedCoupons}
                 />
               </aside>
             </div>
@@ -792,7 +804,7 @@ function Input({ label, name, value, onChange, full = false }) {
   return <label className={full ? "md:col-span-2" : ""}><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">{label}</span><input required={!name.includes("line2")} value={value} onChange={(event) => onChange((address) => ({ ...address, [name]: event.target.value }))} className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm outline-none focus:border-black" /></label>;
 }
 
-function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading }) {
+function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading, recommendedCoupons = [] }) {
   return (
     <section className="checkout-v3-order">
       <div className="checkout-v3-order-top">
@@ -824,12 +836,46 @@ function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, tota
       </form>
       {couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}
       {appliedCoupon && (
-        <p className="mt-2 flex items-center justify-between text-xs font-bold text-[#b9ff57]">
+        <p className="mt-2 flex items-center justify-between text-xs font-bold text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
           <span><Tag className="mr-1 inline" size={13} />{appliedCoupon.code} applied</span>
-          <button type="button" onClick={removeCoupon}>Remove</button>
+          <button type="button" onClick={removeCoupon} className="text-red-500 hover:underline">Remove</button>
         </p>
       )}
-      <div className="checkout-v3-totals">
+
+      {/* Available Offers / Recommended Coupons */}
+      {recommendedCoupons.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-neutral-100 flex flex-col gap-1.5">
+          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
+            <Sparkles size={11} className="text-amber-500" /> Available Offers
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {recommendedCoupons.map((c) => {
+              const isApplied = appliedCoupon?.code === c.code;
+              return (
+                <button
+                  key={c.id || c.code}
+                  type="button"
+                  onClick={() => {
+                    setCouponInput(c.code);
+                  }}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all cursor-pointer ${
+                    isApplied
+                      ? "bg-emerald-100 border-emerald-300 text-emerald-800"
+                      : "bg-neutral-100/90 border-neutral-200 text-neutral-700 hover:border-black hover:bg-white"
+                  }`}
+                >
+                  <span className="uppercase">{c.code}</span>
+                  <span className="text-[9px] text-neutral-500">
+                    ({c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="checkout-v3-totals mt-3">
         <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
         {appliedCoupon && discountAmount > 0 && (
           <Row label={`Discount (${appliedCoupon.code})`} value={`-₹${discountAmount.toFixed(2)}`} />

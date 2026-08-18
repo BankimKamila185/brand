@@ -7,7 +7,7 @@ import { adminApi } from "@/lib/api";
 
 const definitions = {
   products: { label: "Products", list: adminApi.products.list, create: adminApi.products.create, update: adminApi.products.update, remove: adminApi.products.remove, fields: ["title", "handle", "price"] },
-  coupons: { label: "Coupons", list: adminApi.coupons.list, create: adminApi.coupons.create, update: adminApi.coupons.update, remove: adminApi.coupons.remove, fields: ["code", "value"] },
+  coupons: { label: "Coupons", list: adminApi.coupons.list, create: adminApi.coupons.create, update: adminApi.coupons.update, remove: adminApi.coupons.remove, fields: ["code", "value", "description"] },
   categories: { label: "Categories", list: adminApi.categories.list, create: adminApi.categories.create, update: adminApi.categories.update, remove: adminApi.categories.remove, fields: ["name", "slug"] },
   collections: { label: "Collections", list: adminApi.collections.list, create: adminApi.collections.create, update: adminApi.collections.update, remove: adminApi.collections.remove, fields: ["name", "handle"] },
 };
@@ -47,7 +47,14 @@ function rowData(resource, form) {
   }
 
   if (resource === "products") return { title: value.title, handle: value.handle || slugify(value.title), variants: [{ title: "Default", price: Number(value.price), stock: 0 }] };
-  if (resource === "coupons") return { code: value.code, discountType: "PERCENTAGE", value: Number(value.value) };
+  if (resource === "coupons") {
+    return {
+      code: value.code ? value.code.trim().toUpperCase() : "",
+      discountType: value.discountType || "PERCENTAGE",
+      value: Number(value.value),
+      description: value.description ? value.description.trim() : null,
+    };
+  }
   return value;
 }
 

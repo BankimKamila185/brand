@@ -188,6 +188,7 @@ export const paymentsApi = {
 export const couponsApi = {
   validate: (code, orderTotal) =>
     api.post("/api/coupons/validate", { code, orderTotal }),
+  getRecommendations: () => api.get("/api/coupons/recommendations"),
 };
 
 export const reviewsApi = {
