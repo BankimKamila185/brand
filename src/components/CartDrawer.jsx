@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart, MAX_QTY_PER_ITEM } from "../context/CartContext";
-import { couponsApi } from "../lib/api";
-import { Truck, Tag, ShoppingBag, ArrowRight, Trash2, ShieldCheck, Pencil, Check } from "lucide-react";
+import { couponsApi, productsApi } from "../lib/api";
+import { Truck, Tag, ShoppingBag, ArrowRight, Trash2, ShieldCheck, Pencil, Check, Sparkles, Plus } from "lucide-react";
 
 const CartDrawer = ({ onCheckoutSimulation }) => {
   const router = useRouter();
@@ -12,6 +12,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     cart,
     cartOpen,
     setCartOpen,
+    addToCart,
     updateQuantity,
     removeFromCart,
     cartTotal,
@@ -21,6 +22,26 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
   const [editingItemVariantId, setEditingItemVariantId] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [couponMessage, setCouponMessage] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
+  const [addingRecId, setAddingRecId] = useState(null);
+
+  // Fetch recommended products
+  useEffect(() => {
+    let isMounted = true;
+    const loadRecs = async () => {
+      try {
+        const res = await productsApi.list({ limit: 8 });
+        if (res?.success && Array.isArray(res.data?.products || res.data)) {
+          const prods = res.data.products || res.data;
+          if (isMounted) setRecommendations(prods);
+        }
+      } catch (err) {
+        console.warn("Could not load cart recommendations:", err);
+      }
+    };
+    loadRecs();
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     if (appliedCoupon?.code) {
@@ -306,6 +327,74 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* ── Cart Recommendations ("Complete Your Look") ── */}
+          {recommendations.length > 0 && (
+            <div className="cart-drawer-recommendations">
+              <div className="cart-drawer-rec-header">
+                <span className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-neutral-900">
+                  <Sparkles size={13} className="text-amber-500" /> Complete Your Look
+                </span>
+                <span className="text-[10px] text-neutral-400 font-medium">Trending</span>
+              </div>
+              <div className="cart-drawer-rec-list">
+                {recommendations
+                  .filter((rec) => !cart.some((c) => c.product?.id === rec.id || c.product?.title === rec.title))
+                  .slice(0, 4)
+                  .map((rec) => {
+                    const recPrice = rec.variants?.[0]?.price || rec.price || 0;
+                    const recImg = rec.images?.[0]?.src || rec.image || "";
+                    const isAdding = addingRecId === rec.id;
+
+                    return (
+                      <div key={rec.id} className="cart-drawer-rec-card">
+                        <div
+                          className="cart-drawer-rec-img-wrap"
+                          onClick={() => {
+                            setCartOpen(false);
+                            router.push(`/products/${rec.handle || rec.id}`);
+                          }}
+                        >
+                          {recImg ? (
+                            <img src={recImg} alt={rec.title} className="cart-drawer-rec-img" />
+                          ) : (
+                            <div className="cart-drawer-rec-img-placeholder">TOS</div>
+                          )}
+                        </div>
+                        <div className="cart-drawer-rec-info">
+                          <h5
+                            className="cart-drawer-rec-title"
+                            onClick={() => {
+                              setCartOpen(false);
+                              router.push(`/products/${rec.handle || rec.id}`);
+                            }}
+                          >
+                            {rec.title}
+                          </h5>
+                          <div className="cart-drawer-rec-bottom">
+                            <span className="cart-drawer-rec-price">₹{Number(recPrice).toLocaleString("en-IN")}</span>
+                            <button
+                              type="button"
+                              disabled={isAdding}
+                              onClick={async () => {
+                                setAddingRecId(rec.id);
+                                const defaultSize = rec.variants?.[0]?.option1 || rec.variants?.[0]?.size || "M";
+                                await addToCart(rec, defaultSize, 1);
+                                setTimeout(() => setAddingRecId(null), 800);
+                              }}
+                              className="cart-drawer-rec-add-btn"
+                              title="Add to Cart"
+                            >
+                              {isAdding ? <Check size={12} className="text-emerald-600" /> : <><Plus size={11} /> Add</>}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           )}
         </div>

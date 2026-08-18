@@ -7,9 +7,10 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import ProductCard from "@/components/ProductCard";
 import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
-import { couponsApi } from "@/lib/api";
-import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown, Pencil, Check } from "lucide-react";
+import { couponsApi, productsApi } from "@/lib/api";
+import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown, Pencil, Check, Sparkles } from "lucide-react";
 import styles from "./page.module.css";
 
 export default function CartPage() {
@@ -29,6 +30,24 @@ export default function CartPage() {
   const [editingSizeVariantId, setEditingSizeVariantId] = useState(null);
   const [couponMessage, setCouponMessage] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadRecs = async () => {
+      try {
+        const res = await productsApi.list({ limit: 4 });
+        if (res?.success && Array.isArray(res.data?.products || res.data)) {
+          const prods = res.data.products || res.data;
+          if (isMounted) setRecommendations(prods);
+        }
+      } catch (err) {
+        console.warn("Could not load cart page recommendations:", err);
+      }
+    };
+    loadRecs();
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     if (appliedCoupon?.code) {
@@ -425,6 +444,35 @@ export default function CartPage() {
             </div>
           )}
         </div>
+
+        {/* ── Recommended Products for You ── */}
+        {recommendations.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6">
+            <div className="flex items-center justify-between mb-8 border-b border-neutral-200/80 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-5 text-amber-500" />
+                <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900 uppercase tracking-tight">
+                  You May Also Like
+                </h2>
+              </div>
+              <Link
+                href="/collections/all"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors"
+              >
+                View All &rarr;
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {recommendations
+                .filter((p) => !cart.some((item) => item.product?.id === p.id || item.product?.title === p.title))
+                .slice(0, 4)
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />
