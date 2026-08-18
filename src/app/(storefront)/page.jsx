@@ -270,19 +270,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* ⑥ Outliers Recommends */}
-        {loading ? (
-          <SkProductRow count={5} />
-        ) : (
-          <section className="container-fluid home-section">
-            <h2 className="section-title">Outliers Recommends</h2>
-            <div className="sk-5col-grid">
-              {recommends.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </section>
-        )}
+        {/* ⑥ Outliers Recommends (Hidden) */}
 
         {/* ⑦ New Arrivals */}
         {loading ? (
