@@ -95,7 +95,7 @@ router.post(
     });
     if (!product) throw new AppError("Product not found", 404);
 
-    // Try finding user if authenticated
+    // Try to identify the authenticated user
     let userId = null;
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -104,23 +104,31 @@ router.post(
         const jwt = (await import("jsonwebtoken")).default;
         const { env } = await import("../../config/env.js");
         const payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
-        userId = payload.sub;
-      } catch (e) {}
+        if (payload.sub) {
+          // Verify the user actually exists in the DB
+          const existingUser = await db.user.findUnique({
+            where: { id: payload.sub },
+            select: { id: true },
+          });
+          if (existingUser) {
+            userId = existingUser.id;
+          }
+        }
+      } catch (e) {
+        // Token invalid/expired — treat as guest
+      }
     }
 
+    // If not authenticated, create a dedicated guest user with the reviewer's name
     if (!userId) {
-      const defaultUser = await db.user.findFirst({ select: { id: true } });
-      userId = defaultUser?.id;
-    }
-
-    if (!userId) {
-      // Create guest user record
+      const guestName = (authorName || "").trim() || "Verified Buyer";
       const guest = await db.user.create({
         data: {
-          name: authorName || "Verified Buyer",
-          email: `buyer_${Date.now()}@theoutliersstudio.com`,
-          passwordHash: "N/A",
+          name: guestName,
+          email: `reviewer_${Date.now()}_${Math.floor(Math.random() * 10000)}@guest.theoutliersstudio.com`,
+          passwordHash: "GUEST_REVIEWER",
           role: "USER",
+          emailVerified: true,
         },
       });
       userId = guest.id;
@@ -134,7 +142,7 @@ router.post(
         title: title || null,
         body: body || null,
         images: Array.isArray(images) ? images : [],
-        approved: true, // Live immediately in real time!
+        approved: true,
       },
       select: {
         id: true,
