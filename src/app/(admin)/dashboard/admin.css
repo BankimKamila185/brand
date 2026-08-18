@@ -811,85 +811,203 @@
   border-color: #18181b;
 }
 
-/* Tag Specifics per User Brand Spec */
-.barcode-tag-brand {
-  font-family: 'Inter', 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 8px !important;
-  font-weight: 600 !important;
-  letter-spacing: 3px !important;
-  color: #666666 !important;
-  text-transform: uppercase;
+/* ── Premium Label Tag Design ──────────────────────────── */
+
+/* Brand Header Strip — black bar at top */
+.barcode-tag-header-strip {
+  background: #18181b;
+  margin: -18px -16px 0;
+  padding: 8px 16px;
+  border-radius: 14px 14px 0 0;
   text-align: center;
-  margin-bottom: 4px;
+  width: calc(100% + 32px);
 }
 
-.barcode-tag-title {
-  font-size: 18px !important;
+.barcode-tag-brand-text {
+  font-family: 'Inter', 'Manrope', system-ui, sans-serif;
+  font-size: 7.5px !important;
   font-weight: 700 !important;
+  letter-spacing: 3.5px !important;
+  color: #ffffff !important;
+  text-transform: uppercase;
+}
+
+/* Product Title */
+.barcode-tag-title {
+  font-size: 15px !important;
+  font-weight: 800 !important;
   color: #18181b;
-  margin: 4px 0 10px;
-  line-height: 1.2;
+  margin: 12px 0 2px;
+  line-height: 1.25;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
+/* Category / Type */
+.barcode-tag-category {
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  color: #71717a !important;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+/* Size & Price Row */
 .barcode-tag-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #18181b;
-  margin: 10px 0 14px;
-  padding: 0 4px;
+  margin: 8px 0 10px;
+  padding: 0 2px;
   background: transparent;
   box-sizing: border-box;
+  gap: 8px;
 }
 
-.barcode-tag-size {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #18181b;
+/* Size Pill */
+.barcode-tag-size-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+.barcode-tag-size-label {
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  color: #a1a1aa !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.barcode-tag-size-value {
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  color: #18181b !important;
+  line-height: 1;
+}
+
+/* Price Block */
+.barcode-tag-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.barcode-tag-mrp {
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  color: #a1a1aa !important;
+  text-decoration: line-through;
+  letter-spacing: 0.02em;
 }
 
 .barcode-tag-price {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #F05A28 !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  color: #18181b !important;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
+/* Composition Row */
+.barcode-tag-details-row {
+  width: 100%;
+  text-align: center;
+  padding: 6px 0 4px;
+  border-top: 1px dashed #e4e4e7;
+  margin-top: 2px;
+}
+
+.barcode-tag-composition {
+  font-size: 8.5px !important;
+  font-weight: 500 !important;
+  color: #71717a !important;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+/* Care Icons Row */
+.barcode-tag-care-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0 6px;
+}
+
+.barcode-care-icon {
+  width: 16px;
+  height: 16px;
+  color: #a1a1aa;
+  flex-shrink: 0;
+}
+
+/* Barcode */
 .barcode-tag-svg {
-  margin: 14px auto 12px;
+  margin: 8px auto 6px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 180px;
-  height: 44px;
+  max-width: 175px;
+  height: 40px;
   overflow: hidden;
 }
 
+/* Footer: SKU + Origin */
+.barcode-tag-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .barcode-sku-box {
-  height: 34px !important;
-  border-radius: 10px !important;
-  background: #FFFFFF !important;
-  border: 1px solid #E7E7E7 !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  background: #fafafa !important;
+  border: 1px solid #e4e4e7 !important;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #18181b !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  color: #3f3f46 !important;
   text-align: center !important;
   box-sizing: border-box;
-  margin-top: 12px;
+  letter-spacing: 0.5px;
+}
+
+.barcode-tag-origin {
+  font-size: 7.5px !important;
+  font-weight: 600 !important;
+  color: #a1a1aa !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.barcode-origin-dot {
+  color: #22c55e;
+  font-size: 6px;
 }
 
 @media print {

@@ -859,7 +859,7 @@ function formatError(err) {
 
       {showBarcodeModal && (
         <BarcodePrintModal
-          product={{ title: title || "Product", variants }}
+          product={{ title: title || "Product", productType, variants }}
           onClose={() => setShowBarcodeModal(false)}
           onUpdateVariants={(updatedVariants) => {
             setVariants((prev) =>

@@ -95,9 +95,10 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
   if (!product) return null;
 
   const productTitle = product.title || "Product";
+  const productType = product.productType || product.product_type || "";
   const rawVariants = product.variants && product.variants.length > 0
     ? product.variants
-    : [{ size: "M", price: product.price || 0, stock: 1, sku: "" }];
+    : [{ size: "M", price: product.price || 0, comparePrice: product.comparePrice || 0, stock: 1, sku: "" }];
 
   // Initialize unique SKUs for variants
   const [variantsList, setVariantsList] = useState(() => {
@@ -115,6 +116,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
       return {
         size: sizeStr,
         price: v.price || 0,
+        comparePrice: v.comparePrice || v.compare_at_price || v.compare_price || 0,
         stock: v.stock || v.inventory?.quantity || 1,
         sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : defaultSKU,
       };
@@ -354,26 +356,61 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               for (let i = 0; i < count; i++) {
                 tags.push(
                   <div key={`${vIdx}-${i}`} className="barcode-sticker-tag">
-                    {/* Brand Name */}
-                    <div className="barcode-tag-brand">• THE OUTLIERS STUDIO •</div>
+                    {/* ── Brand Header Strip ── */}
+                    <div className="barcode-tag-header-strip">
+                      <span className="barcode-tag-brand-text">THE OUTLIERS STUDIO</span>
+                    </div>
                     
-                    {/* Product Name */}
+                    {/* ── Product Title ── */}
                     <div className="barcode-tag-title">{productTitle}</div>
+
+                    {/* ── Category / Type ── */}
+                    {productType && (
+                      <div className="barcode-tag-category">{productType}</div>
+                    )}
                     
-                    {/* Size & Price */}
+                    {/* ── Size & Price Row ── */}
                     <div className="barcode-tag-meta">
-                      <span className="barcode-tag-size">SIZE: {variant.size}</span>
-                      <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
+                      <div className="barcode-tag-size-pill">
+                        <span className="barcode-tag-size-label">SIZE</span>
+                        <span className="barcode-tag-size-value">{variant.size}</span>
+                      </div>
+                      <div className="barcode-tag-price-block">
+                        {Number(variant.comparePrice) > Number(variant.price) && (
+                          <span className="barcode-tag-mrp">
+                            MRP ₹{Number(variant.comparePrice).toLocaleString("en-IN")}
+                          </span>
+                        )}
+                        <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
+                      </div>
                     </div>
 
-                    {/* Barcode Graphic (Code 128) */}
+                    {/* ── Composition & Care ── */}
+                    <div className="barcode-tag-details-row">
+                      <span className="barcode-tag-composition">100% Cotton · 240 GSM</span>
+                    </div>
+                    <div className="barcode-tag-care-row">
+                      {/* Machine Wash */}
+                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="15" rx="3"/><circle cx="12" cy="12" r="4"/></svg>
+                      {/* No Bleach */}
+                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l4 8H8l4-8z"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
+                      {/* Medium Iron */}
+                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 17h14l4-6H7"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
+                      {/* No Tumble Dry */}
+                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="12" cy="12" r="5"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
+                    </div>
+
+                    {/* ── Barcode ── */}
                     <div className="barcode-tag-svg">
-                      <BarcodeSVG value={variant.sku} height={38} barWidth={1.3} />
+                      <BarcodeSVG value={variant.sku} height={36} barWidth={1.2} />
                     </div>
                     
-                    {/* SKU Code Box */}
-                    <div className="barcode-sku-box">
-                      {variant.sku}
+                    {/* ── SKU + Made in India ── */}
+                    <div className="barcode-tag-footer">
+                      <div className="barcode-sku-box">{variant.sku}</div>
+                      <div className="barcode-tag-origin">
+                        <span className="barcode-origin-dot">●</span> Crafted in India
+                      </div>
                     </div>
                   </div>
                 );
