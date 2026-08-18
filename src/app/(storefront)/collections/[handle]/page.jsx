@@ -32,7 +32,7 @@ const COLLECTION_LABELS = {
   "outliers-recommends": "Outliers Recommends",
   winterwear: "Winterwear",
   outerwear: "Outerwear",
-  "whats-new": "New Arrivals",
+  "whats-new": "New Releases",
 };
 
 const SORT_OPTIONS = [

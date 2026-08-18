@@ -272,12 +272,12 @@ export default function Home() {
 
         {/* ⑥ Outliers Recommends (Hidden) */}
 
-        {/* ⑦ New Arrivals */}
+        {/* ⑦ New Releases */}
         {loading ? (
           <SkProductRow count={5} />
         ) : (
           <section className="container-fluid home-section">
-            <h2 className="section-title">New Arrivals</h2>
+            <h2 className="section-title">New Releases</h2>
             <div className="sk-5col-grid">
               {newArrivals.map((product) => (
                 <ProductCard key={product.id} product={product} />

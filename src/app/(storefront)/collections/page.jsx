@@ -52,7 +52,7 @@ const FEATURED_COLLECTIONS = [
   },
   {
     id: "col-6",
-    name: "New Arrivals",
+    name: "New Releases",
     handle: "whats-new",
     description: "The latest seasonal drop fresh off the production floor.",
     imageUrl: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1200&auto=format&fit=crop",

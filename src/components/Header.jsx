@@ -206,7 +206,7 @@ const Header = ({ onSearch }) => {
                         <li><Link href="/collections/bestsellers" className="dropdown-link">Bestseller Clothing</Link></li>
                         <li><Link href="/collections/winterwear" className="dropdown-link">Winterwear</Link></li>
                         <li><Link href="/collections/outerwear" className="dropdown-link">Outerwear</Link></li>
-                        <li><Link href="/collections/whats-new" className="dropdown-link">New Arrival / Trending</Link></li>
+                        <li><Link href="/collections/whats-new" className="dropdown-link">New Releases / Trending</Link></li>
                       </ul>
                     </div>
                   </li>
@@ -602,7 +602,7 @@ const Header = ({ onSearch }) => {
                         {[
                           { label: "Shop All", href: "/collections/all" },
                           { label: "Bestsellers", href: "/collections/bestsellers" },
-                          { label: "What's New", href: "/collections/whats-new" },
+                          { label: "New Releases", href: "/collections/whats-new" },
                           { label: "Winterwear", href: "/collections/winterwear" },
                           { label: "Outerwear", href: "/collections/outerwear" },
                         ].map((item) => (
