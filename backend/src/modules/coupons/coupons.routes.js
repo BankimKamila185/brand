@@ -9,16 +9,16 @@ import { sendSuccess, sendCreated } from "../../utils/response.js";
 const router = Router();
 
 const createCouponSchema = z.object({
-  code: z.string().min(3).max(20).toUpperCase(),
-  description: z.string().optional(),
-  discountType: z.enum(["PERCENTAGE", "FLAT"]),
+  code: z.string().min(2).max(25).toUpperCase(),
+  description: z.string().optional().nullable(),
+  discountType: z.enum(["PERCENTAGE", "FLAT"]).default("PERCENTAGE").optional(),
   value: z.number().positive(),
-  minOrderValue: z.number().positive().optional(),
-  maxDiscount: z.number().positive().optional(),
-  usageLimit: z.number().int().positive().optional(),
-  userLimit: z.number().int().positive().optional(),
-  startsAt: z.string().datetime().optional(),
-  expiresAt: z.string().datetime().optional(),
+  minOrderValue: z.number().positive().optional().nullable(),
+  maxDiscount: z.number().positive().optional().nullable(),
+  usageLimit: z.number().int().positive().optional().nullable(),
+  userLimit: z.number().int().positive().optional().nullable(),
+  startsAt: z.string().optional().nullable(),
+  expiresAt: z.string().optional().nullable(),
 });
 
 const validateCouponSchema = z.object({
