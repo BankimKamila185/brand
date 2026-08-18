@@ -81,11 +81,11 @@ router.get(
   }),
 );
 
-// POST /api/reviews — create real-time live review
+// POST /api/reviews — create real-time live review (strictly requires user login)
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { productId, rating, title, body, images, authorName } = req.body;
+    const { productId, rating, title, body, images } = req.body;
     if (!productId) throw new AppError("Product ID is required", 400);
 
     // Resolve product by ID or handle
@@ -95,43 +95,39 @@ router.post(
     });
     if (!product) throw new AppError("Product not found", 404);
 
-    // Try to identify the authenticated user
+    // Strictly authenticate the user
     let userId = null;
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      try {
-        const token = authHeader.split(" ")[1];
-        const jwt = (await import("jsonwebtoken")).default;
-        const { env } = await import("../../config/env.js");
-        const payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
-        if (payload.sub) {
-          // Verify the user actually exists in the DB
-          const existingUser = await db.user.findUnique({
-            where: { id: payload.sub },
-            select: { id: true },
-          });
-          if (existingUser) {
-            userId = existingUser.id;
-          }
-        }
-      } catch (e) {
-        // Token invalid/expired — treat as guest
+    let token = null;
+
+    if (req.cookies?.access_token) {
+      token = req.cookies.access_token;
+    } else {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.slice(7);
       }
     }
 
-    // If not authenticated, create a dedicated guest user with the reviewer's name
+    if (token) {
+      try {
+        const { verifyAccessToken } = await import("../../utils/tokens.js");
+        const payload = verifyAccessToken(token);
+        if (payload?.sub) {
+          const user = await db.user.findUnique({
+            where: { id: payload.sub },
+            select: { id: true, isActive: true },
+          });
+          if (user && user.isActive) {
+            userId = user.id;
+          }
+        }
+      } catch (e) {
+        // Invalid or expired token
+      }
+    }
+
     if (!userId) {
-      const guestName = (authorName || "").trim() || "Verified Buyer";
-      const guest = await db.user.create({
-        data: {
-          name: guestName,
-          email: `reviewer_${Date.now()}_${Math.floor(Math.random() * 10000)}@guest.theoutliersstudio.com`,
-          passwordHash: "GUEST_REVIEWER",
-          role: "USER",
-          emailVerified: true,
-        },
-      });
-      userId = guest.id;
+      throw new AppError("Please log in to your account to write a review.", 401);
     }
 
     const review = await db.review.create({
