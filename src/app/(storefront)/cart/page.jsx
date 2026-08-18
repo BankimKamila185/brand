@@ -131,16 +131,14 @@ export default function CartPage() {
                   <div className="flex items-center justify-between text-xs font-bold text-neutral-800">
                     <span className="flex items-center gap-2">
                       <Truck className="size-4 text-neutral-600" />
-                      {remainingForFreeShipping > 0
-                        ? `Add ₹${remainingForFreeShipping.toFixed(0)} more for FREE Shipping!`
-                        : "🎉 You qualify for FREE Express Shipping!"}
+                      🎉 Free Express Shipping on All Orders!
                     </span>
-                    <span>{remainingForFreeShipping > 0 ? `${Math.round((finalTotal / freeShippingThreshold) * 100)}%` : "100%"}</span>
+                    <span>100%</span>
                   </div>
                   <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
                     <div
                       className="bg-neutral-900 h-full transition-all duration-300"
-                      style={{ width: `${Math.min(100, (finalTotal / freeShippingThreshold) * 100)}%` }}
+                      style={{ width: "100%" }}
                     />
                   </div>
                 </div>
@@ -382,14 +380,14 @@ export default function CartPage() {
 
                     <div className="flex items-center justify-between text-neutral-600">
                       <span>Estimated Shipping</span>
-                      <span className="font-bold text-neutral-900">
-                        {remainingForFreeShipping === 0 ? "FREE" : "₹100"}
+                      <span className="font-bold text-emerald-600">
+                        FREE
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between text-base font-extrabold text-neutral-900 pt-2 border-t border-neutral-100">
                       <span>Total Amount</span>
-                      <span className="text-xl">₹{(finalTotal + (remainingForFreeShipping === 0 ? 0 : 100)).toFixed(2)}</span>
+                      <span className="text-xl">₹{finalTotal.toFixed(2)}</span>
                     </div>
                   </div>
 

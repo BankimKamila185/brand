@@ -115,7 +115,7 @@ export default function CheckoutPage() {
         )
       )
     : 0;
-  const shippingCharge = subtotal >= 999 ? 0 : 99;
+  const shippingCharge = 0;
   const total = Math.max(0, subtotal - discountAmount + shippingCharge);
   const selectedAddress = useMemo(
     () => addresses.find((address) => address.id === selectedAddressId),

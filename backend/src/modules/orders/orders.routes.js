@@ -155,8 +155,8 @@ router.post(
         });
       }
 
-      const shippingCharge = subtotal >= 999 ? 0 : 99; // Free shipping above ₹999
-      const total = subtotal - discount + shippingCharge;
+      const shippingCharge = 0; // 100% Free Shipping on all orders
+      const total = Math.max(0, subtotal - discount + shippingCharge);
 
       // Create order
       const isCod = paymentMethod === "COD";
@@ -366,7 +366,7 @@ router.post(
     const qty = Math.floor(Math.random() * 2) + 1;
     const price = Number(variant.price);
     const subtotal = price * qty;
-    const shippingCharge = subtotal >= 999 ? 0 : 99;
+    const shippingCharge = 0;
     const total = subtotal + shippingCharge;
 
     const order = await db.order.create({

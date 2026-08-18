@@ -6,12 +6,9 @@ At **The Outliers Studio**, we want to make sure your streetwear drops reach you
 
 ---
 
-## 1. Shipping Rates & Free Shipping Thresholds
-* **Prepaid Orders**: 
-  * We offer **Free Shipping** across India on all prepaid orders exceeding **INR 999**.
-  * For prepaid orders under INR 999, a nominal flat shipping fee of **INR 99** is charged.
-* **Cash on Delivery (COD) Orders**:
-  * If COD is available, a flat handling fee of **INR 149** applies to all COD orders, regardless of the order value. This fee covers extra validation and delivery collection costs.
+## 1. Shipping Rates & Free Shipping
+* **100% Free Shipping**: We offer **Free Express Shipping** across all pincodes in India on **all orders**, with no minimum purchase requirement.
+* **No Hidden Fees**: The price you see on product pages and at checkout is the exact total you pay. There are no shipping or handling surcharges.
 
 ---
 

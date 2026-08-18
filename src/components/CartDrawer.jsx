@@ -315,8 +315,8 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             <div className="free-shipping-note">
               <Truck size={16} />
               <div>
-                <strong>{remainingForFreeShipping > 0 ? `Add ₹${remainingForFreeShipping.toFixed(0)} for free shipping` : "You qualify for free shipping"}</strong>
-                <div className="free-shipping-track"><span style={{ width: `${Math.min(100, (finalTotal / freeShippingThreshold) * 100)}%` }} /></div>
+                <strong>✦ Free Express Shipping on All Orders!</strong>
+                <div className="free-shipping-track"><span style={{ width: "100%" }} /></div>
               </div>
             </div>
             {/* Expandable Panel Tabs */}
@@ -345,10 +345,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             {showShipping && (
               <div className="footer-panel-expand shipping-info">
                 <p>
-                  🚚 <strong>Free Shipping</strong> on orders above ₹1,500!
+                  🚚 <strong>100% Free Shipping</strong> across India on all orders!
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Estimated delivery: 3-5 business days.
+                  Estimated delivery: 3-5 business days with live tracking.
                 </p>
               </div>
             )}

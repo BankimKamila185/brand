@@ -37,9 +37,8 @@ Because we cannot refund cash directly, COD orders are refunded electronically:
 
 ---
 
-## 4. Non-Refundable Charges
-* **Shipping Charges**: The flat shipping fee of INR 99 charged on orders below INR 999 is non-refundable.
-* **COD Convenience Fee**: The COD fee of INR 149 is paid to our shipping providers to process physical cash and is strictly non-refundable.
+## 4. Refund Deductions
+* **Free Shipping**: Because we provide 100% Free Shipping on all orders, you receive a full 100% refund for the purchase price of your returned/cancelled items.
 
 ---
 
