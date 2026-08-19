@@ -389,7 +389,7 @@ const Header = ({ onSearch }) => {
               </div>
 
               {/* ── LIVE REAL-TIME SEARCH RESULTS CONTAINER ── */}
-              <div className="pb-6 max-w-2xl mx-auto w-full px-2">
+              <div className="srch-results">
                 {/* 1. Searching indicator */}
                 {isSearching && (
                   <div className="py-6 flex items-center justify-center gap-2 text-xs font-semibold text-neutral-500">
@@ -466,11 +466,11 @@ const Header = ({ onSearch }) => {
 
                 {/* 4. Trending / Popular Keywords (when input is empty) */}
                 {searchQuery.trim() === "" && (
-                  <div className="flex flex-col gap-2 pt-1">
-                    <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-1">
+                  <div className="srch-trending">
+                    <p className="srch-trending-title">
                       🔥 Trending Searches
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="srch-trending-tags">
                       {["Rudra Trishul", "Neel Rudra", "Oversized Tee", "Acid Wash", "Anime Graphics", "Vintage Black"].map((tag) => (
                         <button
                           key={tag}
@@ -479,7 +479,7 @@ const Header = ({ onSearch }) => {
                             setSearchQuery(tag);
                             if (onSearch) onSearch(tag);
                           }}
-                          className="px-3 py-1.5 rounded-full text-xs font-semibold bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 transition-colors cursor-pointer"
+                          className="srch-trending-tag"
                         >
                           {tag}
                         </button>
@@ -791,4 +791,3 @@ const Header = ({ onSearch }) => {
 };
 
 export default Header;
-

@@ -2225,9 +2225,9 @@ html, body {
 
 /* ── Search Popup Overlay Bar (Slide-down from top) ── */
 .srch-bar-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 720px) minmax(120px, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
   min-height: 76px;
   padding: 0 16px;
@@ -2241,9 +2241,10 @@ html, body {
 
 .srch-form {
   position: relative;
-  flex: 1;
-  max-width: 680px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 720px;
+  margin: 0;
+  justify-self: center;
 }
 
 .srch-input {
@@ -2290,6 +2291,7 @@ html, body {
   align-items: center;
   gap: 16px;
   color: var(--c-ink);
+  justify-self: end;
 }
 
 .srch-icon-btn {
@@ -2321,8 +2323,52 @@ html, body {
   color: var(--c-ink);
 }
 
+.srch-results {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  padding: 0 0 24px;
+}
+
+.srch-trending {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.srch-trending-title {
+  margin: 0;
+  color: var(--c-ink-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.srch-trending-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.srch-trending-tag {
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--c-ink-2);
+  background: var(--c-surface-2, #f5f5f4);
+  font: 600 12px/1 var(--font-body);
+  transition: background-color .15s, color .15s;
+  cursor: pointer;
+}
+
+.srch-trending-tag:hover {
+  color: #fff;
+  background: var(--c-ink);
+}
+
 @media (max-width: 768px) {
   .srch-bar-inner {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     min-height: auto;
@@ -2343,6 +2389,10 @@ html, body {
     font-size: 14px;
     padding-left: 18px;
     padding-right: 48px;
+  }
+  .srch-results {
+    width: 100%;
+    padding: 0 0 20px;
   }
 }
 
