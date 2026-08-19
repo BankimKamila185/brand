@@ -751,7 +751,16 @@ const Header = ({ onSearch }) => {
 
                 {user ? (
                   <button
-                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    onClick={async () => {
+                      try {
+                        await logout();
+                      } finally {
+                        setMobileMenuOpen(false);
+                        if (typeof window !== "undefined" && window.location.pathname.startsWith("/profile")) {
+                          window.location.href = "/";
+                        }
+                      }
+                    }}
                     style={{
                       width: "100%", border: "1.5px solid #111", background: "#fff",
                       color: "#111", fontSize: "11px", fontWeight: 600,

@@ -52,6 +52,23 @@ function LoginForm() {
     }
   }, [isAuthenticated, router, redirect]);
 
+  const handleClose = () => {
+    const isProtected =
+      !redirect ||
+      redirect === '/' ||
+      redirect.startsWith('/profile') ||
+      redirect.startsWith('/admin') ||
+      redirect.startsWith('/dashboard') ||
+      redirect.startsWith('/checkout') ||
+      redirect.startsWith('/login');
+
+    if (isProtected) {
+      router.push('/');
+    } else {
+      router.push(redirect);
+    }
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -159,7 +176,8 @@ function LoginForm() {
       
       {/* Close button in top right of the viewport */}
       <button 
-        onClick={() => router.push(redirect)}
+        onClick={handleClose}
+        aria-label="Close"
         className="absolute top-8 right-8 w-8 h-8 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:border-neutral-300 transition-all cursor-pointer z-20"
       >
         <X className="w-4.5 h-4.5" />
@@ -229,10 +247,13 @@ function LoginForm() {
               >
                 {/* Email Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Email</label>
+                  <label htmlFor="register-email" className="tevar-login-label">Email</label>
                   <input 
+                    id="register-email"
+                    name="email"
                     type="email"
                     required
+                    autoComplete="email"
                     placeholder="Enter your email"
                     value={registerEmail}
                     onChange={(e) => setRegisterEmail(e.target.value)}
@@ -243,11 +264,14 @@ function LoginForm() {
 
                 {/* Password Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Password</label>
+                  <label htmlFor="register-password" className="tevar-login-label">Password</label>
                   <div className="relative">
                     <input 
+                      id="register-password"
+                      name="new-password"
                       type={showPassword ? 'text' : 'password'}
                       required
+                      autoComplete="new-password"
                       placeholder="••••••••"
                       value={registerPassword}
                       onChange={(e) => setRegisterPassword(e.target.value)}
@@ -281,11 +305,14 @@ function LoginForm() {
 
                 {/* Confirm Password Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Confirm Password</label>
+                  <label htmlFor="register-confirm-password" className="tevar-login-label">Confirm Password</label>
                   <div className="relative">
                     <input 
+                      id="register-confirm-password"
+                      name="confirm-password"
                       type={showConfirmPassword ? 'text' : 'password'}
                       required
+                      autoComplete="new-password"
                       placeholder="Type your password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -305,6 +332,8 @@ function LoginForm() {
                 {/* Marketing / Promotional Offers Subscription Checkbox */}
                 <label className="tevar-login-checkbox-group">
                   <input 
+                    id="register-subscribe"
+                    name="subscribeMarketing"
                     type="checkbox"
                     checked={subscribeMarketing}
                     onChange={(e) => setSubscribeMarketing(e.target.checked)}
@@ -363,10 +392,13 @@ function LoginForm() {
               >
                 {/* Email Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Email Address</label>
+                  <label htmlFor="forgot-email" className="tevar-login-label">Email Address</label>
                   <input 
+                    id="forgot-email"
+                    name="email"
                     type="email"
                     required
+                    autoComplete="email"
                     placeholder="Enter your registered email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
@@ -422,10 +454,13 @@ function LoginForm() {
               >
                 {/* Email Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Email</label>
+                  <label htmlFor="login-email" className="tevar-login-label">Email</label>
                   <input 
+                    id="login-email"
+                    name="email"
                     type="email"
                     required
+                    autoComplete="email"
                     placeholder="Enter your email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
@@ -436,11 +471,14 @@ function LoginForm() {
 
                 {/* Password Input */}
                 <div className="flex flex-col">
-                  <label className="tevar-login-label">Password</label>
+                  <label htmlFor="login-password" className="tevar-login-label">Password</label>
                   <div className="relative">
                     <input 
+                      id="login-password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       required
+                      autoComplete="current-password"
                       placeholder="••••••••"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}

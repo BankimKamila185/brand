@@ -624,8 +624,11 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/");
+    try {
+      await logout();
+    } finally {
+      window.location.href = "/";
+    }
   };
 
   // ── Guard: Never show profile page to unauthenticated visitors ────────────
