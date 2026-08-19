@@ -307,22 +307,25 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateItemSize = async (oldVariantId, newSize, product) => {
-    if (!newSize) return;
+    if (!newSize) return oldVariantId;
     const normalizedSize = String(newSize).toUpperCase();
     const variants = product?.variants || [];
     const matchedVariant = variants.find(
       (v) => (v.option1 || v.size || v.title || "").toString().toUpperCase() === normalizedSize
     );
 
+    const baseProdId = product?.id || (oldVariantId ? String(oldVariantId).split("-")[0] : "");
     const newVariantId = matchedVariant
       ? matchedVariant.id
-      : product?.id
-        ? `${product.id}-${normalizedSize}`
+      : baseProdId
+        ? `${baseProdId}-${normalizedSize}`
         : `${oldVariantId}-${normalizedSize}`;
 
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex(
-        (item) => String(item.variantId) === String(oldVariantId)
+        (item) =>
+          String(item.variantId) === String(oldVariantId) ||
+          (baseProdId && item.product?.id && String(item.product.id) === String(baseProdId))
       );
       if (existingIndex === -1) return prevCart;
 
@@ -378,6 +381,8 @@ export const CartProvider = ({ children }) => {
         console.error("Error updating size in backend cart:", e);
       }
     }
+
+    return newVariantId;
   };
 
   const toggleWishlist = async (productId) => {

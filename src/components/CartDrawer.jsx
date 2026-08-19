@@ -14,6 +14,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
     setCartOpen,
     addToCart,
     updateQuantity,
+    updateItemSize,
     removeFromCart,
     cartTotal,
     appliedCoupon,
@@ -316,7 +317,8 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                     onClick={async (e) => {
                                       e.stopPropagation();
                                       if (updateItemSize) {
-                                        await updateItemSize(item.variantId, sizeOpt, item.product);
+                                        const nextId = await updateItemSize(item.variantId, sizeOpt, item.product);
+                                        if (nextId) setEditingItemVariantId(nextId);
                                       }
                                     }}
                                     className={`cart-size-option ${isCurrent ? "selected" : ""}`}
