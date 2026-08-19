@@ -359,6 +359,7 @@ model Coupon {
   userLimit    Int?         @default(1) @map("user_limit")
   usedCount    Int          @default(0) @map("used_count")
   isActive     Boolean      @default(true) @map("is_active")
+  isRecommended Boolean     @default(false) @map("is_recommended")
   startsAt     DateTime?    @map("starts_at")
   expiresAt    DateTime?    @map("expires_at")
   createdAt    DateTime     @default(now()) @map("created_at")
@@ -368,6 +369,7 @@ model Coupon {
 
   @@index([code])
   @@index([isActive])
+  @@index([isRecommended])
   @@map("coupons")
 }
 

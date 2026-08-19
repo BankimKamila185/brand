@@ -17,6 +17,7 @@ const createCouponSchema = z.object({
   maxDiscount: z.number().positive().optional().nullable(),
   usageLimit: z.number().int().positive().optional().nullable(),
   userLimit: z.number().int().positive().optional().nullable(),
+  isRecommended: z.boolean().default(false).optional(),
   startsAt: z.string().optional().nullable(),
   expiresAt: z.string().optional().nullable(),
 });
@@ -26,13 +27,14 @@ const validateCouponSchema = z.object({
   orderTotal: z.number().positive(),
 });
 
-// GET /api/coupons/recommendations — get active recommended coupons to display in the cart
+// GET /api/coupons/recommendations — get active recommended coupons to display in the cart (ONLY where isRecommended: true)
 router.get(
   "/recommendations",
   asyncHandler(async (_req, res) => {
     const coupons = await db.coupon.findMany({
       where: {
         isActive: true,
+        isRecommended: true,
         OR: [{ startsAt: null }, { startsAt: { lte: new Date() } }],
         AND: [{ OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] }],
       },
@@ -144,6 +146,23 @@ router.post(
 
     const coupon = await db.coupon.create({ data: req.body });
     sendCreated(res, coupon, "Coupon created");
+  }),
+);
+
+router.patch(
+  "/:id/toggle-recommend",
+  asyncHandler(async (req, res) => {
+    const existing = await db.coupon.findUnique({ where: { id: req.params["id"] } });
+    if (!existing) throw new AppError("Coupon not found", 404);
+    const updated = await db.coupon.update({
+      where: { id: req.params["id"] },
+      data: { isRecommended: !existing.isRecommended },
+    });
+    sendSuccess(
+      res,
+      updated,
+      `Coupon is now ${updated.isRecommended ? "RECOMMENDED (Visible in cart)" : "HIDDEN from cart"}`,
+    );
   }),
 );
 

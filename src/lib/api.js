@@ -230,6 +230,7 @@ export const adminApi = {
     list: () => api.get("/api/coupons"),
     create: (data) => api.post("/api/coupons", data),
     update: (id, data) => api.patch(`/api/coupons/${id}`, data),
+    toggleRecommend: (id) => api.patch(`/api/coupons/${id}/toggle-recommend`),
     remove: (id) => api.delete(`/api/coupons/${id}`),
   },
   categories: {

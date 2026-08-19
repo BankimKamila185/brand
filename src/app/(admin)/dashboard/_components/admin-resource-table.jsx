@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react";
+import { Pencil, Plus, RefreshCw, Trash2, X, Check, EyeOff, Sparkles, Tag } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 const definitions = {
@@ -53,6 +53,7 @@ function rowData(resource, form) {
       discountType: value.discountType || "PERCENTAGE",
       value: Number(value.value),
       description: value.description ? value.description.trim() : null,
+      isRecommended: value.isRecommended === "on" || value.isRecommended === "true" || value.isRecommended === true,
     };
   }
   return value;
@@ -80,55 +81,117 @@ export function AdminResourceTable({ resource }) {
     }
   };
 
+  const handleToggleRecommend = async (id) => {
+    try {
+      await adminApi.coupons.toggleRecommend(id);
+      await load();
+    } catch (err) {
+      setError(formatError(err));
+    }
+  };
+
   useEffect(() => {
     void load();
   }, [resource]);
 
-  const columns = useMemo(
-    () => [
-      ...definition.fields.map((field) => ({
-        accessorKey: field,
-        header: field.replace(/([A-Z])/g, " $1"),
-      })),
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              className="admin-table-action flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 hover:bg-black hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
-              onClick={() => setEditingRow(row.original)}
-              aria-label="Edit item"
-              title="Edit item"
-            >
-              <Pencil className="size-3.5" />
-              <span>Edit item</span>
-            </button>
-            <button
-              type="button"
-              className="admin-table-action text-red-500 hover:border-red-200 hover:bg-red-50 p-1.5 rounded-lg transition-all cursor-pointer"
-              onClick={async () => {
-                if (window.confirm(`Delete this ${singular}?`)) {
-                  try {
-                    await definition.remove(row.original.id);
-                    void load();
-                  } catch (err) {
-                    setError(formatError(err));
-                  }
-                }
-              }}
-              aria-label="Delete record"
-              title="Delete record"
-            >
-              <Trash2 className="size-4" />
-            </button>
-          </div>
-        ),
+  const columns = useMemo(() => {
+    const baseCols = definition.fields.map((field) => ({
+      accessorKey: field,
+      header: field.replace(/([A-Z])/g, " $1"),
+      cell: ({ getValue, row }) => {
+        const val = getValue();
+        if (resource === "coupons" && field === "code") {
+          return (
+            <span className="font-mono font-extrabold uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-neutral-900 dark:text-neutral-100">
+              {String(val)}
+            </span>
+          );
+        }
+        if (resource === "coupons" && field === "value") {
+          const isFlat = row.original.discountType === "FLAT";
+          return (
+            <span className="font-extrabold text-neutral-900 dark:text-white">
+              {isFlat ? `₹${val}` : `${val}% OFF`}
+            </span>
+          );
+        }
+        return String(val || "—");
       },
-    ],
-    [definition, resource, singular]
-  );
+    }));
+
+    if (resource === "coupons") {
+      baseCols.push({
+        id: "isRecommended",
+        header: "Show in Cart?",
+        cell: ({ row }) => {
+          const isRec = Boolean(row.original.isRecommended);
+          return (
+            <button
+              type="button"
+              onClick={() => handleToggleRecommend(row.original.id)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer shadow-sm ${
+                isRec
+                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                  : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+              }`}
+              title={isRec ? "Currently visible in cart (Click to hide)" : "Currently hidden (Click to recommend in cart)"}
+            >
+              {isRec ? (
+                <>
+                  <Check className="size-3.5" />
+                  <span>Visible in Cart</span>
+                </>
+              ) : (
+                <>
+                  <EyeOff className="size-3.5 text-neutral-400" />
+                  <span>Hidden / Private</span>
+                </>
+              )}
+            </button>
+          );
+        },
+      });
+    }
+
+    baseCols.push({
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            className="admin-table-action flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 hover:bg-black hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+            onClick={() => setEditingRow(row.original)}
+            aria-label="Edit item"
+            title="Edit item"
+          >
+            <Pencil className="size-3.5" />
+            <span>Edit item</span>
+          </button>
+          <button
+            type="button"
+            className="admin-table-action text-red-500 hover:border-red-200 hover:bg-red-50 p-1.5 rounded-lg transition-all cursor-pointer"
+            onClick={async () => {
+              if (window.confirm(`Delete this ${singular}?`)) {
+                try {
+                  await definition.remove(row.original.id);
+                  void load();
+                } catch (err) {
+                  setError(formatError(err));
+                }
+              }
+            }}
+            aria-label="Delete record"
+            title="Delete record"
+          >
+            <Trash2 className="size-4" />
+          </button>
+        </div>
+      ),
+    });
+
+    return baseCols;
+  }, [definition, resource, singular]);
 
   const table = useReactTable({ data: rows, columns, getCoreRowModel: getCoreRowModel() });
 
@@ -171,9 +234,30 @@ export function AdminResourceTable({ resource }) {
           {definition.fields.map((field) => (
             <label key={field}>
               <span>{field.replace(/([A-Z])/g, " $1")}</span>
-              <input name={field} placeholder={`Enter ${field}`} required />
+              <input
+                name={field}
+                placeholder={`Enter ${field}`}
+                required={field !== "description"}
+                className={resource === "coupons" && field === "code" ? "uppercase font-mono" : ""}
+              />
             </label>
           ))}
+
+          {resource === "coupons" && (
+            <div className="col-span-full flex items-center gap-2 pt-2">
+              <label className="flex items-center gap-2 text-xs font-bold text-neutral-800 dark:text-neutral-200 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  name="isRecommended"
+                  defaultChecked={true}
+                  className="size-4 accent-black rounded cursor-pointer"
+                />
+                <Sparkles size={14} className="text-amber-500" />
+                <span>Show in Cart & Recommend to Customers (1-Click Apply)</span>
+              </label>
+            </div>
+          )}
+
           <button type="submit" className="admin-primary-button">
             <Plus className="size-4" /> Create {singular}
           </button>
@@ -262,8 +346,10 @@ export function AdminResourceTable({ resource }) {
                 if (payload.name && (!payload.handle || !payload.handle.trim())) {
                   payload.handle = slugify(payload.name);
                 }
-                if (resource === "coupons" && payload.value) {
-                  payload.value = Number(payload.value);
+                if (resource === "coupons") {
+                  if (payload.value) payload.value = Number(payload.value);
+                  if (payload.code) payload.code = payload.code.trim().toUpperCase();
+                  payload.isRecommended = formData.get("isRecommended") === "on";
                 }
                 if (resource === "products" && payload.price) {
                   payload.price = Number(payload.price);
@@ -289,11 +375,25 @@ export function AdminResourceTable({ resource }) {
                   <input
                     name={field}
                     defaultValue={editingRow[field] || ""}
-                    className="px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm outline-none focus:border-black dark:focus:border-white transition-colors"
-                    required
+                    className={`px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm outline-none focus:border-black dark:focus:border-white transition-colors ${
+                      resource === "coupons" && field === "code" ? "uppercase font-mono" : ""
+                    }`}
+                    required={field !== "description"}
                   />
                 </label>
               ))}
+
+              {resource === "coupons" && (
+                <label className="flex items-center gap-2 text-xs font-bold text-neutral-800 dark:text-neutral-200 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    name="isRecommended"
+                    defaultChecked={Boolean(editingRow.isRecommended)}
+                    className="size-4 accent-black rounded cursor-pointer"
+                  />
+                  <span>Show in Cart & Recommend to Customers</span>
+                </label>
+              )}
 
               <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <button
