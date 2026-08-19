@@ -183,27 +183,13 @@ function LoginForm() {
         <X className="w-4.5 h-4.5" />
       </button>
 
-      {/* Left Column: Media Card with Rounded Corners & Overlays (hidden on mobile) */}
+      {/* Left Column: Media Card with Rounded Corners (hidden on mobile) */}
       <div className="tevar-login-left hidden md:block">
         <img 
           src="/login-showcase.png" 
           alt="The Outliers Studio Showcase" 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Subtle overlay gradient */}
-        <div className="absolute inset-0 bg-black/15 z-0" />
-
-        {/* Progress Indicators (Carousel indicators) */}
-        <div className="absolute top-6 left-6 right-6 flex gap-2.5 z-10">
-          <span className="flex-grow h-0.75 bg-white rounded-full"></span>
-          <span className="flex-grow h-0.75 bg-white/30 rounded-full"></span>
-          <span className="flex-grow h-0.75 bg-white/30 rounded-full"></span>
-        </div>
-
-        {/* Slogan Description Overlay at the bottom */}
-        <div className="absolute bottom-6 left-6 right-6 z-10 text-white text-[11px] md:text-xs leading-relaxed font-medium bg-black/35 backdrop-blur-md p-5 rounded-2xl border border-white/10 shadow-lg">
-          The Outliers Studio is an exclusive premium apparel house crafted for the bold, featuring limited-edition t-shirts and luxury streetwear.
-        </div>
       </div>
 
       {/* Right Column: Form Panel */}
