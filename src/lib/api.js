@@ -147,6 +147,7 @@ export const productsApi = {
   search: (q) => api.get(`/api/products/search?q=${encodeURIComponent(q)}`),
 
   getRelated: (id) => api.get(`/api/products/${id}/related`),
+  notifyRestock: (data) => api.post("/api/products/notify-restock", data),
 };
 
 export const collectionsApi = {

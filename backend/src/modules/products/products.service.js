@@ -2,6 +2,9 @@ import { db } from "../../config/database.js";
 import { AppError } from "../../middleware/errorHandler.js";
 import { buildPaginationMeta } from "../../utils/response.js";
 import { uploadBase64ToR2, normalizeR2Url } from "../../config/r2.js";
+import { sendEmail, renderEmailLayout } from "../../utils/email.js";
+import { env } from "../../config/env.js";
+import { logger } from "../../utils/logger.js";
 
 function sanitizeProduct(product) {
   if (!product) return product;
@@ -621,5 +624,77 @@ export const productsService = {
       orderBy: { publishedAt: "desc" },
     });
     return sanitizeProducts(related);
+  },
+
+  async notifyRestock({ email, phone, productId, productTitle, productHandle, size }) {
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const contact = cleanEmail || phone || "";
+    if (!contact) throw new AppError("Please provide an email or mobile number", 400);
+
+    const title = productTitle || "The Outliers Product";
+    const selectedSize = size ? `Size ${size}` : "this item";
+    const productUrl = `${env.FRONTEND_URL || "https://theoutliersstudio.com"}/products/${productHandle || ""}`;
+
+    // Send confirmation email to customer if email provided
+    if (cleanEmail && cleanEmail.includes("@")) {
+      const customerContent = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="display: inline-block; width: 56px; height: 56px; border-radius: 50%; background: rgba(197, 169, 104, 0.15); border: 1px solid #c5a968; line-height: 54px; font-size: 24px; color: #c5a968; margin-bottom: 16px;">
+            🔔
+          </div>
+          <h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 900; letter-spacing: 0.04em; color: #ffffff; text-transform: uppercase;">
+            You're on the Waitlist
+          </h1>
+          <p style="margin: 0; color: #a39e94; font-size: 14px; line-height: 1.6;">
+            We have registered your restock alert for <strong style="color: #ffffff;">${title}</strong> (${selectedSize}).
+          </p>
+        </div>
+
+        <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 16px; padding: 22px; margin-bottom: 24px; text-align: center;">
+          <p style="margin: 0 0 14px; font-size: 13px; color: #d6d3cd; line-height: 1.6;">
+            Our studio drops pieces in limited production runs. The moment fresh inventory arrives, you'll receive an instant priority restock notification.
+          </p>
+          <a href="${productUrl}"
+             style="display: inline-block; background: #ffffff; color: #000000; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px;">
+            View Product Page
+          </a>
+        </div>
+      `;
+
+      sendEmail({
+        to: cleanEmail,
+        subject: `🔔 Waitlist Confirmed: ${title} (${selectedSize}) — The Outliers Studio`,
+        html: renderEmailLayout({
+          title: `Waitlist Confirmed: ${title}`,
+          preheader: `You're on the list! We'll notify you as soon as ${title} in ${selectedSize} is back in stock.`,
+          content: customerContent,
+        }),
+      }).catch((e) => logger.error("Customer restock waitlist email failed:", e));
+    }
+
+    // Notify Admin
+    if (env.ADMIN_EMAIL) {
+      sendEmail({
+        to: env.ADMIN_EMAIL,
+        subject: `🔔 [Waitlist Alert] Restock requested for ${title} (${selectedSize})`,
+        html: renderEmailLayout({
+          title: `Waitlist Request: ${title}`,
+          preheader: `${contact} requested restock notification for ${title} (${selectedSize}).`,
+          content: `
+            <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 16px; padding: 22px;">
+              <h2 style="color: #ffffff; margin-top: 0; font-size: 18px;">New Restock Notification Request</h2>
+              <p style="color: #d6d3cd; font-size: 13px; line-height: 1.6;">
+                <strong>Customer:</strong> ${contact}<br/>
+                <strong>Product:</strong> ${title}<br/>
+                <strong>Size:</strong> ${selectedSize}<br/>
+                <strong>Date:</strong> ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
+              </p>
+            </div>
+          `,
+        }),
+      }).catch((e) => logger.error("Admin restock waitlist notification failed:", e));
+    }
+
+    return { success: true, message: "Waitlist registered" };
   },
 };

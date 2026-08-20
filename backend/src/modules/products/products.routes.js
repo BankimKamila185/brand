@@ -11,6 +11,7 @@ import {
 const router = Router();
 
 // Public
+router.post("/notify-restock", productsController.notifyRestock);
 router.get("/", validateQuery(productQuerySchema), productsController.list);
 router.get("/search", productsController.search);
 router.get("/:handle", productsController.getByHandle);

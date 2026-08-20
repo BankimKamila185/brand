@@ -231,18 +231,26 @@ export default function ProductDetailPage({ params }) {
 
   const handleNotifySubmit = async (e) => {
     e.preventDefault();
-    if (!notifyEmail.trim()) {
-      setNotifyError("Please enter your email or phone number.");
+    const contact = (notifyEmail || "").trim();
+    if (!contact) {
+      setNotifyError("Please enter your email or mobile number.");
       return;
     }
     setNotifySubmitting(true);
     setNotifyError("");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await productsApi.notifyRestock({
+        email: contact.includes("@") ? contact : undefined,
+        phone: !contact.includes("@") ? contact : undefined,
+        productId: product?.id,
+        productTitle: product?.title,
+        productHandle: product?.handle,
+        size: selectedSize,
+      });
       setNotifySuccess(true);
       setNotifyEmail("");
-    } catch {
-      setNotifyError("Something went wrong. Please try again.");
+    } catch (err) {
+      setNotifyError(err.message || "Something went wrong. Please try again.");
     } finally {
       setNotifySubmitting(false);
     }

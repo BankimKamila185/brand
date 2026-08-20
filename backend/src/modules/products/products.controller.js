@@ -29,6 +29,11 @@ export const productsController = {
     sendSuccess(res, related);
   }),
 
+  notifyRestock: asyncHandler(async (req, res) => {
+    const result = await productsService.notifyRestock(req.body);
+    sendSuccess(res, result, "You're on the list! We'll notify you as soon as this size is back in stock.");
+  }),
+
   // Admin
   create: asyncHandler(async (req, res) => {
     const product = await productsService.create(req.body);
