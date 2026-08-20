@@ -57,6 +57,16 @@ const getVerifiedSender = async (apiKey, preferredSender) => {
       const data = await res.json();
       const senders = data.senders || [];
       const activeSenders = senders.filter((s) => s.active);
+
+      // Prioritize verified domain sender (e.g. hello@theoutliersstudio.com)
+      const domainSender = activeSenders.find((s) =>
+        s.email.toLowerCase().includes("theoutliersstudio.com")
+      );
+      if (domainSender) {
+        cachedVerifiedSender = { name: "The Outliers Studio", email: domainSender.email };
+        return cachedVerifiedSender;
+      }
+
       const preferred = activeSenders.find(
         (s) => s.email.toLowerCase() === preferredSender.email.toLowerCase()
       );
@@ -72,7 +82,7 @@ const getVerifiedSender = async (apiKey, preferredSender) => {
   } catch (err) {
     logger.warn("Could not fetch Brevo senders list:", err.message);
   }
-  return { name: "The Outliers Studio", email: preferredSender.email };
+  return { name: "The Outliers Studio", email: preferredSender.email || "hello@theoutliersstudio.com" };
 };
 
 export const sendEmail = async (options) => {
@@ -83,8 +93,8 @@ export const sendEmail = async (options) => {
   if (apiKey) {
     try {
       const fromMatch = (env.SMTP_FROM || "").match(/^(.*?)\s*<([^>]+)>$/);
-      const rawSenderName = fromMatch ? fromMatch[1].trim() : "The Outliers Studio";
-      const rawSenderEmail = fromMatch ? fromMatch[2].trim() : (env.SMTP_FROM || "hello@theoutliersstudio.com");
+      const rawSenderName = "The Outliers Studio";
+      const rawSenderEmail = fromMatch ? fromMatch[2].trim() : "hello@theoutliersstudio.com";
 
       const verifiedSender = await getVerifiedSender(apiKey, {
         name: rawSenderName,
@@ -100,7 +110,7 @@ export const sendEmail = async (options) => {
         },
         body: JSON.stringify({
           sender: { name: verifiedSender.name, email: verifiedSender.email },
-          to: [{ email: options.to }],
+          to: [{ email: options.to, name: options.toName || undefined }],
           subject: options.subject,
           htmlContent: options.html,
         }),
@@ -124,7 +134,7 @@ export const sendEmail = async (options) => {
   try {
     const mailer = getTransporter();
     const info = await mailer.sendMail({
-      from: env.SMTP_FROM || "The Outliers Studio <hello@theoutliersstudio.com>",
+      from: '"The Outliers Studio" <hello@theoutliersstudio.com>',
       to: options.to,
       subject: options.subject,
       html: options.html,
