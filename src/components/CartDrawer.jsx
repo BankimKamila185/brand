@@ -481,40 +481,38 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
 
                 {/* Available Offers / Recommended Coupons */}
                 {recommendedCoupons.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-neutral-100 flex flex-col gap-2">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-                      <Tag size={10} className="text-amber-500" /> Recommended Offers
-                    </span>
-                    <div className="flex flex-col gap-1.5">
+                  <div className="drawer-coupon-offers">
+                    <p className="drawer-coupon-offers__title">
+                      <Tag size={13} aria-hidden="true" /> Recommended offers
+                    </p>
+                    <div className="drawer-coupon-offers__list">
                       {recommendedCoupons.map((c) => {
                         const isApplied = appliedCoupon?.code === c.code;
                         return (
-                          <div
+                          <article
                             key={c.id || c.code}
-                            className={`flex items-center justify-between p-2 rounded-lg border text-xs transition-all ${
-                              isApplied
-                                ? "bg-emerald-50 border-emerald-300 text-emerald-900"
-                                : "bg-neutral-50/80 border-neutral-200/80 text-neutral-800 hover:border-neutral-400"
-                            }`}
+                            className={`drawer-coupon-offer ${isApplied ? "is-applied" : ""}`}
                           >
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-extrabold uppercase tracking-wide text-[11px] bg-white px-1.5 py-0.5 rounded border border-neutral-200">
+                            <div className="drawer-coupon-offer__details">
+                              <div className="drawer-coupon-offer__heading">
+                                <span className="drawer-coupon-offer__code">
                                   {c.code}
                                 </span>
-                                <span className="text-[10px] font-bold text-emerald-600">
+                                <span className="drawer-coupon-offer__saving">
                                   {c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`}
                                 </span>
                               </div>
                               {c.description && (
-                                <p className="text-[10px] text-neutral-500 mt-0.5 max-w-[170px] truncate">
+                                <p className="drawer-coupon-offer__description">
                                   {c.description}
                                 </p>
                               )}
                             </div>
                             <button
                               type="button"
+                              disabled={isApplied}
                               onClick={async () => {
+                                if (isApplied) return;
                                 setCouponCode(c.code);
                                 try {
                                   const res = await couponsApi.validate(c.code, cartTotal);
@@ -526,15 +524,11 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
                                   setCouponMessage(err.message || "Could not apply coupon");
                                 }
                               }}
-                              className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded transition-all cursor-pointer ${
-                                isApplied
-                                  ? "bg-emerald-600 text-white"
-                                  : "bg-black text-white hover:bg-neutral-800"
-                              }`}
+                              className="drawer-coupon-offer__apply"
                             >
-                              {isApplied ? "Applied ✓" : "Apply"}
+                              {isApplied ? "Applied" : "Apply"}
                             </button>
-                          </div>
+                          </article>
                         );
                       })}
                     </div>
