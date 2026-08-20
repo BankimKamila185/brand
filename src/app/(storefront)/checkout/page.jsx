@@ -852,34 +852,33 @@ function OrderSummary({
       {/* Coupon & Promo Section */}
       <div className="checkout-discount-wrapper mt-4">
         {appliedCoupon ? (
-          <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 transition-all">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                <Tag size={13} className="stroke-[2.5]" />
+          <div className="checkout-v3-applied-coupon">
+            <div className="checkout-v3-applied-coupon__content">
+              <div className="checkout-v3-applied-coupon__icon">
+                <Tag size={16} aria-hidden="true" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-extrabold text-xs tracking-wider uppercase text-neutral-900 font-mono">
+              <div className="checkout-v3-applied-coupon__copy">
+                <div className="checkout-v3-applied-coupon__heading">
+                  <span className="checkout-v3-applied-coupon__code">
                     {appliedCoupon.code}
                   </span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-200/70 text-emerald-800 tracking-wide">
-                    {appliedCoupon.discountType === "PERCENTAGE" ? `${appliedCoupon.value}% OFF` : `₹${appliedCoupon.value} OFF`}
-                  </span>
+                  <span>Applied</span>
                 </div>
                 {discountAmount > 0 && (
-                  <p className="text-[11px] text-emerald-700 font-medium mt-0.5">
-                    Saved ₹{discountAmount.toFixed(2)} on this order
+                  <p>
+                    You&apos;re saving ₹{discountAmount.toFixed(2)} on this order
                   </p>
                 )}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={removeCoupon}
-              className="text-xs font-bold text-neutral-500 hover:text-red-600 px-2.5 py-1 rounded-md hover:bg-white/80 border border-transparent hover:border-neutral-200 transition-all ml-2 flex-shrink-0 cursor-pointer"
-            >
-              Remove
-            </button>
+            <div className="checkout-v3-applied-coupon__actions">
+              <span className="checkout-v3-applied-coupon__value">
+                {appliedCoupon.discountType === "PERCENTAGE" ? `${appliedCoupon.value}% off` : `₹${appliedCoupon.value} off`}
+              </span>
+              <button type="button" onClick={removeCoupon}>
+                Remove
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={applyCoupon} className="checkout-v3-coupon">
