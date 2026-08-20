@@ -129,16 +129,16 @@ export function AdminResourceTable({ resource }) {
             <button
               type="button"
               onClick={() => handleToggleRecommend(row.original.id)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold transition-all cursor-pointer shadow-sm ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none shadow-xs ${
                 isRec
-                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                  : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                  : "bg-neutral-100 text-neutral-600 border border-neutral-200 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700"
               }`}
               title={isRec ? "Currently visible in cart (Click to hide)" : "Currently hidden (Click to recommend in cart)"}
             >
               {isRec ? (
                 <>
-                  <Check className="size-3.5" />
+                  <Check className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Visible in Cart</span>
                 </>
               ) : (
@@ -157,20 +157,19 @@ export function AdminResourceTable({ resource }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex items-center justify-end gap-1.5">
           <button
             type="button"
-            className="admin-table-action flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 hover:bg-black hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+            className="admin-table-action"
             onClick={() => setEditingRow(row.original)}
             aria-label="Edit item"
             title="Edit item"
           >
             <Pencil className="size-3.5" />
-            <span>Edit item</span>
           </button>
           <button
             type="button"
-            className="admin-table-action text-red-500 hover:border-red-200 hover:bg-red-50 p-1.5 rounded-lg transition-all cursor-pointer"
+            className="admin-table-action delete text-red-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
             onClick={async () => {
               if (window.confirm(`Delete this ${singular}?`)) {
                 try {
@@ -184,7 +183,7 @@ export function AdminResourceTable({ resource }) {
             aria-label="Delete record"
             title="Delete record"
           >
-            <Trash2 className="size-4" />
+            <Trash2 className="size-3.5" />
           </button>
         </div>
       ),

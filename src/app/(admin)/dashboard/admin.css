@@ -1192,4 +1192,28 @@
   }
 }
 
-
+.admin-table-action {
+  background: #ffffff;
+  border: 1px solid #e6e6e8;
+  border-radius: 9px;
+  color: #52525b;
+  height: 34px;
+  width: 34px;
+  min-width: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.admin-table-action:hover {
+  border-color: #18181b;
+  color: #18181b;
+  background: #fafafa;
+}
+.admin-table-action.delete:hover {
+  border-color: #fca5a5;
+  color: #dc2626;
+  background: #fef2f2;
+}
