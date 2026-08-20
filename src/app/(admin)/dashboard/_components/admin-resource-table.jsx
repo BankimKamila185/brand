@@ -102,16 +102,39 @@ export function AdminResourceTable({ resource }) {
         const val = getValue();
         if (resource === "coupons" && field === "code") {
           return (
-            <span className="font-mono font-extrabold uppercase bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-neutral-900 dark:text-neutral-100">
-              {String(val)}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg font-mono font-extrabold text-xs tracking-wider text-amber-950 dark:text-amber-200 shadow-xs">
+                <Tag className="size-3 text-amber-600 shrink-0" />
+                {String(val)}
+              </span>
+            </div>
           );
         }
         if (resource === "coupons" && field === "value") {
           const isFlat = row.original.discountType === "FLAT";
+          const numVal = Number(val);
           return (
-            <span className="font-extrabold text-neutral-900 dark:text-white">
-              {isFlat ? `₹${val}` : `${val}% OFF`}
+            <div className="flex flex-col gap-0.5">
+              <span
+                className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit shadow-xs ${
+                  isFlat
+                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                    : "bg-blue-50 text-blue-800 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                }`}
+              >
+                {isFlat ? `₹${numVal || val} FLAT` : `${numVal || val}% OFF`}
+              </span>
+            </div>
+          );
+        }
+        if (resource === "coupons" && field === "description") {
+          return val ? (
+            <span className="text-xs text-neutral-600 dark:text-neutral-300 font-medium line-clamp-1 max-w-[260px]">
+              {String(val)}
+            </span>
+          ) : (
+            <span className="text-xs text-neutral-400 italic font-normal">
+              No description
             </span>
           );
         }
