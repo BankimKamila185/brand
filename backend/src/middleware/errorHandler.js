@@ -48,9 +48,12 @@ export const errorHandler = (err, req, res, _next) => {
   // Prisma unique constraint
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === "P2002") {
+      const field = Array.isArray(err.meta?.target)
+        ? err.meta.target.join(", ")
+        : err.meta?.target || "value";
       res.status(409).json({
         success: false,
-        message: "A record with this value already exists",
+        message: `A record with this ${field} already exists. Please choose a different ${field}.`,
       });
       return;
     }
