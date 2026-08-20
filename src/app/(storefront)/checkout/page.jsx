@@ -816,6 +816,12 @@ function OrderSummary({
   couponLoading,
   recommendedCoupons = [],
 }) {
+  // The applied promotion already has its own status card above. Keeping it in
+  // the offer picker as well makes the same coupon appear twice in the summary.
+  const availableCoupons = recommendedCoupons.filter(
+    (coupon) => coupon.code !== appliedCoupon?.code,
+  );
+
   return (
     <section className="checkout-v3-order">
       <div className="checkout-v3-order-top">
@@ -897,35 +903,24 @@ function OrderSummary({
         )}
 
         {/* Available Offers / Recommended Coupons */}
-        {recommendedCoupons.length > 0 && (
+        {availableCoupons.length > 0 && (
           <div className="mt-3.5 pt-3 border-t border-neutral-100 flex flex-col gap-2">
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles size={11} className="text-amber-500" /> Available Offers
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {recommendedCoupons.map((c) => {
-                const isApplied = appliedCoupon?.code === c.code;
+              {availableCoupons.map((c) => {
                 return (
                   <button
                     key={c.id || c.code}
                     type="button"
-                    onClick={() => {
-                      if (isApplied) return;
-                      applyCoupon(c.code);
-                    }}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
-                      isApplied
-                        ? "bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs pointer-events-none"
-                        : "bg-white border-neutral-200 text-neutral-800 hover:border-neutral-900 hover:shadow-xs"
-                    }`}
+                    onClick={() => applyCoupon(c.code)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border bg-white border-neutral-200 text-neutral-800 hover:border-neutral-900 hover:shadow-xs"
                   >
                     <span className="uppercase text-[11px] font-mono font-extrabold">{c.code}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                      isApplied ? "bg-emerald-200/70 text-emerald-900" : "bg-neutral-100 text-neutral-600"
-                    }`}>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-neutral-100 text-neutral-600">
                       {c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`}
                     </span>
-                    {isApplied && <Check size={12} className="text-emerald-700 stroke-[3]" />}
                   </button>
                 );
               })}
@@ -938,7 +933,7 @@ function OrderSummary({
       <div className="checkout-v3-totals mt-4">
         <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
         {appliedCoupon && discountAmount > 0 && (
-          <div className="flex justify-between items-center py-1 text-xs text-emerald-600 font-semibold">
+          <div className="checkout-v3-discount flex justify-between items-center py-1 text-xs text-emerald-600 font-semibold">
             <span>Discount ({appliedCoupon.code})</span>
             <span>-₹{discountAmount.toFixed(2)}</span>
           </div>

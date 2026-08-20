@@ -828,6 +828,8 @@ h1, h2, h3,
 .checkout-v3-product strong,
 .checkout-v3-totals > div:last-child { color: var(--c-ink); }
 
+.checkout-v3-totals > .checkout-v3-discount { color: #047857; }
+
 .checkout-v3-product img { filter: none; border-radius: var(--r-xs); }
 
 .checkout-v3-coupon input {
