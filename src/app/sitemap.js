@@ -6,7 +6,7 @@ export default async function sitemap() {
   const rawBackend = (
     process.env.BACKEND_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:4000"
+    "https://brand-production-8c25.up.railway.app"
   ).trim();
   const backendUrl = rawBackend.startsWith("http")
     ? rawBackend

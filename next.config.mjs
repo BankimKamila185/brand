@@ -1,4 +1,8 @@
-const rawBackendUrl = (process.env["BACKEND_URL"] || process.env["NEXT_PUBLIC_API_URL"] || "http://localhost:4000").trim();
+const rawBackendUrl = (
+  process.env["BACKEND_URL"] ||
+  process.env["NEXT_PUBLIC_API_URL"] ||
+  "https://brand-production-8c25.up.railway.app"
+).trim();
 const BACKEND_URL = rawBackendUrl.startsWith("http://") || rawBackendUrl.startsWith("https://")
   ? rawBackendUrl
   : `https://${rawBackendUrl}`;
