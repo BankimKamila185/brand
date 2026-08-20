@@ -137,7 +137,7 @@ function SkTrendingSection() {
         <SkBox style={{ width: 200, height: 28, borderRadius: 5 }} />
       </div>
       <div className="sk-product-grid sk-product-grid--featured">
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <SkProductCard key={i} />
         ))}
       </div>
@@ -204,7 +204,7 @@ export default function Home() {
       setLoading(true);
       try {
         const [trendRes, recRes, newRes, allRes] = await Promise.all([
-          productsApi.list({ collection: "bestsellers", limit: "8" }),
+          productsApi.list({ collection: "bestsellers", limit: "4" }),
           productsApi.list({ collection: "outliers-recommends", limit: "5" }),
           productsApi.list({ collection: "whats-new", limit: "5" }),
           productsApi.list({ limit: "24" }),
@@ -227,13 +227,20 @@ export default function Home() {
         const recDb = extract(recRes);
         const newDb = extract(newRes);
 
-        setTrending(trendDb.length > 0 ? trendDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("bestsellers", 8)));
+        setTrending(
+          (trendDb.length > 0
+            ? trendDb
+            : allDb.length > 0
+            ? allDb
+            : getLocalProductsByCollection("bestsellers", 4)
+          ).slice(0, 4)
+        );
         setRecommends(recDb.length > 0 ? recDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("outliers-recommends", 5)));
         setNewArrivals(newDb.length > 0 ? newDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("whats-new", 5)));
       } catch (e) {
         console.error("Error fetching backend products, using local data:", e);
         // Fallback to local products
-        setTrending(getLocalProductsByCollection("bestsellers", 8));
+        setTrending(getLocalProductsByCollection("bestsellers", 4));
         setRecommends(getLocalProductsByCollection("outliers-recommends", 5));
         setNewArrivals(getLocalProductsByCollection("whats-new", 5));
       } finally {
@@ -263,7 +270,7 @@ export default function Home() {
           <section className="container-fluid home-section">
             <h2 className="section-title">Trending Now</h2>
             <div className="product-grid">
-              {trending.map((product) => (
+              {trending.slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
