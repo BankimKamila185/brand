@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use, useRef } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import CartDrawer from "@/components/CartDrawer";
@@ -186,7 +187,16 @@ function Skeleton() {
 
 /* ─── Main Component ─────────────────────────────────────── */
 export default function ProductDetailPage({ params }) {
-  const { handle } = use(params);
+  const routeParams = useParams();
+  let handle = routeParams?.handle;
+  if (!handle && params) {
+    try {
+      const unwrapped = typeof params.then === "function" ? use(params) : params;
+      handle = unwrapped?.handle;
+    } catch {
+      handle = "";
+    }
+  }
   const { addToCart, toggleWishlist, isInWishlist } = useCart();
   const { isAuthenticated, user } = useAuth();
 
@@ -386,17 +396,21 @@ export default function ProductDetailPage({ params }) {
 
   /* fetch product */
   useEffect(() => {
+    const cleanHandle = decodeURIComponent(handle || "").trim().toLowerCase();
+    if (!cleanHandle) return;
+
+    let isMounted = true;
     const load = async () => {
       setLoading(true);
-      const cleanHandle = decodeURIComponent(handle || "").trim().toLowerCase();
       try {
         const res = await productsApi.getByHandle(cleanHandle);
-        if (res.success && res.data) {
+        if (!isMounted) return;
+        if (res.success && res.data && !Array.isArray(res.data) && res.data.id) {
           setProduct(mapProduct(res.data));
         } else {
           // Fallback to local product
           const localProduct = localProducts.products.find(
-            (p) => p.handle.toLowerCase() === cleanHandle
+            (p) => p.handle?.toLowerCase() === cleanHandle
           );
           if (localProduct) {
             setProduct({
