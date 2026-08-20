@@ -11,6 +11,17 @@ const startServer = async () => {
     await db.$connect();
     logger.info("✅ Database connected");
 
+    // Clean up any stale phantom inventory reservations from abandoned checkouts
+    try {
+      await db.inventory.updateMany({
+        where: { reserved: { gt: 0 } },
+        data: { reserved: 0 },
+      });
+      logger.info("🧹 Stale inventory reservations cleared");
+    } catch (cleanErr) {
+      logger.warn("Could not auto-clean reservations:", cleanErr.message);
+    }
+
     // ── Connect to Redis ───────────────────────────────────────────────────
     try {
       await connectRedis();

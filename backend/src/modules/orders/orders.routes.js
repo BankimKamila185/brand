@@ -79,13 +79,13 @@ router.post(
       });
       if (!address) throw new AppError("Address not found", 404);
 
-      // Stock check and reserve
+      // Deduct stock upon order placement
       for (const item of cart.items) {
         if (item.variant?.inventory) {
           try {
             await tx.inventory.update({
               where: { variantId: item.variantId },
-              data: { reserved: { increment: item.quantity } },
+              data: { quantity: { decrement: item.quantity } },
             });
           } catch {
             // Gracefully ignore stock update error

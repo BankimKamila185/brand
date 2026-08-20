@@ -39,10 +39,7 @@ const mapProduct = (bp) => ({
         : 0;
       const invQty = Number(v.inventory?.quantity ?? 0);
       const totalQty = Math.max(invQty, whQty);
-      const reserved = Number(v.inventory?.reserved ?? 0);
-      const inStock = v.available !== undefined
-        ? v.available !== false
-        : (totalQty - reserved) > 0;
+      const inStock = totalQty > 0 || v.available === true;
 
       return {
         id: v.id,

@@ -156,8 +156,7 @@ export default function CollectionPage({ params }) {
             price: String(v.price || "0"),
             compare_at_price: v.comparePrice ? String(v.comparePrice) : null,
             option1: v.option1,
-            option2: v.option2,
-            available: v.inventory ? v.inventory.quantity > 0 : true,
+            available: v.inventory ? v.inventory.quantity > 0 : (v.available !== false),
           })),
           images: (p.images || []).map((img) => ({
             src: img.src,
