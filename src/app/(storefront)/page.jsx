@@ -172,6 +172,17 @@ function SkCampaignBanner() {
   );
 }
 
+// ─── Shuffle Utility ───────────────────────────────────────────────────────────
+function shuffleArray(arr) {
+  if (!Array.isArray(arr) || arr.length <= 1) return arr;
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [trending, setTrending] = useState([]);
@@ -196,7 +207,7 @@ export default function Home() {
         p.tags.some((t) => ["new", "new-arrival", "whats-new"].includes(t.toLowerCase()))
       );
     }
-    return filtered.slice(0, limit).map(normalizeProduct);
+    return shuffleArray(filtered).slice(0, limit).map(normalizeProduct);
   };
 
   useEffect(() => {
@@ -204,10 +215,10 @@ export default function Home() {
       setLoading(true);
       try {
         const [trendRes, recRes, newRes, allRes] = await Promise.all([
-          productsApi.list({ collection: "bestsellers", limit: "4" }),
+          productsApi.list({ collection: "bestsellers", limit: "8" }),
           productsApi.list({ collection: "outliers-recommends", limit: "5" }),
-          productsApi.list({ collection: "whats-new", limit: "5" }),
-          productsApi.list({ limit: "24" }),
+          productsApi.list({ collection: "whats-new", limit: "12" }),
+          productsApi.list({ limit: "40" }),
         ]);
 
         const extract = (res) => {
@@ -227,22 +238,28 @@ export default function Home() {
         const recDb = extract(recRes);
         const newDb = extract(newRes);
 
-        setTrending(
-          (trendDb.length > 0
-            ? trendDb
-            : allDb.length > 0
-            ? allDb
-            : getLocalProductsByCollection("bestsellers", 4)
-          ).slice(0, 4)
-        );
-        setRecommends(recDb.length > 0 ? recDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("outliers-recommends", 5)));
-        setNewArrivals(newDb.length > 0 ? newDb : (allDb.length > 0 ? allDb : getLocalProductsByCollection("whats-new", 5)));
+        const pool = allDb.length > 0 ? allDb : (newDb.length > 0 ? newDb : trendDb);
+        const shuffledPool = shuffleArray(pool);
+
+        // Trending: 4 randomized items from top pool
+        const trendingItems = trendDb.length >= 4 
+          ? shuffleArray(trendDb).slice(0, 4) 
+          : shuffledPool.slice(0, 4);
+
+        // New Releases: remaining randomized items or full shuffled pool in 4-col grid
+        const newItems = newDb.length > 0 
+          ? shuffleArray(newDb) 
+          : shuffledPool;
+
+        setTrending(trendingItems.length > 0 ? trendingItems : getLocalProductsByCollection("bestsellers", 4));
+        setRecommends(recDb.length > 0 ? shuffleArray(recDb) : getLocalProductsByCollection("outliers-recommends", 4));
+        setNewArrivals(newItems.length > 0 ? newItems : getLocalProductsByCollection("whats-new", 8));
       } catch (e) {
         console.error("Error fetching backend products, using local data:", e);
         // Fallback to local products
         setTrending(getLocalProductsByCollection("bestsellers", 4));
-        setRecommends(getLocalProductsByCollection("outliers-recommends", 5));
-        setNewArrivals(getLocalProductsByCollection("whats-new", 5));
+        setRecommends(getLocalProductsByCollection("outliers-recommends", 4));
+        setNewArrivals(getLocalProductsByCollection("whats-new", 8));
       } finally {
         setLoading(false);
       }
@@ -279,13 +296,13 @@ export default function Home() {
 
         {/* ⑥ Outliers Recommends (Hidden) */}
 
-        {/* ⑦ New Releases */}
+        {/* ⑦ New Releases (Balanced 4-Column Grid) */}
         {loading ? (
-          <SkProductRow count={5} />
+          <SkProductRow count={8} />
         ) : (
           <section className="container-fluid home-section">
             <h2 className="section-title">New Releases</h2>
-            <div className="sk-5col-grid">
+            <div className="product-grid">
               {newArrivals.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
