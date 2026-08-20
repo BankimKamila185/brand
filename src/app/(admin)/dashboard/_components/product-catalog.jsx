@@ -37,6 +37,8 @@ export function ProductCatalog() {
       ]);
       setProducts(productResult.data || []);
       setCategories(categoryResult.data || []);
+    } catch (err) {
+      console.error("Failed to load catalog products:", err);
     } finally {
       setLoading(false);
     }
@@ -126,66 +128,74 @@ export function ProductCatalog() {
       </header>
 
       {/* Search & Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between my-4">
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center", justifyContent: "space-between", margin: "16px 0" }}>
         {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+        <div style={{ position: "relative", flex: "1 1 300px", maxWidth: "420px" }}>
+          <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9ca3af" }} />
           <input
             type="text"
             placeholder="Search products by title, SKU, handle..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-2 rounded-xl border border-neutral-200 bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors"
+            style={{
+              width: "100%", padding: "10px 14px 10px 36px", borderRadius: 10,
+              border: "1px solid #e5e7eb", background: "#fff", fontSize: 13,
+              outline: "none", boxSizing: "border-box"
+            }}
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+              style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}
             >
-              <X className="size-3.5" />
+              <X style={{ width: 14, height: 14 }} />
             </button>
           )}
         </div>
 
         {/* Status Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
           <button
             onClick={() => setStatusFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              statusFilter === "all"
-                ? "bg-neutral-900 text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-            }`}
+            style={{
+              padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+              cursor: "pointer", border: "none",
+              background: statusFilter === "all" ? "#18181b" : "#f3f4f6",
+              color: statusFilter === "all" ? "#fff" : "#4b5563"
+            }}
           >
             All Status
           </button>
           <button
             onClick={() => setStatusFilter("active")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              statusFilter === "active"
-                ? "bg-emerald-600 text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-            }`}
+            style={{
+              padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+              cursor: "pointer", border: "none",
+              background: statusFilter === "active" ? "#10b981" : "#f3f4f6",
+              color: statusFilter === "active" ? "#fff" : "#4b5563"
+            }}
           >
             Active
           </button>
           <button
             onClick={() => setStatusFilter("out_of_stock")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              statusFilter === "out_of_stock"
-                ? "bg-amber-600 text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-            }`}
+            style={{
+              padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+              cursor: "pointer", border: "none",
+              background: statusFilter === "out_of_stock" ? "#f59e0b" : "#f3f4f6",
+              color: statusFilter === "out_of_stock" ? "#fff" : "#4b5563"
+            }}
           >
             0 Stock
           </button>
           <button
             onClick={() => setStatusFilter("inactive")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              statusFilter === "inactive"
-                ? "bg-neutral-700 text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-            }`}
+            style={{
+              padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+              cursor: "pointer", border: "none",
+              background: statusFilter === "inactive" ? "#374151" : "#f3f4f6",
+              color: statusFilter === "inactive" ? "#fff" : "#4b5563"
+            }}
           >
             Draft / Inactive
           </button>

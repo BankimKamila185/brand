@@ -150,7 +150,7 @@ export const sendEmail = async (options) => {
 /**
  * Shared Email Template Shell
  */
-const renderEmailLayout = ({ title, preheader, content }) => `
+export const renderEmailLayout = ({ title, preheader, content }) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
