@@ -105,12 +105,28 @@ export default function ContactPage() {
                     Instagram
                   </a>
                   <a
-                    href="https://facebook.com/theoutliersstudio"
+                    href="https://www.facebook.com/profile.php?id=61593738772874"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contact-social-link"
                   >
                     Facebook
+                  </a>
+                  <a
+                    href="https://x.com/Outliers_Studio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-social-link"
+                  >
+                    X (Twitter)
+                  </a>
+                  <a
+                    href="https://www.youtube.com/channel/UC23eIT-fay1tUn8V77CFYuA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="contact-social-link"
+                  >
+                    YouTube
                   </a>
                 </div>
               </div>

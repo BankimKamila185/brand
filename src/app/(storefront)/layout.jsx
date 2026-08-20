@@ -134,7 +134,10 @@ export default function RootLayout({ children }) {
         },
         "image": `${SITE_URL}/seo-logo.png?v=${BRAND_ICON_VERSION}`,
         "sameAs": [
-          "https://www.instagram.com/theoutliersstudio"
+          "https://www.instagram.com/theoutliersstudio",
+          "https://x.com/Outliers_Studio",
+          "https://www.facebook.com/profile.php?id=61593738772874",
+          "https://www.youtube.com/channel/UC23eIT-fay1tUn8V77CFYuA"
         ]
       },
       {
