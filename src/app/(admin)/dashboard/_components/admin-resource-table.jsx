@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Pencil, Plus, RefreshCw, Trash2, X, Check, EyeOff, Sparkles, Tag } from "lucide-react";
+import { Pencil, Plus, RefreshCw, Trash2, X, Sparkles } from "lucide-react";
 import { adminApi } from "@/lib/api";
 
 const definitions = {
@@ -102,7 +102,7 @@ export function AdminResourceTable({ resource }) {
         const val = getValue();
         if (resource === "coupons" && field === "code") {
           return (
-            <span className="font-mono font-bold text-xs tracking-wider text-neutral-900 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800 px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-700 select-all">
+            <span className="admin-coupon-code">
               {String(val)}
             </span>
           );
@@ -111,11 +111,11 @@ export function AdminResourceTable({ resource }) {
           const isFlat = row.original.discountType === "FLAT";
           const numVal = Number(val);
           return (
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-sm text-neutral-900 dark:text-white">
+            <div className="admin-coupon-value">
+              <span className="admin-coupon-value__amount">
                 {isFlat ? `₹${numVal || val}` : `${numVal || val}%`}
               </span>
-              <span className="text-[11px] text-neutral-400 font-medium tracking-wide uppercase">
+              <span className="admin-coupon-value__type">
                 {isFlat ? "Flat Off" : "Discount"}
               </span>
             </div>
@@ -123,15 +123,15 @@ export function AdminResourceTable({ resource }) {
         }
         if (resource === "coupons" && field === "description") {
           return val ? (
-            <span className="text-xs text-neutral-600 dark:text-neutral-400 font-normal line-clamp-1 max-w-[280px]">
+            <span className="admin-coupon-description">
               {String(val)}
             </span>
           ) : (
-            <span className="text-xs text-neutral-300 dark:text-neutral-600">—</span>
+            <span className="admin-coupon-description is-empty">—</span>
           );
         }
         return (
-          <span className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">
+          <span className="admin-table-value">
             {val !== undefined && val !== null && String(val).trim() !== "" ? String(val) : "—"}
           </span>
         );
@@ -148,14 +148,10 @@ export function AdminResourceTable({ resource }) {
             <button
               type="button"
               onClick={() => handleToggleRecommend(row.original.id)}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                isRec
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800"
-                  : "bg-neutral-50 text-neutral-500 border-neutral-200 hover:bg-neutral-100 hover:text-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-400 dark:border-neutral-700"
-              }`}
+              className={`admin-coupon-status ${isRec ? "is-visible" : "is-hidden"}`}
               title={isRec ? "Click to hide from cart recommendations" : "Click to recommend in cart"}
             >
-              <span className={`size-1.5 rounded-full ${isRec ? "bg-emerald-500" : "bg-neutral-400"}`} />
+              <span className="admin-coupon-status__dot" />
               <span>{isRec ? "Visible in Cart" : "Hidden"}</span>
             </button>
           );
@@ -167,10 +163,10 @@ export function AdminResourceTable({ resource }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="admin-table-actions">
           <button
             type="button"
-            className="p-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
+            className="admin-table-action"
             onClick={() => setEditingRow(row.original)}
             aria-label="Edit item"
             title="Edit item"
@@ -179,7 +175,7 @@ export function AdminResourceTable({ resource }) {
           </button>
           <button
             type="button"
-            className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+            className="admin-table-action delete"
             onClick={async () => {
               if (window.confirm(`Delete this ${singular}?`)) {
                 try {
