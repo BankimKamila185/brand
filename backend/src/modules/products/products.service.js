@@ -351,34 +351,48 @@ export const productsService = {
             create: validCollectionIds.map((id) => ({ collectionId: id })),
           },
           variants: {
-            create: (data.variants || []).map((v, i) => {
-              const formattedSku = v.sku && typeof v.sku === "string" && v.sku.trim() ? v.sku.trim() : null;
-              return {
-                sku: formattedSku,
-                title: v.title || v.option1 || "Default",
-                option1: v.option1 || v.title || "Default",
-                option2: v.option2 || null,
-                option3: v.option3 || null,
-                price: v.price,
-                comparePrice: v.comparePrice || null,
-                weight: v.weight || 0,
-                position: i + 1,
-                inventory: {
-                  create: {
-                    quantity: v.warehouseStocks?.length
-                      ? v.warehouseStocks.reduce((total, stock) => total + stock.quantity, 0)
-                      : v.stock || 0,
+            create: await Promise.all(
+              (data.variants || []).map(async (v, i) => {
+                let sku =
+                  v.sku && typeof v.sku === "string" && v.sku.trim()
+                    ? v.sku.trim()
+                    : null;
+                if (sku) {
+                  const existingWithSku = await tx.productVariant.findUnique({
+                    where: { sku },
+                    select: { id: true },
+                  });
+                  if (existingWithSku) {
+                    sku = `${sku}-${Math.floor(100 + Math.random() * 900)}`;
+                  }
+                }
+                return {
+                  sku,
+                  title: v.title || v.option1 || "Default",
+                  option1: v.option1 || v.title || "Default",
+                  option2: v.option2 || null,
+                  option3: v.option3 || null,
+                  price: v.price,
+                  comparePrice: v.comparePrice || null,
+                  weight: v.weight || 0,
+                  position: i + 1,
+                  inventory: {
+                    create: {
+                      quantity: v.warehouseStocks?.length
+                        ? v.warehouseStocks.reduce((total, stock) => total + stock.quantity, 0)
+                        : v.stock || 0,
+                    },
                   },
-                },
-                warehouseStocks: v.warehouseStocks?.length
-                  ? {
-                      create: v.warehouseStocks
-                        .filter((ws) => ws.warehouseId)
-                        .map((ws) => ({ warehouseId: ws.warehouseId, quantity: ws.quantity })),
-                    }
-                  : undefined,
-              };
-            }),
+                  warehouseStocks: v.warehouseStocks?.length
+                    ? {
+                        create: v.warehouseStocks
+                          .filter((ws) => ws.warehouseId)
+                          .map((ws) => ({ warehouseId: ws.warehouseId, quantity: ws.quantity })),
+                      }
+                    : undefined,
+                };
+              })
+            ),
           },
           images: {
             create: uploadedImages,
@@ -508,10 +522,23 @@ export const productsService = {
         });
 
         for (const v of data.variants) {
-          const formattedSku = v.sku && typeof v.sku === "string" && v.sku.trim() ? v.sku.trim() : null;
+          let formattedSku = v.sku && typeof v.sku === "string" && v.sku.trim() ? v.sku.trim() : null;
           const existingVariant = await tx.productVariant.findFirst({
             where: { productId: id, option1: v.option1 },
           });
+
+          if (formattedSku) {
+            const existingWithSku = await tx.productVariant.findFirst({
+              where: {
+                sku: formattedSku,
+                ...(existingVariant ? { NOT: { id: existingVariant.id } } : {}),
+              },
+              select: { id: true },
+            });
+            if (existingWithSku) {
+              formattedSku = `${formattedSku}-${Math.floor(100 + Math.random() * 900)}`;
+            }
+          }
 
           if (existingVariant) {
             // Update existing variant

@@ -109,10 +109,11 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [showBarcodeModal, setShowBarcodeModal] = useState(false);
 
   const autoGenerateAllSKUs = () => {
+    const baseRand = Math.floor(1000 + Math.random() * 8000);
     setVariants((prev) =>
       prev.map((v, idx) => ({
         ...v,
-        sku: generateTOSSKUCode(title || "PRODUCT", v.size, 3432 + idx),
+        sku: generateTOSSKUCode(title || "PRODUCT", v.size, baseRand + idx),
       }))
     );
   };
@@ -144,13 +145,14 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       }
       
       if (data.variants && data.variants.length > 0) {
+        const randBase = Math.floor(1000 + Math.random() * 8000);
         setVariants(
           data.variants.map((v, idx) => ({
             size: v.option1 || v.title,
             price: String(v.price),
             comparePrice: v.comparePrice ? String(v.comparePrice) : "",
             stock: String(v.inventory?.quantity || 0),
-            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(data.title, v.option1 || v.title, 3432 + idx),
+            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(data.title, v.option1 || v.title, randBase + idx),
           }))
         );
       } else {

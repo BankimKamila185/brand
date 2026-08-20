@@ -82,13 +82,16 @@ export function BarcodeSVG({ value, height = 38, barWidth = 1.35 }) {
 // Generate TOS-[PRODUCT]-[SIZE]-[UNIQUE_ID] preventing duplicates
 export function generateTOSSKUCode(title, sizeVal, uniqueId = null) {
   const prefix = "TOS";
-  const firstWord = (title || "PRODUCT").trim().split(/\s+/)[0];
-  const cleanTitle = firstWord.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  const words = (title || "PRODUCT").trim().split(/[\s-]+/).filter(Boolean);
+  const codePart = words
+    .map((w) => w.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase())
+    .join("")
+    .slice(0, 8);
   const cleanSize = (sizeVal || "M")
     .replace(/[^a-zA-Z0-9]/g, "")
     .toUpperCase();
   const idNum = uniqueId || Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}-${cleanTitle}-${cleanSize}-${idNum}`;
+  return `${prefix}-${codePart || "PRD"}-${cleanSize}-${idNum}`;
 }
 
 export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
