@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
+import { db } from "../config/database.js";
 import { logger } from "./logger.js";
 
 let transporter;
@@ -60,18 +61,18 @@ const getVerifiedSender = async (apiKey, preferredSender) => {
         (s) => s.email.toLowerCase() === preferredSender.email.toLowerCase()
       );
       if (preferred) {
-        cachedVerifiedSender = { name: preferredSender.name || preferred.name, email: preferred.email };
+        cachedVerifiedSender = { name: "The Outliers Studio", email: preferred.email };
         return cachedVerifiedSender;
       }
       if (activeSenders.length > 0) {
-        cachedVerifiedSender = { name: preferredSender.name || "The Outliers Studio", email: activeSenders[0].email };
+        cachedVerifiedSender = { name: "The Outliers Studio", email: activeSenders[0].email };
         return cachedVerifiedSender;
       }
     }
   } catch (err) {
     logger.warn("Could not fetch Brevo senders list:", err.message);
   }
-  return preferredSender;
+  return { name: "The Outliers Studio", email: preferredSender.email };
 };
 
 export const sendEmail = async (options) => {
@@ -145,6 +146,7 @@ const renderEmailLayout = ({ title, preheader, content }) => `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>${title}</title>
   <!--[if mso]>
   <style type="text/css">
@@ -152,28 +154,28 @@ const renderEmailLayout = ({ title, preheader, content }) => `
   </style>
   <![endif]-->
 </head>
-<body style="margin: 0; padding: 0; background-color: #0b0a08; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
-  <div style="display: none; font-size: 1px; color: #0b0a08; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+<body style="margin: 0; padding: 0; background-color: #0c0b09; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+  <div style="display: none; font-size: 1px; color: #0c0b09; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
     ${preheader || title}
   </div>
 
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0b0a08; padding: 32px 16px;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0c0b09; padding: 36px 12px;">
     <tr>
       <td align="center">
         <!-- Main Card Container -->
-        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 580px; background-color: #12110e; border: 1px solid #28251e; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);">
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #141310; border: 1px solid #23211c; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.75);">
           
           <!-- Header Banner -->
           <tr>
-            <td align="center" style="padding: 40px 32px 28px; background: linear-gradient(180deg, #1a1814 0%, #12110e 100%); border-bottom: 1px solid #23201a;">
+            <td align="center" style="padding: 36px 28px 24px; background: linear-gradient(180deg, #1b1915 0%, #141310 100%); border-bottom: 1px solid #24221b;">
               <!-- Brand Title -->
-              <h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 0.28em; color: #ffffff; text-transform: uppercase; line-height: 1.2;">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 900; letter-spacing: 0.28em; color: #ffffff; text-transform: uppercase; line-height: 1.2;">
                 THE OUTLIERS
               </h1>
-              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.35em; color: #c5a968; text-transform: uppercase; margin-top: 5px;">
+              <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.4em; color: #c5a968; text-transform: uppercase; margin-top: 4px;">
                 S T U D I O
               </div>
-              <div style="display: inline-block; margin-top: 14px; padding: 4px 14px; border-radius: 20px; background-color: rgba(197, 169, 104, 0.1); border: 1px solid rgba(197, 169, 104, 0.25); font-size: 9px; font-weight: 700; letter-spacing: 0.2em; color: #e5d2a4; text-transform: uppercase;">
+              <div style="display: inline-block; margin-top: 14px; padding: 4px 14px; border-radius: 20px; background-color: rgba(197, 169, 104, 0.08); border: 1px solid rgba(197, 169, 104, 0.22); font-size: 8.5px; font-weight: 800; letter-spacing: 0.22em; color: #e5d2a4; text-transform: uppercase;">
                 BUILT DIFFERENT · WORN BY FEW
               </div>
             </td>
@@ -181,22 +183,22 @@ const renderEmailLayout = ({ title, preheader, content }) => `
 
           <!-- Main Content Slot -->
           <tr>
-            <td style="padding: 36px 32px 32px; color: #d6d3cd; font-size: 14px; line-height: 1.65;">
+            <td style="padding: 32px 28px 28px; color: #d6d3cd; font-size: 14px; line-height: 1.65;">
               ${content}
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 32px 36px; background-color: #0d0c0a; border-top: 1px solid #1f1d17; text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 11px; color: #78746b; letter-spacing: 0.05em;">
-                Need assistance? Contact our concierge at <a href="mailto:hello@theoutliersstudio.com" style="color: #c5a968; text-decoration: none; font-weight: 600;">hello@theoutliersstudio.com</a>
+            <td style="padding: 24px 28px 32px; background-color: #0d0c0a; border-top: 1px solid #1f1d17; text-align: center;">
+              <p style="margin: 0 0 6px; font-size: 11px; color: #8c887f; letter-spacing: 0.04em;">
+                Need assistance? Contact our concierge at <a href="mailto:hello@theoutliersstudio.com" style="color: #c5a968; text-decoration: none; font-weight: 700;">hello@theoutliersstudio.com</a>
               </p>
-              <p style="margin: 0 0 14px; font-size: 10px; color: #524f48; letter-spacing: 0.08em; text-transform: uppercase;">
-                100% Encrypted & Authentic · Crafted for Excellence
+              <p style="margin: 0 0 10px; font-size: 10px; color: #524f48; letter-spacing: 0.08em; text-transform: uppercase;">
+                100% Encrypted & Authentic · Mumbai, India
               </p>
               <p style="margin: 0; font-size: 10px; color: #43403a; letter-spacing: 0.04em;">
-                © 2026 The Outliers Studio. All rights reserved. · <a href="${env.FRONTEND_URL || "https://theoutliersstudio.com"}" style="color: #666258; text-decoration: underline;">theoutliersstudio.com</a>
+                © 2026 The Outliers Studio. All rights reserved. · <a href="${env.FRONTEND_URL || "https://theoutliersstudio.com"}" style="color: #736f65; text-decoration: underline;">theoutliersstudio.com</a>
               </p>
             </td>
           </tr>
@@ -226,7 +228,7 @@ export const sendVerificationEmail = async (to, name, token) => {
       </p>
     </div>
 
-    <div style="background-color: #171511; border: 1px solid #28241c; border-radius: 14px; padding: 24px; margin-bottom: 28px; text-align: center;">
+    <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 14px; padding: 24px; margin-bottom: 28px; text-align: center;">
       <p style="margin: 0 0 16px; color: #bfbab0; font-size: 13.5px; line-height: 1.6;">
         Please confirm your email address to unlock your exclusive access, save your size preferences, and track your limited-edition orders.
       </p>
@@ -270,7 +272,7 @@ export const sendPasswordResetEmail = async (to, name, token) => {
       </p>
     </div>
 
-    <div style="background-color: #171511; border: 1px solid #28241c; border-radius: 14px; padding: 24px; margin-bottom: 28px; text-align: center;">
+    <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 14px; padding: 24px; margin-bottom: 28px; text-align: center;">
       <p style="margin: 0 0 18px; color: #bfbab0; font-size: 13.5px; line-height: 1.6;">
         Click the button below to choose a new password for your Outliers Studio account:
       </p>
@@ -298,67 +300,183 @@ export const sendPasswordResetEmail = async (to, name, token) => {
 };
 
 export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
-  const shortOrderId = orderId.slice(-8).toUpperCase();
-  const displayName = name || to.split("@")[0] || "Customer";
-  const orderUrl = `${env.FRONTEND_URL}/profile`;
+  const shortOrderId = orderId ? orderId.slice(-8).toUpperCase() : "N/A";
+  let displayName = name || to.split("@")[0] || "Customer";
+  const orderUrl = `${env.FRONTEND_URL}/profile?tab=orders&orderId=${orderId}`;
+
+  // Fetch complete order details if available in database
+  let orderData = null;
+  if (orderId) {
+    try {
+      orderData = await db.order.findUnique({
+        where: { id: orderId },
+        include: {
+          items: true,
+          address: true,
+          payment: true,
+          coupon: true,
+          user: { select: { name: true, email: true } },
+        },
+      });
+      if (orderData?.user?.name) displayName = orderData.user.name;
+    } catch (e) {
+      logger.warn("Could not query extended order details for email:", e.message);
+    }
+  }
+
+  const items = orderData?.items || [];
+  const address = orderData?.address;
+  const payment = orderData?.payment;
+  const isCod = payment?.method === "COD";
+  const subtotal = orderData ? Number(orderData.subtotal || 0) : Number(total || 0);
+  const discount = orderData ? Number(orderData.discount || 0) : 0;
+  const shipping = orderData ? Number(orderData.shippingCharge || 0) : 0;
+  const finalTotal = orderData ? Number(orderData.total || 0) : Number(total || 0);
+
+  // Render Purchased Items Rows
+  const itemsHtml = items.length > 0
+    ? items.map((item) => {
+        const itemImage = item.imageSnapshot || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=160&q=80";
+        const itemPrice = Number(item.priceSnapshot || 0) * (item.quantity || 1);
+        return `
+          <tr>
+            <td style="padding: 14px 0; border-bottom: 1px solid #23201a; vertical-align: middle;" width="64">
+              <img src="${itemImage}" alt="${item.titleSnapshot}" width="56" height="70" style="border-radius: 8px; object-fit: cover; display: block; border: 1px solid #2d2922;" />
+            </td>
+            <td style="padding: 14px 12px; border-bottom: 1px solid #23201a; vertical-align: middle;">
+              <p style="margin: 0 0 4px; font-weight: 700; color: #ffffff; font-size: 13.5px; line-height: 1.3;">
+                ${item.titleSnapshot}
+              </p>
+              <p style="margin: 0; color: #9c978e; font-size: 11.5px;">
+                ${item.variantSnapshot ? `${item.variantSnapshot} · ` : ""}Qty: ${item.quantity}
+              </p>
+            </td>
+            <td align="right" style="padding: 14px 0; border-bottom: 1px solid #23201a; vertical-align: middle; font-weight: 800; color: #ffffff; font-size: 14px;">
+              ₹${itemPrice.toFixed(2)}
+            </td>
+          </tr>
+        `;
+      }).join("")
+    : `
+      <tr>
+        <td colspan="3" style="padding: 12px 0; color: #9c978e; font-size: 13px;">
+          Order #${shortOrderId} — Status: Being Prepared for Dispatch
+        </td>
+      </tr>
+    `;
 
   const customerContent = `
-    <div style="text-align: center; margin-bottom: 28px;">
-      <div style="display: inline-block; width: 56px; height: 56px; border-radius: 50%; background: rgba(34, 197, 94, 0.12); border: 1px solid #22c55e; line-height: 54px; font-size: 24px; color: #22c55e; margin-bottom: 16px;">
+    <!-- Top Status Banner -->
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div style="display: inline-block; width: 54px; height: 54px; border-radius: 50%; background: rgba(34, 197, 94, 0.12); border: 1px solid #22c55e; line-height: 52px; font-size: 22px; color: #22c55e; margin-bottom: 14px;">
         ✓
       </div>
-      <h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">
+      <h2 style="margin: 0 0 6px; font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: -0.02em;">
         Order Confirmed! 🎉
       </h2>
-      <p style="margin: 0; color: #9c978e; font-size: 14px;">
+      <p style="margin: 0; color: #a39e94; font-size: 14px;">
         Thank you for ordering with us, <strong style="color: #ffffff;">${displayName}</strong>.
       </p>
     </div>
 
-    <!-- Order Receipt Card -->
-    <div style="background-color: #171511; border: 1px solid #28241c; border-radius: 16px; padding: 24px; margin-bottom: 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #26221a; padding-bottom: 16px; margin-bottom: 16px;">
-        <div>
-          <span style="font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #8a857b; text-transform: uppercase;">Order Number</span>
-          <div style="font-size: 16px; font-weight: 800; color: #c5a968; font-family: monospace; margin-top: 2px;">#${shortOrderId}</div>
-        </div>
-        <div style="text-align: right;">
-          <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; background-color: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">
-            CONFIRMED
-          </span>
-        </div>
-      </div>
-
-      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 12px 0;">
+    <!-- Order Header Pill Box -->
+    <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 14px; padding: 18px 20px; margin-bottom: 20px;">
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
-          <td style="padding: 10px 0; color: #9e998e; font-size: 13px; border-bottom: 1px solid #1f1c16;">Status</td>
-          <td style="padding: 10px 0; color: #ffffff; font-weight: 700; text-align: right; font-size: 13px; border-bottom: 1px solid #1f1c16;">Being Prepared for Dispatch</td>
-        </tr>
-        <tr>
-          <td style="padding: 12px 0; color: #ffffff; font-size: 15px; font-weight: 700;">Total Amount</td>
-          <td style="padding: 12px 0; color: #c5a968; font-weight: 900; text-align: right; font-size: 18px;">₹${Number(total).toFixed(2)}</td>
+          <td>
+            <span style="font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; color: #7d786f; text-transform: uppercase;">Order Number</span>
+            <div style="font-size: 17px; font-weight: 900; color: #c5a968; font-family: monospace; margin-top: 3px;">#${shortOrderId}</div>
+          </td>
+          <td align="right">
+            <span style="display: inline-block; padding: 5px 12px; border-radius: 20px; background-color: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">
+              CONFIRMED
+            </span>
+          </td>
         </tr>
       </table>
-
-      <div style="text-align: center; margin-top: 20px;">
-        <a href="${orderUrl}"
-           style="display: inline-block; background: linear-gradient(135deg, #c5a968 0%, #a88947 100%); color: #000000; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 12px; box-shadow: 0 4px 16px rgba(197, 169, 104, 0.3);">
-          View Order in Profile
-        </a>
-      </div>
     </div>
 
-    <p style="margin: 0; text-align: center; color: #6b665d; font-size: 12px; line-height: 1.6;">
-      You will receive live tracking notifications as soon as your package ships from our studio warehouse.
+    <!-- Items Section -->
+    <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 16px; padding: 20px 22px; margin-bottom: 20px;">
+      <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.15em; color: #7d786f; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid #24211b; padding-bottom: 8px;">
+        Items in Your Order
+      </div>
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        ${itemsHtml}
+      </table>
+
+      <!-- Totals Breakdown -->
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 14px;">
+        <tr>
+          <td style="padding: 6px 0; color: #8c877e; font-size: 13px;">Subtotal</td>
+          <td align="right" style="padding: 6px 0; color: #d6d3cd; font-weight: 600; font-size: 13px;">₹${subtotal.toFixed(2)}</td>
+        </tr>
+        ${discount > 0 ? `
+          <tr>
+            <td style="padding: 6px 0; color: #4ade80; font-size: 13px;">Discount ${orderData?.coupon?.code ? `(${orderData.coupon.code})` : ""}</td>
+            <td align="right" style="padding: 6px 0; color: #4ade80; font-weight: 700; font-size: 13px;">-₹${discount.toFixed(2)}</td>
+          </tr>
+        ` : ""}
+        <tr>
+          <td style="padding: 6px 0; color: #8c877e; font-size: 13px;">Shipping</td>
+          <td align="right" style="padding: 6px 0; color: #4ade80; font-weight: 600; font-size: 13px;">${shipping > 0 ? `₹${shipping.toFixed(2)}` : "Free"}</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0 4px; color: #ffffff; font-size: 15px; font-weight: 800; border-top: 1px solid #28241c;">Total Paid</td>
+          <td align="right" style="padding: 12px 0 4px; color: #c5a968; font-weight: 900; font-size: 20px; border-top: 1px solid #28241c;">₹${finalTotal.toFixed(2)}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Shipping & Payment Information -->
+    <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 16px; padding: 20px 22px; margin-bottom: 24px;">
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="vertical-align: top; padding-bottom: 12px;">
+            <span style="font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; color: #7d786f; text-transform: uppercase;">Shipping Address</span>
+            ${address ? `
+              <p style="margin: 6px 0 2px; font-weight: 700; color: #ffffff; font-size: 13px;">${address.name}</p>
+              <p style="margin: 0; color: #a39e94; font-size: 12.5px; line-height: 1.5;">
+                ${address.line1}${address.line2 ? `, ${address.line2}` : ""}<br />
+                ${address.city}, ${address.state} — ${address.pincode}<br />
+                ${address.phone ? `Phone: ${address.phone}` : ""}
+              </p>
+            ` : `
+              <p style="margin: 6px 0 0; color: #a39e94; font-size: 12.5px;">Registered delivery address on file</p>
+            `}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 12px; border-top: 1px solid #24211b;">
+            <span style="font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; color: #7d786f; text-transform: uppercase;">Payment Method</span>
+            <p style="margin: 4px 0 0; font-weight: 700; color: #ffffff; font-size: 13px;">
+              ${isCod ? "🚚 Cash on Delivery (COD)" : "⚡ Paid Online via Razorpay"}
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Action Button -->
+    <div style="text-align: center; margin-bottom: 16px;">
+      <a href="${orderUrl}"
+         style="display: inline-block; background: linear-gradient(135deg, #c5a968 0%, #a88947 100%); color: #000000; padding: 15px 36px; border-radius: 12px; text-decoration: none; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; font-size: 12px; box-shadow: 0 6px 20px rgba(197, 169, 104, 0.35);">
+        Track Shipment in Profile →
+      </a>
+    </div>
+
+    <p style="margin: 0; text-align: center; color: #6b665d; font-size: 11.5px; line-height: 1.6;">
+      You will receive real-time tracking updates as soon as your parcel is dispatched from our Mumbai studio.
     </p>
   `;
 
   await sendEmail({
     to,
+    toName: displayName,
     subject: `Order Confirmed #${shortOrderId} — The Outliers Studio`,
     html: renderEmailLayout({
       title: `Order Confirmed #${shortOrderId} — The Outliers Studio`,
-      preheader: `Thank you for your order #${shortOrderId}! Total: ₹${Number(total).toFixed(2)}.`,
+      preheader: `Thank you for your order #${shortOrderId}! Total: ₹${finalTotal.toFixed(2)}.`,
       content: customerContent,
     }),
   });
@@ -378,7 +496,7 @@ export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
         </p>
       </div>
 
-      <div style="background-color: #171511; border: 1px solid #28241c; border-radius: 16px; padding: 22px; margin-bottom: 24px;">
+      <div style="background-color: #181612; border: 1px solid #28241c; border-radius: 16px; padding: 22px; margin-bottom: 24px;">
         <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td style="padding: 8px 0; color: #8a857b; font-size: 12.5px; border-bottom: 1px solid #221e17;">Customer</td>
@@ -390,7 +508,11 @@ export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
           </tr>
           <tr>
             <td style="padding: 10px 0; color: #ffffff; font-size: 14px; font-weight: 700;">Total Amount</td>
-            <td style="padding: 10px 0; color: #4ade80; font-weight: 900; text-align: right; font-size: 16px;">₹${Number(total).toFixed(2)}</td>
+            <td style="padding: 10px 0; color: #4ade80; font-weight: 900; text-align: right; font-size: 16px;">₹${finalTotal.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #8a857b; font-size: 12.5px;">Payment</td>
+            <td style="padding: 8px 0; color: #ffffff; font-weight: 700; text-align: right; font-size: 12.5px;">${isCod ? "COD" : "Online (Razorpay)"}</td>
           </tr>
         </table>
 
@@ -405,10 +527,10 @@ export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
 
     sendEmail({
       to: env.ADMIN_EMAIL,
-      subject: `🚨 [Outliers Studio] New Order #${shortOrderId} (₹${Number(total).toFixed(2)})`,
+      subject: `🚨 [Outliers Studio] New Order #${shortOrderId} (₹${finalTotal.toFixed(2)})`,
       html: renderEmailLayout({
         title: `New Order #${shortOrderId} — The Outliers Studio Admin`,
-        preheader: `New order #${shortOrderId} placed by ${displayName} for ₹${Number(total).toFixed(2)}.`,
+        preheader: `New order #${shortOrderId} placed by ${displayName} for ₹${finalTotal.toFixed(2)}.`,
         content: adminContent,
       }),
     }).catch((e) => logger.error("Admin order notification email failed:", e));
