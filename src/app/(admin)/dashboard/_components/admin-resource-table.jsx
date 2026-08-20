@@ -102,43 +102,39 @@ export function AdminResourceTable({ resource }) {
         const val = getValue();
         if (resource === "coupons" && field === "code") {
           return (
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg font-mono font-extrabold text-xs tracking-wider text-amber-950 dark:text-amber-200 shadow-xs">
-                <Tag className="size-3 text-amber-600 shrink-0" />
-                {String(val)}
-              </span>
-            </div>
+            <span className="font-mono font-bold text-xs tracking-wider text-neutral-900 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800 px-2.5 py-1 rounded-md border border-neutral-200 dark:border-neutral-700 select-all">
+              {String(val)}
+            </span>
           );
         }
         if (resource === "coupons" && field === "value") {
           const isFlat = row.original.discountType === "FLAT";
           const numVal = Number(val);
           return (
-            <div className="flex flex-col gap-0.5">
-              <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit shadow-xs ${
-                  isFlat
-                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
-                    : "bg-blue-50 text-blue-800 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
-                }`}
-              >
-                {isFlat ? `₹${numVal || val} FLAT` : `${numVal || val}% OFF`}
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-sm text-neutral-900 dark:text-white">
+                {isFlat ? `₹${numVal || val}` : `${numVal || val}%`}
+              </span>
+              <span className="text-[11px] text-neutral-400 font-medium tracking-wide uppercase">
+                {isFlat ? "Flat Off" : "Discount"}
               </span>
             </div>
           );
         }
         if (resource === "coupons" && field === "description") {
           return val ? (
-            <span className="text-xs text-neutral-600 dark:text-neutral-300 font-medium line-clamp-1 max-w-[260px]">
+            <span className="text-xs text-neutral-600 dark:text-neutral-400 font-normal line-clamp-1 max-w-[280px]">
               {String(val)}
             </span>
           ) : (
-            <span className="text-xs text-neutral-400 italic font-normal">
-              No description
-            </span>
+            <span className="text-xs text-neutral-300 dark:text-neutral-600">—</span>
           );
         }
-        return String(val || "—");
+        return (
+          <span className="text-xs text-neutral-700 dark:text-neutral-300 font-medium">
+            {val !== undefined && val !== null && String(val).trim() !== "" ? String(val) : "—"}
+          </span>
+        );
       },
     }));
 
@@ -152,24 +148,15 @@ export function AdminResourceTable({ resource }) {
             <button
               type="button"
               onClick={() => handleToggleRecommend(row.original.id)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none shadow-xs ${
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                 isRec
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
-                  : "bg-neutral-100 text-neutral-600 border border-neutral-200 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800"
+                  : "bg-neutral-50 text-neutral-500 border-neutral-200 hover:bg-neutral-100 hover:text-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-400 dark:border-neutral-700"
               }`}
-              title={isRec ? "Currently visible in cart (Click to hide)" : "Currently hidden (Click to recommend in cart)"}
+              title={isRec ? "Click to hide from cart recommendations" : "Click to recommend in cart"}
             >
-              {isRec ? (
-                <>
-                  <Check className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Visible in Cart</span>
-                </>
-              ) : (
-                <>
-                  <EyeOff className="size-3.5 text-neutral-400" />
-                  <span>Hidden / Private</span>
-                </>
-              )}
+              <span className={`size-1.5 rounded-full ${isRec ? "bg-emerald-500" : "bg-neutral-400"}`} />
+              <span>{isRec ? "Visible in Cart" : "Hidden"}</span>
             </button>
           );
         },
@@ -180,19 +167,19 @@ export function AdminResourceTable({ resource }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-end gap-1">
           <button
             type="button"
-            className="admin-table-action"
+            className="p-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors cursor-pointer"
             onClick={() => setEditingRow(row.original)}
             aria-label="Edit item"
             title="Edit item"
           >
-            <Pencil className="size-3.5" />
+            <Pencil className="size-4" />
           </button>
           <button
             type="button"
-            className="admin-table-action delete text-red-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+            className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
             onClick={async () => {
               if (window.confirm(`Delete this ${singular}?`)) {
                 try {
@@ -206,7 +193,7 @@ export function AdminResourceTable({ resource }) {
             aria-label="Delete record"
             title="Delete record"
           >
-            <Trash2 className="size-3.5" />
+            <Trash2 className="size-4" />
           </button>
         </div>
       ),
