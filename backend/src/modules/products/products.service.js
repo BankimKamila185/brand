@@ -11,6 +11,25 @@ function sanitizeProduct(product) {
       src: normalizeR2Url(img.src),
     }));
   }
+  if (Array.isArray(product.variants)) {
+    product.variants = product.variants.map((v) => {
+      const warehouseQty = Array.isArray(v.warehouseStocks)
+        ? v.warehouseStocks.reduce((sum, s) => sum + (Number(s.quantity) || 0), 0)
+        : 0;
+      const invQty = Number(v.inventory?.quantity ?? 0);
+      const totalQty = Math.max(invQty, warehouseQty);
+      const reserved = Number(v.inventory?.reserved ?? 0);
+      const isAvailable = (totalQty - reserved) > 0;
+      return {
+        ...v,
+        available: isAvailable,
+        inventory: {
+          quantity: totalQty,
+          reserved: reserved,
+        },
+      };
+    });
+  }
   return product;
 }
 
@@ -41,6 +60,7 @@ const productListSelect = {
       comparePrice: true,
       position: true,
       inventory: { select: { quantity: true, reserved: true } },
+      warehouseStocks: { select: { quantity: true, warehouseId: true } },
     },
     orderBy: { position: "asc" },
   },
@@ -96,6 +116,7 @@ const productDetailSelect = {
       taxable: true,
       requiresShipping: true,
       inventory: { select: { quantity: true, reserved: true } },
+      warehouseStocks: { select: { quantity: true, warehouseId: true } },
     },
     orderBy: { position: "asc" },
   },

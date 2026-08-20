@@ -33,19 +33,33 @@ const mapProduct = (bp) => ({
   product_type: bp.productType || "Apparel",
   tags: bp.tags || [],
   variants:
-    bp.variants?.map((v) => ({
-      id: v.id,
-      title: v.title,
-      option1: v.option1 || null,
-      option2: v.option2 || null,
-      price: v.price,
-      compare_at_price: v.comparePrice || null,
-      available: v.inventory
-        ? (Number(v.inventory.quantity ?? 1) - Number(v.inventory.reserved ?? 0)) >= 0
-        : v.available !== false,
-      position: v.position || 1,
-      product_id: bp.id,
-    })) || [],
+    bp.variants?.map((v) => {
+      const whQty = Array.isArray(v.warehouseStocks)
+        ? v.warehouseStocks.reduce((sum, s) => sum + (Number(s.quantity) || 0), 0)
+        : 0;
+      const invQty = Number(v.inventory?.quantity ?? 0);
+      const totalQty = Math.max(invQty, whQty);
+      const reserved = Number(v.inventory?.reserved ?? 0);
+      const inStock = v.available !== undefined
+        ? v.available !== false
+        : (totalQty - reserved) > 0;
+
+      return {
+        id: v.id,
+        title: v.title,
+        option1: v.option1 || null,
+        option2: v.option2 || null,
+        price: v.price,
+        compare_at_price: v.comparePrice || null,
+        available: inStock,
+        position: v.position || 1,
+        product_id: bp.id,
+        inventory: {
+          quantity: totalQty,
+          reserved,
+        },
+      };
+    }) || [],
   images:
     bp.images?.map((img) => ({
       id: img.id,
@@ -57,7 +71,7 @@ const mapProduct = (bp) => ({
     {
       name: "Size",
       position: 1,
-      values: bp.variants?.map((v) => v.option1).filter(Boolean) || [],
+      values: bp.variants?.map((v) => v.option1 || v.title).filter(Boolean) || [],
     },
   ],
 });
@@ -546,8 +560,11 @@ export default function ProductDetailPage({ params }) {
   }, [product]);
 
   const getActiveVariant = () =>
-    product?.variants.find((v) => v.option1 === selectedSize || v.title === selectedSize) ||
-    product?.variants[0];
+    product?.variants.find((v) => {
+      const vSize = (v.option1 || v.title || "").trim().toLowerCase();
+      const sSize = (selectedSize || "").trim().toLowerCase();
+      return vSize === sSize;
+    }) || product?.variants[0];
 
   const handleAddToCart = () => {
     addToCart(product, selectedSize, quantity);
@@ -861,9 +878,13 @@ export default function ProductDetailPage({ params }) {
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {sizes.map((size) => {
-                      const v = product.variants.find((v) => v.option1 === size || v.title === size);
+                      const v = product.variants.find((v) => {
+                        const vSize = (v.option1 || v.title || "").trim().toLowerCase();
+                        const sSize = (size || "").trim().toLowerCase();
+                        return vSize === sSize;
+                      });
                       const isSoldOut = v ? v.available === false : false;
-                      const isActive = selectedSize === size;
+                      const isActive = (selectedSize || "").trim().toLowerCase() === (size || "").trim().toLowerCase();
                       return (
                         <button
                           className={`pdp-size-option${isActive ? " active" : ""}${isSoldOut ? " sold-out" : ""}`}
