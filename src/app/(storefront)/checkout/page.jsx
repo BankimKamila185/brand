@@ -83,11 +83,7 @@ export default function CheckoutPage() {
     return () => { isMounted = false; };
   }, []);
 
-  useEffect(() => {
-    if (appliedCoupon?.code) {
-      setCouponInput(appliedCoupon.code);
-    }
-  }, [appliedCoupon]);
+  // Coupon input state is managed independently when user enters a new coupon
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -328,9 +324,9 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const applyCoupon = async (event) => {
-    event.preventDefault();
-    const code = couponInput.trim();
+  const applyCoupon = async (eventOrCode) => {
+    if (eventOrCode?.preventDefault) eventOrCode.preventDefault();
+    const code = (typeof eventOrCode === "string" ? eventOrCode : couponInput).trim();
     if (!code) return;
     setCouponError("");
     setCouponLoading(true);
@@ -338,6 +334,7 @@ export default function CheckoutPage() {
       const response = await couponsApi.validate(code, subtotal);
       if (!response.success || !response.data) throw new Error("This coupon is not valid.");
       setAppliedCoupon(response.data);
+      setCouponInput("");
     } catch (error) {
       setCouponError(error?.message || "This coupon is not valid.");
     } finally {
@@ -804,13 +801,28 @@ function Input({ label, name, value, onChange, full = false }) {
   return <label className={full ? "md:col-span-2" : ""}><span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">{label}</span><input required={!name.includes("line2")} value={value} onChange={(event) => onChange((address) => ({ ...address, [name]: event.target.value }))} className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-3 text-sm outline-none focus:border-black" /></label>;
 }
 
-function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, total, couponInput, setCouponInput, applyCoupon, appliedCoupon, removeCoupon, couponError, couponLoading, recommendedCoupons = [] }) {
+function OrderSummary({
+  cart,
+  subtotal,
+  discountAmount = 0,
+  shippingCharge,
+  total,
+  couponInput,
+  setCouponInput,
+  applyCoupon,
+  appliedCoupon,
+  removeCoupon,
+  couponError,
+  couponLoading,
+  recommendedCoupons = [],
+}) {
   return (
     <section className="checkout-v3-order">
       <div className="checkout-v3-order-top">
         <p className="checkout-v3-eyebrow">Your bag</p>
-        <h2>Order total</h2>
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-neutral-900">Order total</h2>
       </div>
+
       <div className="checkout-items">
         {cart.map((item, index) => {
           const variants = item.product?.variants || [];
@@ -821,69 +833,125 @@ function OrderSummary({ cart, subtotal, discountAmount = 0, shippingCharge, tota
           return (
             <div key={item.variantId || index} className="checkout-v3-product">
               <img src={imageSrc} alt={title} />
-              <div>
-                <p>{title}</p>
+              <div className="min-w-0">
+                <p className="truncate">{title}</p>
                 <span>Size {item.selectedSize || "M"} · Qty {item.quantity || 1}</span>
               </div>
-              <strong>₹{(price * (item.quantity || 1)).toFixed(2)}</strong>
+              <strong className="flex-shrink-0 font-bold">₹{(price * (item.quantity || 1)).toFixed(2)}</strong>
             </div>
           );
         })}
       </div>
-      <form onSubmit={applyCoupon} className="checkout-v3-coupon">
-        <input value={couponInput} onChange={(event) => setCouponInput(event.target.value)} placeholder="Coupon code" />
-        <button disabled={couponLoading}>{couponLoading ? "…" : "Apply"}</button>
-      </form>
-      {couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}
-      {appliedCoupon && (
-        <p className="mt-2 flex items-center justify-between text-xs font-bold text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
-          <span><Tag className="mr-1 inline" size={13} />{appliedCoupon.code} applied</span>
-          <button type="button" onClick={removeCoupon} className="text-red-500 hover:underline">Remove</button>
-        </p>
-      )}
 
-      {/* Available Offers / Recommended Coupons */}
-      {recommendedCoupons.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-neutral-100 flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-            <Sparkles size={11} className="text-amber-500" /> Available Offers
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {recommendedCoupons.map((c) => {
-              const isApplied = appliedCoupon?.code === c.code;
-              return (
-                <button
-                  key={c.id || c.code}
-                  type="button"
-                  onClick={() => {
-                    setCouponInput(c.code);
-                  }}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all cursor-pointer ${
-                    isApplied
-                      ? "bg-emerald-100 border-emerald-300 text-emerald-800"
-                      : "bg-neutral-100/90 border-neutral-200 text-neutral-700 hover:border-black hover:bg-white"
-                  }`}
-                >
-                  <span className="uppercase">{c.code}</span>
-                  <span className="text-[9px] text-neutral-500">
-                    ({c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`})
+      {/* Coupon & Promo Section */}
+      <div className="checkout-discount-wrapper mt-4">
+        {appliedCoupon ? (
+          <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 transition-all">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                <Tag size={13} className="stroke-[2.5]" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-extrabold text-xs tracking-wider uppercase text-neutral-900 font-mono">
+                    {appliedCoupon.code}
                   </span>
-                </button>
-              );
-            })}
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-200/70 text-emerald-800 tracking-wide">
+                    {appliedCoupon.discountType === "PERCENTAGE" ? `${appliedCoupon.value}% OFF` : `₹${appliedCoupon.value} OFF`}
+                  </span>
+                </div>
+                {discountAmount > 0 && (
+                  <p className="text-[11px] text-emerald-700 font-medium mt-0.5">
+                    Saved ₹{discountAmount.toFixed(2)} on this order
+                  </p>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={removeCoupon}
+              className="text-xs font-bold text-neutral-500 hover:text-red-600 px-2.5 py-1 rounded-md hover:bg-white/80 border border-transparent hover:border-neutral-200 transition-all ml-2 flex-shrink-0 cursor-pointer"
+            >
+              Remove
+            </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <form onSubmit={applyCoupon} className="checkout-v3-coupon">
+            <input
+              value={couponInput}
+              onChange={(event) => setCouponInput(event.target.value)}
+              placeholder="Coupon code"
+              spellCheck={false}
+              autoComplete="off"
+            />
+            <button type="submit" disabled={couponLoading || !couponInput.trim()}>
+              {couponLoading ? <Loader2 size={13} className="animate-spin" /> : "Apply"}
+            </button>
+          </form>
+        )}
 
-      <div className="checkout-v3-totals mt-3">
+        {couponError && (
+          <p className="mt-2 text-xs font-medium text-red-600 flex items-center gap-1.5">
+            <AlertCircle size={13} /> {couponError}
+          </p>
+        )}
+
+        {/* Available Offers / Recommended Coupons */}
+        {recommendedCoupons.length > 0 && (
+          <div className="mt-3.5 pt-3 border-t border-neutral-100 flex flex-col gap-2">
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles size={11} className="text-amber-500" /> Available Offers
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {recommendedCoupons.map((c) => {
+                const isApplied = appliedCoupon?.code === c.code;
+                return (
+                  <button
+                    key={c.id || c.code}
+                    type="button"
+                    onClick={() => {
+                      if (isApplied) return;
+                      applyCoupon(c.code);
+                    }}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                      isApplied
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs pointer-events-none"
+                        : "bg-white border-neutral-200 text-neutral-800 hover:border-neutral-900 hover:shadow-xs"
+                    }`}
+                  >
+                    <span className="uppercase text-[11px] font-mono font-extrabold">{c.code}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                      isApplied ? "bg-emerald-200/70 text-emerald-900" : "bg-neutral-100 text-neutral-600"
+                    }`}>
+                      {c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`}
+                    </span>
+                    {isApplied && <Check size={12} className="text-emerald-700 stroke-[3]" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Totals Breakdown */}
+      <div className="checkout-v3-totals mt-4">
         <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
         {appliedCoupon && discountAmount > 0 && (
-          <Row label={`Discount (${appliedCoupon.code})`} value={`-₹${discountAmount.toFixed(2)}`} />
+          <div className="flex justify-between items-center py-1 text-xs text-emerald-600 font-semibold">
+            <span>Discount ({appliedCoupon.code})</span>
+            <span>-₹{discountAmount.toFixed(2)}</span>
+          </div>
         )}
-        <Row label="Shipping" value={shippingCharge ? `₹${shippingCharge.toFixed(2)}` : "Free"} />
-        <div>
-          <span>Total</span>
-          <strong>₹{total.toFixed(2)}</strong>
+        <Row
+          label="Shipping"
+          value={shippingCharge ? `₹${shippingCharge.toFixed(2)}` : "Free"}
+        />
+        <div className="flex justify-between items-baseline pt-3 mt-2 border-t border-neutral-200">
+          <span className="font-bold text-sm tracking-tight text-neutral-900">Total</span>
+          <strong className="font-extrabold text-2xl tracking-tight text-neutral-900 font-display">
+            ₹{total.toFixed(2)}
+          </strong>
         </div>
       </div>
     </section>
