@@ -388,13 +388,16 @@ export default function ProductDetailPage({ params }) {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+      const cleanHandle = decodeURIComponent(handle || "").trim().toLowerCase();
       try {
-        const res = await productsApi.getByHandle(handle);
+        const res = await productsApi.getByHandle(cleanHandle);
         if (res.success && res.data) {
           setProduct(mapProduct(res.data));
         } else {
           // Fallback to local product
-          const localProduct = localProducts.products.find(p => p.handle === handle);
+          const localProduct = localProducts.products.find(
+            (p) => p.handle.toLowerCase() === cleanHandle
+          );
           if (localProduct) {
             setProduct({
               id: localProduct.id,
@@ -404,21 +407,21 @@ export default function ProductDetailPage({ params }) {
               vendor: localProduct.vendor,
               product_type: localProduct.product_type,
               tags: localProduct.tags,
-              variants: localProduct.variants.map(v => ({
+              variants: localProduct.variants.map((v) => ({
                 id: v.id,
                 title: v.title,
                 option1: v.option1,
                 option2: v.option2,
                 price: v.price,
                 compare_at_price: v.compare_at_price,
-                available: v.available
+                available: v.available,
               })),
-              images: localProduct.images.map(img => ({
+              images: localProduct.images.map((img) => ({
                 id: img.id,
                 src: img.src,
-                alt_text: img.alt
+                alt_text: img.alt,
               })),
-              options: localProduct.options
+              options: localProduct.options,
             });
           } else {
             setProduct(null);
@@ -426,7 +429,9 @@ export default function ProductDetailPage({ params }) {
         }
       } catch {
         // Fallback to local product if API fails
-        const localProduct = localProducts.products.find(p => p.handle === handle);
+        const localProduct = localProducts.products.find(
+          (p) => p.handle.toLowerCase() === cleanHandle
+        );
         if (localProduct) {
           setProduct({
             id: localProduct.id,
@@ -436,21 +441,21 @@ export default function ProductDetailPage({ params }) {
             vendor: localProduct.vendor,
             product_type: localProduct.product_type,
             tags: localProduct.tags,
-            variants: localProduct.variants.map(v => ({
+            variants: localProduct.variants.map((v) => ({
               id: v.id,
               title: v.title,
               option1: v.option1,
               option2: v.option2,
               price: v.price,
               compare_at_price: v.compare_at_price,
-              available: v.available
+              available: v.available,
             })),
-            images: localProduct.images.map(img => ({
+            images: localProduct.images.map((img) => ({
               id: img.id,
               src: img.src,
-              alt_text: img.alt
+              alt_text: img.alt,
             })),
-            options: localProduct.options
+            options: localProduct.options,
           });
         } else {
           setProduct(null);
