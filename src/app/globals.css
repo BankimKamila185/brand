@@ -6719,14 +6719,25 @@ textarea.form-input {
 .admin-refresh-button { background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; color: #3f3f46; font-size: 13px; font-weight: 700; gap: 8px; padding: 11px 14px; }
 .admin-refresh-button:hover { border-color: #b7b7bd; transform: translateY(-1px); }
 .admin-create-card, .admin-table-card { background: #fff; border: 1px solid #e7e7e8; border-radius: 24px; box-shadow: 0 10px 32px rgba(24, 24, 27, .04); }
-.admin-create-card { align-items: center; display: grid; gap: 24px; grid-template-columns: minmax(210px, .75fr) minmax(0, 1.25fr); padding: 28px; }
+.admin-create-card { align-items: start; display: grid; gap: 32px; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); padding: 28px; }
 .admin-create-card h2, .admin-table-card h2 { font-size: 22px; }
-.admin-create-form { align-items: end; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
-.admin-create-form label { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-.admin-create-form label span { color: #71717a; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: capitalize; }
-.admin-create-form input { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 11px; color: #18181b; font: inherit; font-size: 13px; height: 43px; min-width: 0; outline: none; padding: 0 12px; width: 100%; }
-.admin-create-form input:focus { background: #fff; border-color: #df5c35; box-shadow: 0 0 0 3px rgba(223, 92, 53, .12); }
-.admin-primary-button { align-self: end; background: #18181b; border-radius: 11px; color: #fff; font-size: 13px; font-weight: 700; gap: 8px; height: 43px; padding: 0 16px; white-space: nowrap; }
+.admin-create-header { display: flex; flex-direction: column; }
+.admin-create-form { display: flex; flex-direction: column; gap: 16px; width: 100%; min-width: 0; }
+.admin-create-fields { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); width: 100%; }
+.admin-create-fields .admin-field-group,
+.admin-create-form label:not(.admin-checkbox-row) { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.admin-create-fields span,
+.admin-create-form label:not(.admin-checkbox-row) span { color: #71717a; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: capitalize; }
+.admin-create-form input:not([type="checkbox"]):not([type="radio"]),
+.admin-create-form select { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 11px; color: #18181b; font: inherit; font-size: 13px; height: 43px; min-width: 0; outline: none; padding: 0 12px; width: 100%; box-sizing: border-box; transition: all .2s ease; }
+.admin-create-form input:not([type="checkbox"]):not([type="radio"]):focus,
+.admin-create-form select:focus { background: #fff; border-color: #df5c35; box-shadow: 0 0 0 3px rgba(223, 92, 53, .12); }
+.admin-create-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 4px; }
+.admin-checkbox-row { display: inline-flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important; font-size: 12px !important; font-weight: 700 !important; color: #27272a !important; cursor: pointer !important; user-select: none !important; margin: 0 !important; padding: 0 !important; }
+.admin-checkbox-row span { color: #27272a !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: normal !important; text-transform: none !important; }
+.admin-checkbox-row input[type="checkbox"],
+.admin-checkbox { appearance: auto !important; -webkit-appearance: checkbox !important; width: 16px !important; height: 16px !important; min-width: 16px !important; min-height: 16px !important; margin: 0 !important; padding: 0 !important; accent-color: #18181b !important; cursor: pointer !important; display: inline-block !important; }
+.admin-primary-button { align-self: center; background: #18181b; border-radius: 11px; color: #fff; font-size: 13px; font-weight: 700; gap: 8px; height: 43px; padding: 0 18px; white-space: nowrap; margin-left: auto; }
 .admin-primary-button:hover { background: #df5c35; box-shadow: 0 8px 18px rgba(223, 92, 53, .24); }
 .admin-table-card { overflow: hidden; }
 .admin-table-card-header { align-items: center; display: flex; justify-content: space-between; padding: 26px 28px 18px; }

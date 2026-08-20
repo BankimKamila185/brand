@@ -209,7 +209,7 @@ export function AdminResourceTable({ resource }) {
       </header>
 
       <section className="admin-create-card">
-        <div>
+        <div className="admin-create-header">
           <p className="admin-eyebrow">Quick create</p>
           <h2>New {singular}</h2>
           <p>Add the essential details now; you can refine them later.</p>
@@ -231,50 +231,52 @@ export function AdminResourceTable({ resource }) {
             }
           }}
         >
-          {resource === "coupons" && (
-            <label>
-              <span>Discount Type</span>
-              <select
-                name="discountType"
-                defaultValue="FLAT"
-                className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-900 dark:text-neutral-100"
-              >
-                <option value="FLAT">Flat Amount (₹)</option>
-                <option value="PERCENTAGE">Percentage (%)</option>
-              </select>
-            </label>
-          )}
+          <div className="admin-create-fields">
+            {resource === "coupons" && (
+              <label className="admin-field-group">
+                <span>Discount Type</span>
+                <select
+                  name="discountType"
+                  defaultValue="FLAT"
+                  className="admin-select"
+                >
+                  <option value="FLAT">Flat Amount (₹)</option>
+                  <option value="PERCENTAGE">Percentage (%)</option>
+                </select>
+              </label>
+            )}
 
-          {definition.fields.map((field) => (
-            <label key={field}>
-              <span>{field === "value" && resource === "coupons" ? "Value (Amount / %)" : field.replace(/([A-Z])/g, " $1")}</span>
-              <input
-                name={field}
-                placeholder={field === "value" && resource === "coupons" ? "e.g. 100 for ₹100 or 10 for 10%" : `Enter ${field}`}
-                required={field !== "description"}
-                className={resource === "coupons" && field === "code" ? "uppercase font-mono" : ""}
-              />
-            </label>
-          ))}
+            {definition.fields.map((field) => (
+              <label key={field} className="admin-field-group">
+                <span>{field === "value" && resource === "coupons" ? "Value (Amount / %)" : field.replace(/([A-Z])/g, " $1")}</span>
+                <input
+                  name={field}
+                  placeholder={field === "value" && resource === "coupons" ? "e.g. 100 for ₹100 or 10 for 10%" : `Enter ${field}`}
+                  required={field !== "description"}
+                  className={resource === "coupons" && field === "code" ? "uppercase font-mono tracking-wider font-bold" : ""}
+                />
+              </label>
+            ))}
+          </div>
 
-          {resource === "coupons" && (
-            <div className="col-span-full flex items-center gap-2 pt-2">
-              <label className="flex items-center gap-2 text-xs font-bold text-neutral-800 dark:text-neutral-200 cursor-pointer select-none">
+          <div className="admin-create-footer">
+            {resource === "coupons" ? (
+              <label className="admin-checkbox-row">
                 <input
                   type="checkbox"
                   name="isRecommended"
                   defaultChecked={true}
-                  className="size-4 accent-black rounded cursor-pointer"
+                  className="admin-checkbox"
                 />
-                <Sparkles size={14} className="text-amber-500" />
+                <Sparkles className="size-4 text-amber-500 shrink-0" />
                 <span>Show in Cart & Recommend to Customers (1-Click Apply)</span>
               </label>
-            </div>
-          )}
+            ) : <div />}
 
-          <button type="submit" className="admin-primary-button">
-            <Plus className="size-4" /> Create {singular}
-          </button>
+            <button type="submit" className="admin-primary-button">
+              <Plus className="size-4" /> Create {singular}
+            </button>
+          </div>
         </form>
       </section>
 
