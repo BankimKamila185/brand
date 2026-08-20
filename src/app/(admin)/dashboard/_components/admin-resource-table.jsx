@@ -50,7 +50,7 @@ function rowData(resource, form) {
   if (resource === "coupons") {
     return {
       code: value.code ? value.code.trim().toUpperCase() : "",
-      discountType: value.discountType || "PERCENTAGE",
+      discountType: value.discountType || "FLAT",
       value: Number(value.value),
       description: value.description ? value.description.trim() : null,
       isRecommended: value.isRecommended === "on" || value.isRecommended === "true" || value.isRecommended === true,
@@ -231,12 +231,26 @@ export function AdminResourceTable({ resource }) {
             }
           }}
         >
+          {resource === "coupons" && (
+            <label>
+              <span>Discount Type</span>
+              <select
+                name="discountType"
+                defaultValue="FLAT"
+                className="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-900 dark:text-neutral-100"
+              >
+                <option value="FLAT">Flat Amount (₹)</option>
+                <option value="PERCENTAGE">Percentage (%)</option>
+              </select>
+            </label>
+          )}
+
           {definition.fields.map((field) => (
             <label key={field}>
-              <span>{field.replace(/([A-Z])/g, " $1")}</span>
+              <span>{field === "value" && resource === "coupons" ? "Value (Amount / %)" : field.replace(/([A-Z])/g, " $1")}</span>
               <input
                 name={field}
-                placeholder={`Enter ${field}`}
+                placeholder={field === "value" && resource === "coupons" ? "e.g. 100 for ₹100 or 10 for 10%" : `Enter ${field}`}
                 required={field !== "description"}
                 className={resource === "coupons" && field === "code" ? "uppercase font-mono" : ""}
               />
@@ -367,10 +381,26 @@ export function AdminResourceTable({ resource }) {
               }}
               className="flex flex-col gap-4"
             >
+              {resource === "coupons" && (
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-xs font-bold text-neutral-700 dark:text-neutral-300 capitalize">
+                    Discount Type
+                  </span>
+                  <select
+                    name="discountType"
+                    defaultValue={editingRow.discountType || "FLAT"}
+                    className="px-3.5 py-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm outline-none focus:border-black dark:focus:border-white transition-colors"
+                  >
+                    <option value="FLAT">Flat Amount (₹)</option>
+                    <option value="PERCENTAGE">Percentage (%)</option>
+                  </select>
+                </label>
+              )}
+
               {definition.fields.map((field) => (
                 <label key={field} className="flex flex-col gap-1.5">
                   <span className="text-xs font-bold text-neutral-700 dark:text-neutral-300 capitalize">
-                    {field.replace(/([A-Z])/g, " $1")}
+                    {field === "value" && resource === "coupons" ? "Value (Amount / %)" : field.replace(/([A-Z])/g, " $1")}
                   </span>
                   <input
                     name={field}

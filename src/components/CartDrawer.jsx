@@ -102,6 +102,10 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
       } else if (normalized === "OUTLIERS21") {
         setAppliedCoupon({ code: "OUTLIERS21", discountType: "PERCENTAGE", value: 21, discount: Math.round(cartTotal * 0.21) });
         setCouponMessage("Coupon OUTLIERS21 applied: 21% discount!");
+      } else if (normalized === "HACKOUT100" || normalized === "FLAT100") {
+        const flatDiscount = Math.min(cartTotal, 100);
+        setAppliedCoupon({ code: normalized, discountType: "FLAT", value: 100, discount: flatDiscount });
+        setCouponMessage(`Coupon ${normalized} applied: Saved ₹100.00!`);
       } else {
         setAppliedCoupon(null);
         setCouponMessage(err?.message || "Invalid coupon code!");
@@ -548,7 +552,7 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
               <div className="drawer-summary-row text-green-600">
                 <span>
                   Discount ({appliedCoupon.code}
-                  {appliedCoupon.discountType === "PERCENTAGE" ? ` - ${appliedCoupon.value}%` : ""})
+                  {appliedCoupon.discountType === "PERCENTAGE" ? ` - ${appliedCoupon.value}%` : ` - ₹${appliedCoupon.value}`})
                 </span>
                 <span className="font-bold">-₹{discountAmount.toFixed(2)}</span>
               </div>

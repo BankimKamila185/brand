@@ -464,7 +464,7 @@ export default function CartPage() {
                       <div className="flex items-center justify-between text-green-600 font-medium">
                         <span>
                           Discount ({appliedCoupon.code}
-                          {appliedCoupon.discountType === "PERCENTAGE" ? ` - ${appliedCoupon.value}%` : ""})
+                          {appliedCoupon.discountType === "PERCENTAGE" ? ` - ${appliedCoupon.value}%` : ` - ₹${appliedCoupon.value}`})
                         </span>
                         <span className="font-bold">-₹{discountAmount.toFixed(2)}</span>
                       </div>
