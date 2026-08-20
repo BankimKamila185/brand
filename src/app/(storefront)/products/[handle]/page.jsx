@@ -54,7 +54,7 @@ const mapProduct = (bp) => ({
         product_id: bp.id,
         inventory: {
           quantity: totalQty,
-          reserved,
+          reserved: 0,
         },
       };
     }) || [],
