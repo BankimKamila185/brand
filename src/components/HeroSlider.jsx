@@ -6,6 +6,13 @@ import Link from "next/link";
 
 const HERO_SLIDES = [
   {
+    title: "BUILT DIFFERENT. MADE TO OUTLIVE.",
+    subtitle: "Streetwear For The Few. Immortal • Grind • Rise • Fall",
+    link: "/collections/all",
+    desktopImg: "/oni-immortal-hero-banner.png",
+    mobileImg: "/oni-immortal-hero-banner-mobile.png",
+  },
+  {
     title: "BUILT DIFFERENT. WORN BY FEW.",
     subtitle: "Rooted in Strength. Designed to Stand Out.",
     link: "/collections/all",
