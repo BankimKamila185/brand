@@ -118,6 +118,7 @@ router.get(
           id: true,
           title: true,
           handle: true,
+          description: true,
           productType: true,
           tags: true,
           variants: {

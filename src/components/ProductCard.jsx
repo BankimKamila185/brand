@@ -161,11 +161,10 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
   };
 
   // Description text for list view
-  const cleanDescription = product.body_html
-    ? product.body_html.replace(/<[^>]*>/g, "").trim()
-    : product.description
-    ? String(product.description).replace(/<[^>]*>/g, "").trim()
-    : "-Color : Yellow -Casual shirt -Button down collar with placket -Single pocket, long regular sleeves, curved hem...";
+  const rawDesc = product.body_html || product.description || "";
+  const cleanDescription = rawDesc
+    ? String(rawDesc).replace(/<[^>]*>/g, "").trim()
+    : `${product.productType || "Premium Oversized Graphic Tee"} — 240+ GSM Heavyweight French Terry Cotton. Custom high-density streetwear print.`;
 
   const reviewsCount =
     product.reviewsCount ??

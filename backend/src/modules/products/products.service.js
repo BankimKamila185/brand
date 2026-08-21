@@ -45,6 +45,7 @@ const productListSelect = {
   id: true,
   title: true,
   handle: true,
+  description: true,
   productType: true,
   vendor: true,
   tags: true,
