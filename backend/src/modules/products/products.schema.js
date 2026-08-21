@@ -30,11 +30,11 @@ export const productQuerySchema = z.object({
   available: z
     .string()
     .optional()
-    .transform((v) => v === "true"),
+    .transform((v) => (v !== undefined ? v === "true" : undefined)),
   includeInactive: z
     .string()
     .optional()
-    .transform((v) => v === "true"),
+    .transform((v) => (v !== undefined ? v === "true" : undefined)),
 });
 
 export const createProductSchema = z.object({

@@ -192,7 +192,7 @@ export const productsService = {
           { vendor: { contains: search, mode: "insensitive" } },
         ],
       }),
-      ...(available !== undefined && {
+      ...(available === true && {
         variants: {
           some: { isActive: true, inventory: { quantity: { gt: 0 } } },
         },
