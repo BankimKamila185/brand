@@ -406,7 +406,7 @@ export default function CartPage() {
                             return (
                               <div
                                 key={c.id || c.code}
-                                className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all ${
+                                className={`${styles.offerRow} ${
                                   isApplied
                                     ? "bg-emerald-50 border-emerald-300 text-emerald-900"
                                     : "bg-neutral-50/80 border-neutral-200/80 text-neutral-800 hover:border-neutral-400"
@@ -439,7 +439,7 @@ export default function CartPage() {
                                       setValidatingCoupon(false);
                                     }
                                   }}
-                                  className={`text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                  className={`${styles.offerApply} ${
                                     isApplied
                                       ? "bg-emerald-600 text-white"
                                       : "bg-black text-white hover:bg-neutral-800"
@@ -521,7 +521,7 @@ export default function CartPage() {
 
         {/* ── Recommended Products for You ── */}
         {recommendations.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6">
+          <section className={styles.recommendations}>
             <div className="flex items-center justify-between mb-8 border-b border-neutral-200/80 pb-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-5 text-amber-500" />
