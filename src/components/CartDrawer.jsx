@@ -72,7 +72,6 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
   }, [cartOpen]);
 
   // Expandable footer tabs state
-  const [showShipping, setShowShipping] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
 
   const handleApplyCoupon = async (e) => {
@@ -424,36 +423,12 @@ const CartDrawer = ({ onCheckoutSimulation }) => {
             {/* Expandable Panel Tabs */}
             <div className="drawer-footer-actions">
               <button
-                className={`footer-action-btn ${showShipping ? "active" : ""}`}
-                onClick={() => {
-                  setShowShipping(!showShipping);
-                  setShowCoupon(false);
-                }}
-              >
-                <Truck size={16} /> Shipping
-              </button>
-              <button
                 className={`footer-action-btn ${showCoupon ? "active" : ""}`}
-                onClick={() => {
-                  setShowCoupon(!showCoupon);
-                  setShowShipping(false);
-                }}
+                onClick={() => setShowCoupon(!showCoupon)}
               >
                 <Tag size={16} /> Coupon
               </button>
             </div>
-
-            {/* Shipping Panel */}
-            {showShipping && (
-              <div className="footer-panel-expand shipping-info">
-                <p>
-                  🚚 <strong>100% Free Shipping</strong> across India on all orders!
-                </p>
-                <p className="text-gray-500 text-xs">
-                  Estimated delivery: 3-5 business days with live tracking.
-                </p>
-              </div>
-            )}
 
             {/* Coupon Panel */}
             {showCoupon && (

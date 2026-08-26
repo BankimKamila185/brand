@@ -858,13 +858,17 @@ function OrderDetailView({ orderId, onBack }) {
                 </h3>
                 <div className="admin-info-rows">
                   <div className="admin-info-row">
-                    <span>Gateway:</span>
-                    <strong>Razorpay</strong>
+                    <span>Payment Method:</span>
+                    <strong>{order.payment?.method === "COD" ? "Cash on Delivery (COD)" : "Razorpay (Online)"}</strong>
                   </div>
                   <div className="admin-info-row">
                     <span>Payment Status:</span>
                     <strong className={`admin-status-badge status-${(order.payment?.status || "PENDING").toLowerCase()}`}>
-                      {order.payment?.status || "PENDING"}
+                      {order.payment?.status === "COMPLETED" || order.payment?.status === "PAID"
+                        ? "PAID (Prepaid)"
+                        : order.payment?.method === "COD"
+                        ? "PENDING (Collect on Delivery)"
+                        : "PENDING (Unpaid / Incomplete)"}
                     </strong>
                   </div>
                   {order.payment?.razorpayPaymentId && (
@@ -875,7 +879,7 @@ function OrderDetailView({ orderId, onBack }) {
                   )}
                   {order.payment?.razorpayOrderId && (
                     <div className="admin-info-row">
-                      <span>Order ID:</span>
+                      <span>Razorpay Order ID:</span>
                       <strong className="admin-mono">{order.payment.razorpayOrderId}</strong>
                     </div>
                   )}

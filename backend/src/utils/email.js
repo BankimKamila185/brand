@@ -334,6 +334,17 @@ export const sendOrderConfirmationEmail = async (to, name, orderId, total) => {
     }
   }
 
+  // Safeguard: Never send order confirmation email for pending / unpaid orders (unless COD)
+  if (
+    orderData &&
+    orderData.status === "PENDING" &&
+    orderData.payment?.status !== "PAID" &&
+    orderData.payment?.method !== "COD"
+  ) {
+    logger.warn(`Skipping order confirmation email for unpaid pending order #${shortOrderId}`);
+    return;
+  }
+
   const items = orderData?.items || [];
   const address = orderData?.address;
   const payment = orderData?.payment;

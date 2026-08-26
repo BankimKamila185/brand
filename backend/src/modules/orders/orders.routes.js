@@ -79,16 +79,20 @@ router.post(
       });
       if (!address) throw new AppError("Address not found", 404);
 
-      // Deduct stock upon order placement
-      for (const item of cart.items) {
-        if (item.variant?.inventory) {
-          try {
-            await tx.inventory.update({
-              where: { variantId: item.variantId },
-              data: { quantity: { decrement: item.quantity } },
-            });
-          } catch {
-            // Gracefully ignore stock update error
+      const isCod = paymentMethod === "COD";
+
+      // Deduct stock upon order placement for COD orders (ONLINE orders deduct stock on payment verification)
+      if (isCod) {
+        for (const item of cart.items) {
+          if (item.variant?.inventory) {
+            try {
+              await tx.inventory.update({
+                where: { variantId: item.variantId },
+                data: { quantity: { decrement: item.quantity } },
+              });
+            } catch {
+              // Gracefully ignore stock update error
+            }
           }
         }
       }
@@ -159,7 +163,6 @@ router.post(
       const total = Math.max(0, subtotal - discount + shippingCharge);
 
       // Create order
-      const isCod = paymentMethod === "COD";
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -201,25 +204,30 @@ router.post(
         },
       });
 
-      // Clear cart items on order placement
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      // Clear cart items for COD orders (for ONLINE orders, cart will be cleared on payment verification)
+      if (isCod) {
+        await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      }
 
       return newOrder;
     });
 
-    // Send confirmation email (non-blocking)
-    const user = await db.user.findUnique({
-      where: { id: userId },
-      select: { name: true, email: true },
-    });
-    if (user) {
-      const customerName = user.name || user.email?.split("@")[0] || "Customer";
-      sendOrderConfirmationEmail(
-        user.email,
-        customerName,
-        order.id,
-        Number(order.total),
-      ).catch((e) => logger.error("Order confirmation email failed:", e));
+    // Send confirmation email only for COD orders upon creation.
+    // For ONLINE orders (UPI, Card, Netbanking), confirmation emails are dispatched in verifyPaymentHandler once payment is confirmed.
+    if (order.status === "CONFIRMED") {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { name: true, email: true },
+      });
+      if (user) {
+        const customerName = user.name || user.email?.split("@")[0] || "Customer";
+        sendOrderConfirmationEmail(
+          user.email,
+          customerName,
+          order.id,
+          Number(order.total),
+        ).catch((e) => logger.error("Order confirmation email failed:", e));
+      }
     }
 
     sendCreated(res, order, "Order placed successfully");

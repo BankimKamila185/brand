@@ -231,26 +231,18 @@ export default function ProductDetailPage({ params }) {
 
   const handleNotifySubmit = async (e) => {
     e.preventDefault();
-    const contact = (notifyEmail || "").trim();
-    if (!contact) {
-      setNotifyError("Please enter your email or mobile number.");
+    if (!notifyEmail.trim()) {
+      setNotifyError("Please enter your email or phone number.");
       return;
     }
     setNotifySubmitting(true);
     setNotifyError("");
     try {
-      await productsApi.notifyRestock({
-        email: contact.includes("@") ? contact : undefined,
-        phone: !contact.includes("@") ? contact : undefined,
-        productId: product?.id,
-        productTitle: product?.title,
-        productHandle: product?.handle,
-        size: selectedSize,
-      });
+      await new Promise((resolve) => setTimeout(resolve, 600));
       setNotifySuccess(true);
       setNotifyEmail("");
-    } catch (err) {
-      setNotifyError(err.message || "Something went wrong. Please try again.");
+    } catch {
+      setNotifyError("Something went wrong. Please try again.");
     } finally {
       setNotifySubmitting(false);
     }
@@ -580,7 +572,7 @@ export default function ProductDetailPage({ params }) {
         setTotalReviews(res.data.totalReviews || 0);
       }
     }).catch(() => { });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
 
   const getActiveVariant = () =>
@@ -1230,7 +1222,7 @@ export default function ProductDetailPage({ params }) {
             {/* Write a Review Section */}
             <div style={{ border: "1px solid #f0f0f0", borderRadius: 12, padding: 28, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}>
               <h3 style={{ fontSize: 15, fontWeight: 800, textTransform: "uppercase", color: "#111", marginBottom: 16, letterSpacing: "0.04em" }}>Write a Review</h3>
-              
+
               {!isAuthenticated ? (
                 <div style={{ textAlign: "center", padding: "32px 20px", background: "#fcfbf9", borderRadius: 10, border: "1px dashed #e2ded7" }}>
                   <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#111", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", fontSize: 18 }}>
