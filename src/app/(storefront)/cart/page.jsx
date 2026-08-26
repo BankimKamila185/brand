@@ -10,7 +10,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import { useCart, MAX_QTY_PER_ITEM } from "@/context/CartContext";
 import { couponsApi, productsApi } from "@/lib/api";
-import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, ChevronDown, Pencil, Check, Sparkles } from "lucide-react";
+import { ShoppingBag, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Tag, Pencil, Check, Sparkles, PackageCheck } from "lucide-react";
 import styles from "./page.module.css";
 
 export default function CartPage() {
@@ -100,8 +100,6 @@ export default function CartPage() {
       )
     : 0;
   const finalTotal = Math.max(0, cartTotal - discountAmount);
-  const freeShippingThreshold = 1500;
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - finalTotal);
 
   return (
     <div className={`flex flex-col min-h-screen bg-[#fafafa] ${styles.cartPage}`}>
@@ -150,27 +148,33 @@ export default function CartPage() {
             <div className={`w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start ${styles.cartGrid}`}>
               
               {/* Left Column: Cart Items List */}
-              <div className={`lg:col-span-8 flex flex-col gap-6 w-full ${styles.itemsColumn}`}>
+              <div className={`flex flex-col gap-6 w-full ${styles.itemsColumn}`}>
                 
                 {/* Free Shipping Progress */}
-                <div className={`bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col gap-2 ${styles.shippingProgress}`}>
-                  <div className="flex items-center justify-between text-xs font-bold text-neutral-800">
+                <div className={`bg-emerald-50/70 p-4 rounded-2xl border border-emerald-100 flex items-center justify-between gap-4 ${styles.shippingProgress}`}>
+                  <div className="flex items-center gap-3 text-sm font-semibold text-neutral-800">
                     <span className="flex items-center gap-2">
-                      <Truck className="size-4 text-neutral-600" />
-                      🎉 Free Express Shipping on All Orders!
+                      <span className="grid size-9 place-items-center rounded-full bg-white text-emerald-700 shadow-sm">
+                        <Truck className="size-4" />
+                      </span>
+                      <span>
+                        <span className="block">Free shipping included</span>
+                        <span className="block text-xs font-medium text-neutral-500 mt-0.5">Your order is ready for checkout.</span>
+                      </span>
                     </span>
-                    <span>100%</span>
-                  </div>
-                  <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-neutral-900 h-full transition-all duration-300"
-                      style={{ width: "100%" }}
-                    />
+                    <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider text-emerald-700">No minimum</span>
                   </div>
                 </div>
 
                 {/* Items Table Container */}
                 <div className={`bg-white rounded-3xl border border-neutral-200/80 shadow-sm overflow-hidden ${styles.itemsCard}`}>
+                  <div className={styles.itemsTitleBar}>
+                    <div>
+                      <h2>Cart items</h2>
+                      <p>{cart.reduce((total, item) => total + item.quantity, 0)} item{cart.reduce((total, item) => total + item.quantity, 0) === 1 ? "" : "s"} in your bag</p>
+                    </div>
+                    <PackageCheck aria-hidden="true" />
+                  </div>
                   <div className={`hidden sm:grid grid-cols-12 gap-4 px-6 py-4 border-b border-neutral-100 text-[11px] font-bold uppercase tracking-wider text-neutral-400 ${styles.itemsHeader}`}>
                     <div className="col-span-6">Product</div>
                     <div className="col-span-2 text-center">Price</div>
@@ -353,17 +357,21 @@ export default function CartPage() {
               </div>
 
               {/* Right Column: Order Summary Card */}
-              <div className={`lg:col-span-4 flex flex-col gap-6 w-full ${styles.summaryColumn}`}>
+              <div className={`flex flex-col gap-6 w-full ${styles.summaryColumn}`}>
                 
                 <div className={`bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/80 shadow-sm flex flex-col gap-6 sticky top-24 ${styles.summaryCard}`}>
-                  <h3 className="text-lg font-extrabold text-neutral-900 tracking-tight border-b border-neutral-100 pb-4">
-                    Order Summary
-                  </h3>
+                  <div className={styles.summaryHeading}>
+                    <div>
+                      <p>Ready to order?</p>
+                      <h3>Order summary</h3>
+                    </div>
+                    <span>{cart.reduce((total, item) => total + item.quantity, 0)} item{cart.reduce((total, item) => total + item.quantity, 0) === 1 ? "" : "s"}</span>
+                  </div>
 
                   {/* Coupon Box */}
                   <form onSubmit={handleApplyCoupon} className={`flex flex-col gap-2 ${styles.couponForm}`}>
                     <label className="text-xs font-bold text-neutral-700 flex items-center gap-1.5">
-                      <Tag size={13} /> Promo / Coupon Code
+                      <Tag size={13} /> Have a promo code?
                     </label>
                     <div className={`flex gap-2 ${styles.couponRow}`}>
                       <input
@@ -387,9 +395,8 @@ export default function CartPage() {
                       </p>
                     )}
 
-                    {/* Available Offers / Recommended Coupons */}
                     {recommendedCoupons.length > 0 && (
-                      <div className="mt-2 pt-2 border-t border-neutral-100 flex flex-col gap-2">
+                      <div className="mt-2 pt-3 border-t border-neutral-100 flex flex-col gap-2">
                         <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
                           <Sparkles size={10} className="text-amber-500" /> Available Offers
                         </span>
@@ -414,11 +421,6 @@ export default function CartPage() {
                                       {c.discountType === "PERCENTAGE" ? `${c.value}% OFF` : `₹${c.value} OFF`}
                                     </span>
                                   </div>
-                                  {c.description && (
-                                    <p className="text-[10px] text-neutral-500 mt-0.5 max-w-[190px] truncate">
-                                      {c.description}
-                                    </p>
-                                  )}
                                 </div>
                                 <button
                                   type="button"
@@ -494,8 +496,7 @@ export default function CartPage() {
                   </button>
 
 
-                  {/* Trust Badges */}
-                  <div className={`flex flex-col gap-3 pt-2 text-xs text-neutral-500 ${styles.trustBadges}`}>
+                  <div className={`flex flex-col gap-3 pt-1 text-xs text-neutral-500 ${styles.trustBadges}`}>
                     <div className="flex items-center gap-2.5">
                       <ShieldCheck size={16} className="text-neutral-700" />
                       <span>100% Secure Checkout guaranteed</span>
