@@ -38,7 +38,7 @@ export default function CartPage() {
     const loadRecs = async () => {
       try {
         const [prodRes, couponRes] = await Promise.all([
-          productsApi.list({ limit: 4 }).catch(() => null),
+          productsApi.list({ limit: 12 }).catch(() => null),
           couponsApi.getRecommendations().catch(() => null),
         ]);
         if (prodRes?.success && Array.isArray(prodRes.data?.products || prodRes.data)) {
@@ -125,9 +125,9 @@ export default function CartPage() {
           </div>
         </div>
 
-        <div className={`w-full flex justify-center items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 ${styles.cartShell}`}>
+        <div className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${styles.cartShell}`}>
           {cart.length === 0 ? (
-            <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-12 border border-neutral-200/80 shadow-sm text-center flex flex-col items-center mx-auto">
+            <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-12 border border-neutral-200/80 shadow-sm text-center flex flex-col items-center mx-auto my-8">
               <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center mb-6 text-neutral-400">
                 <ShoppingBag className="w-10 h-10 stroke-[1.5]" />
               </div>
@@ -147,10 +147,10 @@ export default function CartPage() {
             </div>
 
           ) : (
-            <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start ${styles.cartGrid}`}>
+            <div className={`w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start ${styles.cartGrid}`}>
               
               {/* Left Column: Cart Items List */}
-              <div className={`lg:col-span-8 flex flex-col gap-6 ${styles.itemsColumn}`}>
+              <div className={`lg:col-span-8 flex flex-col gap-6 w-full ${styles.itemsColumn}`}>
                 
                 {/* Free Shipping Progress */}
                 <div className={`bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm flex flex-col gap-2 ${styles.shippingProgress}`}>
@@ -353,7 +353,7 @@ export default function CartPage() {
               </div>
 
               {/* Right Column: Order Summary Card */}
-              <div className={`lg:col-span-4 flex flex-col gap-6 ${styles.summaryColumn}`}>
+              <div className={`lg:col-span-4 flex flex-col gap-6 w-full ${styles.summaryColumn}`}>
                 
                 <div className={`bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/80 shadow-sm flex flex-col gap-6 sticky top-24 ${styles.summaryCard}`}>
                   <h3 className="text-lg font-extrabold text-neutral-900 tracking-tight border-b border-neutral-100 pb-4">
