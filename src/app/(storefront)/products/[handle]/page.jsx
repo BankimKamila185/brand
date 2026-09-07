@@ -32,6 +32,10 @@ const mapProduct = (bp) => ({
   manufacturer_details: bp.manufacturerDetails || null,
   vendor: bp.vendor || "House of Outliers",
   product_type: bp.productType || "Apparel",
+  fabric: bp.fabric || "100% Super Combed Cotton",
+  gsm: bp.gsm || "240 GSM Heavyweight",
+  fit: bp.fit || "Oversized Drop-Shoulder",
+  print_type: bp.printType || bp.print_type || "High-Density HD Print",
   tags: bp.tags || [],
   variants:
     bp.variants?.map((v) => {
@@ -420,6 +424,10 @@ export default function ProductDetailPage({ params }) {
               body_html: localProduct.body_html,
               vendor: localProduct.vendor,
               product_type: localProduct.product_type,
+              fabric: localProduct.fabric || "100% Super Combed Cotton",
+              gsm: localProduct.gsm || "240 GSM Heavyweight",
+              fit: localProduct.fit || "Oversized Drop-Shoulder",
+              print_type: localProduct.print_type || "High-Density HD Print",
               tags: localProduct.tags,
               variants: localProduct.variants.map((v) => ({
                 id: v.id,
@@ -454,6 +462,10 @@ export default function ProductDetailPage({ params }) {
             body_html: localProduct.body_html,
             vendor: localProduct.vendor,
             product_type: localProduct.product_type,
+            fabric: localProduct.fabric || "100% Super Combed Cotton",
+            gsm: localProduct.gsm || "240 GSM Heavyweight",
+            fit: localProduct.fit || "Oversized Drop-Shoulder",
+            print_type: localProduct.print_type || "High-Density HD Print",
             tags: localProduct.tags,
             variants: localProduct.variants.map((v) => ({
               id: v.id,
@@ -690,7 +702,7 @@ export default function ProductDetailPage({ params }) {
               {/* Hero Image */}
               <div
                 className="pdp-hero-image"
-                style={{ position: "relative", background: "#f5f5f5", cursor: "zoom-in", overflow: "visible" }}
+                style={{ position: "relative", background: "#000", cursor: "zoom-in", overflow: "hidden", borderRadius: 12 }}
                 onClick={handleHeroClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -792,7 +804,7 @@ export default function ProductDetailPage({ params }) {
                   src={product.images[activeImg]?.src}
                   alt={product.title}
                   className="pdp-hero-image-media"
-                  style={{ width: "100%", objectFit: "cover", display: "block", transition: "opacity 0.25s", borderRadius: "inherit" }}
+                  style={{ width: "100%", height: "auto", maxHeight: "none", objectFit: "contain", display: "block", transition: "opacity 0.25s" }}
                 />
               </div>
 
@@ -847,34 +859,194 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Price */}
-              <div style={{ display: "flex", alignItems: "baseline", gap: 10, margin: "2px 0 0 0" }}>
-                <span style={{ fontSize: "26px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, margin: "4px 0 2px 0" }}>
+                <span style={{ fontSize: "32px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   ₹ {fmt(price)}.00
                 </span>
                 {comparePrice > price && (
-                  <span style={{ fontSize: "16px", color: "#888", textDecoration: "line-through" }}>
+                  <span style={{ fontSize: "18px", color: "#888", textDecoration: "line-through", fontWeight: 500 }}>
                     ₹ {fmt(comparePrice)}.00
                   </span>
                 )}
                 {discount > 0 && (
-                  <span style={{ fontSize: "12px", fontWeight: 700, color: "#df5c35", background: "#fff0ea", padding: "4px 8px", borderRadius: 6 }}>
+                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#df5c35", background: "#fff0ea", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em" }}>
                     {discount}% OFF
                   </span>
                 )}
               </div>
 
-              {/* Rating */}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 4px 0" }}>
-                <Stars rating={avgRating || 0} size={15} color="#111" />
-                <span style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>
-                  {totalReviews > 0 ? (
-                    `${Number(avgRating || 0).toFixed(1)} (${totalReviews} ${totalReviews === 1 ? "review" : "reviews"})`
-                  ) : (
-                    <a href="#reviews" style={{ color: "#888", textDecoration: "underline", fontSize: 12 }}>
-                      No reviews yet • Be the first to review
-                    </a>
-                  )}
-                </span>
+              {/* Rating (only when reviews exist) */}
+              {totalReviews > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 2px 0" }}>
+                  <Stars rating={avgRating || 0} size={15} color="#111" />
+                  <span style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>
+                    {`${Number(avgRating || 0).toFixed(1)} (${totalReviews} ${totalReviews === 1 ? "review" : "reviews"})`}
+                  </span>
+                </div>
+              )}
+
+              {/* Product Highlights / Specifications (Above Size) */}
+              <div
+                className="pdp-highlights-grid"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: 8,
+                  margin: "8px 0",
+                }}
+              >
+                {/* 1. Fabric */}
+                <div
+                  style={{
+                    background: "#fbfbfb",
+                    border: "1px solid #ededed",
+                    borderRadius: 8,
+                    padding: "9px 11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 9,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 6,
+                      background: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="1.8">
+                      <path d="M12 2a4.5 4.5 0 0 0-4.5 4.5c0 1.25.5 2.38 1.32 3.2A6.5 6.5 0 0 0 4 16a6.5 6.5 0 0 0 6.5 6.5c1.8 0 3.44-.73 4.63-1.92A6.5 6.5 0 0 0 20 15a6.5 6.5 0 0 0-4.82-6.3A4.5 4.5 0 0 0 12 2z" />
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                      Fabric
+                    </div>
+                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {product.fabric || "100% Super Combed Cotton"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. GSM */}
+                <div
+                  style={{
+                    background: "#fbfbfb",
+                    border: "1px solid #ededed",
+                    borderRadius: 8,
+                    padding: "9px 11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 9,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 6,
+                      background: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="1.8">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 3" />
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                      GSM / Weight
+                    </div>
+                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {product.gsm || "240 GSM Heavyweight"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Fit */}
+                <div
+                  style={{
+                    background: "#fbfbfb",
+                    border: "1px solid #ededed",
+                    borderRadius: 8,
+                    padding: "9px 11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 9,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 6,
+                      background: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="1.8">
+                      <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                      Fit
+                    </div>
+                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {product.fit || "Oversized Drop-Shoulder"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Print & Craft */}
+                <div
+                  style={{
+                    background: "#fbfbfb",
+                    border: "1px solid #ededed",
+                    borderRadius: 8,
+                    padding: "9px 11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 9,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 6,
+                      background: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" strokeWidth="1.8">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                      Print / Craft
+                    </div>
+                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {product.print_type || "High-Density HD Print"}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Size Selector */}

@@ -2869,7 +2869,7 @@ html, body {
   aspect-ratio: 16 / 9;
   max-height: calc(100vh - var(--header-h) - var(--announce-h));
   overflow: hidden;
-  background: #0e0d0b;
+  background: #000000;
 }
 
 @media (max-width: 768px) {
@@ -2880,6 +2880,7 @@ html, body {
     min-height: unset;
     max-height: unset;
     overflow: hidden;
+    background: #000000;
   }
 }
 
@@ -6659,9 +6660,10 @@ textarea.form-input {
 
   .pdp-hero-image {
     width: min(100%, 510px);
-    max-height: 580px;
     margin-inline: auto;
-    border-radius: 18px;
+    border-radius: 12px;
+    background: #000;
+    overflow: hidden;
   }
 
   .reviews-two-col {
@@ -6677,9 +6679,11 @@ textarea.form-input {
 }
 
 .pdp-hero-image-media {
-  aspect-ratio: 3 / 4;
-  max-height: 580px;
-  object-fit: cover;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  display: block;
 }
 
 .pdp-thumbnail-strip {

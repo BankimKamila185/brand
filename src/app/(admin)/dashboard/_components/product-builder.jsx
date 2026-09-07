@@ -5,7 +5,16 @@ import { ImagePlus, Plus, Trash2, Warehouse, X, Save, Printer, Zap } from "lucid
 import { adminApi } from "@/lib/api";
 import { BarcodePrintModal, BarcodeSVG, generateTOSSKUCode } from "./barcode-print-modal";
 
-const blankVariant = (size = "M") => ({ size, price: "", comparePrice: "", stock: "0", sku: "" });
+const DEFAULT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+const blankVariant = (size = "M", enabled = true) => ({
+  size,
+  price: "",
+  comparePrice: "",
+  stock: "0",
+  sku: "",
+  enabled: enabled !== false,
+});
 
 const slugify = (value) =>
   value
@@ -93,6 +102,10 @@ export function ProductBuilder({ product, onCreated, onClose }) {
   const [description, setDescription] = useState("");
   const [careInstructions, setCareInstructions] = useState("");
   const [manufacturerDetails, setManufacturerDetails] = useState("");
+  const [fabric, setFabric] = useState("100% Super Combed Cotton");
+  const [gsm, setGsm] = useState("240 GSM Heavyweight");
+  const [fit, setFit] = useState("Oversized Drop-Shoulder");
+  const [printType, setPrintType] = useState("High-Density HD Print");
   const [variants, setVariants] = useState([]);
   const [mainImage, setMainImage] = useState(null);
   const [gallery, setGallery] = useState([]);
@@ -134,6 +147,10 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setDescription(data.description || "");
       setCareInstructions(data.careInstructions || "");
       setManufacturerDetails(data.manufacturerDetails || "");
+      setFabric(data.fabric || "100% Super Combed Cotton");
+      setGsm(data.gsm || "240 GSM Heavyweight");
+      setFit(data.fit || "Oversized Drop-Shoulder");
+      setPrintType(data.printType || data.print_type || "High-Density HD Print");
       setIsActive(data.isActive !== false);
 
       if (data.collections && data.collections.length > 0) {
@@ -146,17 +163,49 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       
       if (data.variants && data.variants.length > 0) {
         const randBase = Math.floor(1000 + Math.random() * 8000);
+        const existingMap = new Map();
+        data.variants.forEach((v) => {
+          const s = (v.option1 || v.title || "").trim();
+          if (s) existingMap.set(s.toUpperCase(), v);
+        });
+
+        // Ensure standard XS to XXL are all present, plus any custom sizes
+        const allSizes = [...DEFAULT_SIZES];
+        data.variants.forEach((v) => {
+          const s = (v.option1 || v.title || "").trim().toUpperCase();
+          if (s && !allSizes.includes(s)) {
+            allSizes.push(s);
+          }
+        });
+
+        const basePrice = String(data.variants[0]?.price || "");
+        const baseCompare = data.variants[0]?.comparePrice ? String(data.variants[0].comparePrice) : "";
+
         setVariants(
-          data.variants.map((v, idx) => ({
-            size: v.option1 || v.title,
-            price: String(v.price),
-            comparePrice: v.comparePrice ? String(v.comparePrice) : "",
-            stock: String(v.inventory?.quantity || 0),
-            sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : generateTOSSKUCode(data.title, v.option1 || v.title, randBase + idx),
-          }))
+          allSizes.map((sizeName, idx) => {
+            const existing = existingMap.get(sizeName);
+            if (existing) {
+              return {
+                size: existing.option1 || existing.title || sizeName,
+                price: String(existing.price ?? ""),
+                comparePrice: existing.comparePrice ? String(existing.comparePrice) : "",
+                stock: String(existing.inventory?.quantity || 0),
+                sku: (existing.sku && existing.sku.startsWith("TOS-")) ? existing.sku : generateTOSSKUCode(data.title, existing.option1 || existing.title, randBase + idx),
+                enabled: existing.isActive !== false,
+              };
+            }
+            return {
+              size: sizeName,
+              price: basePrice,
+              comparePrice: baseCompare,
+              stock: "0",
+              sku: generateTOSSKUCode(data.title || "PRODUCT", sizeName, randBase + idx),
+              enabled: false,
+            };
+          })
         );
       } else {
-        setVariants([blankVariant("S"), blankVariant("M"), blankVariant("L")]);
+        setVariants(DEFAULT_SIZES.map((s) => blankVariant(s, true)));
       }
 
       if (data.images && data.images.length > 0) {
@@ -188,7 +237,7 @@ export function ProductBuilder({ product, onCreated, onClose }) {
       setManufacturerDetails("");
       setIsActive(true);
       setSelectedCollectionIds([]);
-      setVariants([blankVariant("S"), blankVariant("M"), blankVariant("L")]);
+      setVariants(DEFAULT_SIZES.map((s) => blankVariant(s, true)));
       setMainImage(null);
       setGallery([]);
     }
@@ -290,12 +339,22 @@ function formatError(err) {
       }))
       .filter((img) => img.src);
 
+    const enabledVariants = variants.filter((v) => v.enabled !== false);
+    if (enabledVariants.length === 0) {
+      setMessage("Please check at least one size variant to show on the website.");
+      return;
+    }
+
     const payload = {
       title,
       handle: handle || slugify(title),
       description,
       careInstructions,
       manufacturerDetails,
+      fabric,
+      gsm,
+      fit,
+      printType,
       vendor,
       productType,
       categoryId: categoryId || undefined,
@@ -303,7 +362,7 @@ function formatError(err) {
       isActive,
       tags: [],
       images: formattedImages,
-      variants: variants.map((variant, idx) => ({
+      variants: enabledVariants.map((variant, idx) => ({
         title: variant.size || "Default",
         option1: variant.size || "Default",
         sku: (variant.sku && variant.sku.trim()) || generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + idx),
@@ -450,6 +509,43 @@ function formatError(err) {
         label: "Manufacturer Details",
         from: "Previous details",
         to: "Updated details",
+      });
+    }
+
+    // Fabric
+    if (fabric.trim() !== (initialData.fabric || "").trim()) {
+      changes.push({
+        label: "Fabric",
+        from: initialData.fabric || "None",
+        to: fabric,
+      });
+    }
+
+    // GSM
+    if (gsm.trim() !== (initialData.gsm || "").trim()) {
+      changes.push({
+        label: "GSM / Weight",
+        from: initialData.gsm || "None",
+        to: gsm,
+      });
+    }
+
+    // Fit
+    if (fit.trim() !== (initialData.fit || "").trim()) {
+      changes.push({
+        label: "Fit",
+        from: initialData.fit || "None",
+        to: fit,
+      });
+    }
+
+    // Print & Craft
+    const initialPrint = initialData.printType || initialData.print_type || "";
+    if (printType.trim() !== initialPrint.trim()) {
+      changes.push({
+        label: "Print / Craft",
+        from: initialPrint || "None",
+        to: printType,
       });
     }
 
@@ -602,6 +698,39 @@ function formatError(err) {
                 value={productType}
                 onChange={(e) => setProductType(e.target.value)}
                 placeholder="T-shirt, shirt…"
+              />
+            </label>
+
+            <label>
+              🧵 Fabric
+              <input
+                value={fabric}
+                onChange={(e) => setFabric(e.target.value)}
+                placeholder="e.g. 100% Super Combed Cotton"
+              />
+            </label>
+            <label>
+              ⚖️ GSM / Fabric Weight
+              <input
+                value={gsm}
+                onChange={(e) => setGsm(e.target.value)}
+                placeholder="e.g. 240 GSM Heavyweight"
+              />
+            </label>
+            <label>
+              👕 Fit Style
+              <input
+                value={fit}
+                onChange={(e) => setFit(e.target.value)}
+                placeholder="e.g. Oversized Drop-Shoulder"
+              />
+            </label>
+            <label>
+              🎨 Print / Craft Type
+              <input
+                value={printType}
+                onChange={(e) => setPrintType(e.target.value)}
+                placeholder="e.g. High-Density HD Print"
               />
             </label>
 
@@ -778,7 +907,8 @@ function formatError(err) {
             </label>
           </div>
           <div className="variant-table">
-            <div>
+            <div style={{ display: "grid", gridTemplateColumns: "110px 85px 1.4fr 1.1fr 1.1fr 85px 36px", gap: 10, alignItems: "center" }}>
+              <span>Show on Web</span>
               <span>Size</span>
               <span>SKU / Code</span>
               <span>Selling Price (₹)</span>
@@ -786,75 +916,127 @@ function formatError(err) {
               <span>Quantity</span>
               <span />
             </div>
-            {variants.map((variant, index) => (
-              <div key={index}>
-                <input
-                  value={variant.size}
-                  onChange={(e) => updateVariant(index, "size", e.target.value)}
-                  placeholder="Size"
-                  required
-                />
-                <div className="flex flex-col gap-1">
-                  <div className="flex gap-1 items-center">
-                    <input
-                      value={variant.sku}
-                      onChange={(e) => updateVariant(index, "sku", e.target.value)}
-                      placeholder="Product Barcode Code"
-                      className="flex-grow font-mono text-xs"
-                    />
-                    <button
-                      type="button"
-                      title="Auto-generate Product Barcode Code"
-                      onClick={() => updateVariant(index, "sku", generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + index))}
-                      className="admin-refresh-button shrink-0 text-[#df5c35]"
-                      style={{ height: "38px", width: "38px", padding: 0, minWidth: 0, justifyContent: "center" }}
-                    >
-                      ⚡
-                    </button>
-                  </div>
-                  {variant.sku && (
-                    <div className="flex flex-col items-center mt-1 bg-white p-1 border border-neutral-200 rounded">
-                      <BarcodeSVG value={variant.sku} height={24} barWidth={1.0} />
-                      <span className="text-[8px] text-neutral-500 font-mono mt-0.5">{variant.sku}</span>
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="number"
-                  min="0"
-                  value={variant.price}
-                  onChange={(e) => updateVariant(index, "price", e.target.value)}
-                  placeholder="Selling Price"
-                  required
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={variant.comparePrice}
-                  onChange={(e) => updateVariant(index, "comparePrice", e.target.value)}
-                  placeholder="MRP (Original)"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={variant.stock}
-                  onChange={(e) => updateVariant(index, "stock", e.target.value)}
-                  placeholder="Qty"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVariants((current) =>
-                      current.filter((_, i) => i !== index)
-                    )
-                  }
-                  aria-label="Remove size"
+            {variants.map((variant, index) => {
+              const isEnabled = variant.enabled !== false;
+              return (
+                <div
+                  key={index}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "110px 85px 1.4fr 1.1fr 1.1fr 85px 36px",
+                    gap: 10,
+                    alignItems: "center",
+                    padding: "6px 8px",
+                    background: isEnabled ? "#fff" : "#fbfbfb",
+                    border: isEnabled ? "1px solid #e4e4e7" : "1px dashed #d4d4d8",
+                    borderRadius: 10,
+                    marginBottom: 8,
+                    opacity: isEnabled ? 1 : 0.55,
+                    transition: "all 0.15s ease",
+                  }}
                 >
-                  <Trash2 />
-                </button>
-              </div>
-            ))}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+                    <label
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        cursor: "pointer",
+                        padding: "5px 9px",
+                        borderRadius: 6,
+                        background: isEnabled ? "#e8f3ed" : "#f4f4f5",
+                        border: isEnabled ? "1px solid #c6e7d3" : "1px solid #e4e4e7",
+                        userSelect: "none",
+                      }}
+                      title={isEnabled ? "Size is visible and purchasable on website" : "Size is hidden on website"}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isEnabled}
+                        onChange={(e) => updateVariant(index, "enabled", e.target.checked)}
+                        style={{ width: 15, height: 15, accentColor: "#21835a", cursor: "pointer", margin: 0 }}
+                      />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: isEnabled ? "#21835a" : "#71717a" }}>
+                        {isEnabled ? "Visible" : "Hidden"}
+                      </span>
+                    </label>
+                  </div>
+                  <input
+                    value={variant.size}
+                    onChange={(e) => updateVariant(index, "size", e.target.value)}
+                    placeholder="Size"
+                    required={isEnabled}
+                    disabled={!isEnabled}
+                    style={{ fontWeight: 700, textAlign: "center", fontSize: 14 }}
+                  />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex gap-1 items-center">
+                      <input
+                        value={variant.sku}
+                        onChange={(e) => updateVariant(index, "sku", e.target.value)}
+                        placeholder="Product Barcode Code"
+                        disabled={!isEnabled}
+                        className="flex-grow font-mono text-xs"
+                      />
+                      <button
+                        type="button"
+                        title="Auto-generate Product Barcode Code"
+                        disabled={!isEnabled}
+                        onClick={() => updateVariant(index, "sku", generateTOSSKUCode(title || "PRODUCT", variant.size, 3432 + index))}
+                        className="admin-refresh-button shrink-0 text-[#df5c35]"
+                        style={{ height: "38px", width: "38px", padding: 0, minWidth: 0, justifyContent: "center" }}
+                      >
+                        ⚡
+                      </button>
+                    </div>
+                    {variant.sku && isEnabled && (
+                      <div className="flex flex-col items-center mt-1 bg-white p-1 border border-neutral-200 rounded">
+                        <BarcodeSVG value={variant.sku} height={24} barWidth={1.0} />
+                        <span className="text-[8px] text-neutral-500 font-mono mt-0.5">{variant.sku}</span>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    value={variant.price}
+                    onChange={(e) => updateVariant(index, "price", e.target.value)}
+                    placeholder="Selling Price"
+                    required={isEnabled}
+                    disabled={!isEnabled}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    value={variant.comparePrice}
+                    onChange={(e) => updateVariant(index, "comparePrice", e.target.value)}
+                    placeholder="MRP (Original)"
+                    disabled={!isEnabled}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    value={variant.stock}
+                    onChange={(e) => updateVariant(index, "stock", e.target.value)}
+                    placeholder="Qty"
+                    required={isEnabled}
+                    disabled={!isEnabled}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVariants((current) =>
+                        current.filter((_, i) => i !== index)
+                      )
+                    }
+                    aria-label="Remove size"
+                    style={{ height: 38, width: 36, display: "flex", alignItems: "center", justifyContent: "center", margin: "auto" }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

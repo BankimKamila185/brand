@@ -21,7 +21,6 @@ const Header = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [liveResults, setLiveResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [shopExpanded, setShopExpanded] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [collectionsExpanded, setCollectionsExpanded] = useState(false);
   const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
@@ -195,21 +194,7 @@ const Header = ({ onSearch }) => {
               {/* Desktop Navigation */}
               <nav className="desktop-nav hidden md:block">
                 <ul className="nav-menu">
-                  {/* Shop */}
-                  <li className="nav-item">
-                    <Link href="/collections/all" className="nav-link" style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                      Shop
-                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 1L5 5L9 1" /></svg>
-                    </Link>
-                    <div className="dropdown-pane">
-                      <ul className="dropdown-list">
-                        <li><Link href="/collections/bestsellers" className="dropdown-link">Bestseller Clothing</Link></li>
-                        <li><Link href="/collections/winterwear" className="dropdown-link">Winterwear</Link></li>
-                        <li><Link href="/collections/outerwear" className="dropdown-link">Outerwear</Link></li>
-                        <li><Link href="/collections/whats-new" className="dropdown-link">New Releases / Trending</Link></li>
-                      </ul>
-                    </div>
-                  </li>
+
 
                   {/* Categories */}
                   <li className="nav-item">
@@ -584,42 +569,7 @@ const Header = ({ onSearch }) => {
               <nav className="flex-1">
                 <ul className="flex flex-col divide-y divide-neutral-100">
 
-                  {/* Shop */}
-                  <li>
-                    <button
-                      onClick={() => setShopExpanded(!shopExpanded)}
-                      className="w-full flex items-center justify-between text-neutral-900 text-left transition-colors active:bg-neutral-50"
-                      style={{ fontSize: "17px", fontWeight: 400, letterSpacing: "0.01em", paddingTop: "18px", paddingBottom: "18px", paddingLeft: "22px", paddingRight: "20px" }}
-                    >
-                      <span>Shop</span>
-                      <ChevronRight
-                        className="text-neutral-400 transition-transform duration-200"
-                        style={{ width: "16px", height: "16px", strokeWidth: 1.5, flexShrink: 0, transform: shopExpanded ? "rotate(90deg)" : "rotate(0deg)" }}
-                      />
-                    </button>
-                    {shopExpanded && (
-                      <ul style={{ background: "#fafafa", borderTop: "1px solid #f0f0f0", paddingLeft: "22px", paddingRight: "20px", paddingBottom: "8px" }}>
-                        {[
-                          { label: "Shop All", href: "/collections/all" },
-                          { label: "Bestsellers", href: "/collections/bestsellers" },
-                          { label: "New Releases", href: "/collections/whats-new" },
-                          { label: "Winterwear", href: "/collections/winterwear" },
-                          { label: "Outerwear", href: "/collections/outerwear" },
-                        ].map((item) => (
-                          <li key={item.href} style={{ borderBottom: "1px solid #f0f0f0" }} className="last:border-0">
-                            <Link
-                              href={item.href}
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="drawer-sub-link block text-neutral-500 transition-colors"
-                              style={{ fontSize: "14px", paddingTop: "12px", paddingBottom: "12px" }}
-                            >
-                              {item.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
+
 
                   {/* Categories */}
                   <li>

@@ -428,33 +428,24 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
             {product.title}
           </h3>
 
-          {/* Ratings & Reviews */}
-          {reviewsCount > 0 ? (
-            <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-600">
-              <span className="product-card-stars">★★★★★</span>
-              <span className="product-card-review-count">
-                {reviewsCount} {reviewsCount === 1 ? "review" : "reviews"}
-              </span>
-            </div>
-          ) : (
-            <div className="product-card-rating flex items-center gap-1.5 text-xs text-neutral-400">
-              <span className="product-card-review-count italic">No reviews yet</span>
-            </div>
-          )}
-
           {/* Price Row */}
-          <div className="product-card-price-row flex items-center gap-2">
+          <div className="product-card-price-row flex items-center gap-2 mt-1">
             {comparePriceNum > priceNum ? (
               <>
-                <span className="price-sale font-bold text-[#e84e4e] text-sm">
+                <span className="price-sale font-bold text-[#e84e4e] text-[15px]">
                   ₹{Math.round(priceNum).toLocaleString("en-IN")}
                 </span>
                 <span className="price-compare line-through text-neutral-400 text-xs">
                   ₹{Math.round(comparePriceNum).toLocaleString("en-IN")}
                 </span>
+                {discountPercent > 0 && (
+                  <span className="font-bold text-[11px] text-[#df5c35] bg-[#fff0ea] px-1.5 py-0.5 rounded">
+                    {discountPercent}% OFF
+                  </span>
+                )}
               </>
             ) : (
-              <span className="price-regular font-bold text-neutral-900 text-sm">
+              <span className="price-regular font-bold text-neutral-900 text-[15px]">
                 ₹{Math.round(priceNum).toLocaleString("en-IN")}
               </span>
             )}
