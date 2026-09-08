@@ -1258,7 +1258,7 @@ export default function ProductDetailPage({ params }) {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" style={{ flexShrink: 0 }}>
                     <rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8h4l3 5v3h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
                   </svg>
-                  <span style={{ fontSize: 12, color: "#555", lineHeight: 1.4 }}>Free delivery above ₹999</span>
+                  <span style={{ fontSize: 12, color: "#555", lineHeight: 1.4 }}>Free delivery</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" style={{ flexShrink: 0 }}>
@@ -1293,7 +1293,7 @@ export default function ProductDetailPage({ params }) {
                 </AccordionItem>
                 <AccordionItem label="Shipping & Returns">
                   <ul style={{ paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                    <li>Free shipping on orders above ₹999</li>
+                    <li>Free shipping on all orders</li>
                     <li>Delivered within 5–7 business days</li>
                     <li>Easy 15-day return & exchange policy</li>
                     <li>COD available on all orders</li>
