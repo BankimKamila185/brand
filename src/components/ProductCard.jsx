@@ -413,13 +413,9 @@ const ProductCard = ({ product, onOpenDetails, viewMode = "grid" }) => {
 
           {/* Floating bottom action bar */}
           <div className="product-card-bottom-action">
-            <Link
-              href={`/products/${product.handle}`}
-              className="select-options-btn"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <span className="select-options-btn">
               View Details
-            </Link>
+            </span>
           </div>
         </div>
 

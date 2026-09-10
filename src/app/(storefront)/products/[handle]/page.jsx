@@ -693,16 +693,15 @@ export default function ProductDetailPage({ params }) {
         </div>
 
         {/* ── Product Section ── */}
-        <section className="container" style={{ paddingTop: 24, paddingBottom: 60 }}>
+        <section className="container pdp-section">
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 40 }} className="pdp-two-col">
 
             {/* ── LEFT: Gallery — Hero + Thumbnail Strip ── */}
-            <div className="pdp-gallery" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="pdp-gallery">
 
               {/* Hero Image */}
               <div
                 className="pdp-hero-image"
-                style={{ position: "relative", background: "#000", cursor: "zoom-in", overflow: "hidden", borderRadius: 12 }}
                 onClick={handleHeroClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -714,16 +713,10 @@ export default function ProductDetailPage({ params }) {
               >
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-                  style={{
-                    position: "absolute", top: 14, right: 14, zIndex: 2,
-                    width: 38, height: 38, borderRadius: "50%",
-                    background: "#fff", border: "1px solid #eee",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-                  }}
+                  className="pdp-wishlist-btn"
                   aria-label="Wishlist"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlisted ? "#e84e4e" : "none"} stroke={wishlisted ? "#e84e4e" : "#888"} strokeWidth="2">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill={wishlisted ? "#e84e4e" : "none"} stroke={wishlisted ? "#e84e4e" : "#555"} strokeWidth="2">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                 </button>
@@ -737,29 +730,15 @@ export default function ProductDetailPage({ params }) {
                         setActiveImg((prev) => Math.max(0, prev - 1));
                       }}
                       disabled={activeImg === 0}
+                      className="pdp-nav-arrow prev"
                       style={{
-                        position: "absolute",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        left: isDesktop ? -20 : 12,
-                        width: 38,
-                        height: 38,
-                        borderRadius: "50%",
-                        background: "#fff",
-                        border: "1px solid #eee",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 3,
-                        boxShadow: activeImg === 0 ? "none" : "0 3px 10px rgba(0,0,0,0.08)",
-                        transition: "all 0.2s ease",
-                        cursor: activeImg === 0 ? "default" : "pointer",
                         opacity: activeImg === 0 ? 0 : 1,
                         visibility: activeImg === 0 ? "hidden" : "visible",
+                        pointerEvents: activeImg === 0 ? "none" : "auto",
                       }}
                       aria-label="Previous image"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2.5">
                         <path d="M15 18l-6-6 6-6" />
                       </svg>
                     </button>
@@ -771,32 +750,23 @@ export default function ProductDetailPage({ params }) {
                         setActiveImg((prev) => Math.min(product.images.length - 1, prev + 1));
                       }}
                       disabled={activeImg === product.images.length - 1}
+                      className="pdp-nav-arrow next"
                       style={{
-                        position: "absolute",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        right: isDesktop ? -20 : 12,
-                        width: 38,
-                        height: 38,
-                        borderRadius: "50%",
-                        background: "#fff",
-                        border: "1px solid #eee",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 3,
-                        boxShadow: activeImg === product.images.length - 1 ? "none" : "0 3px 10px rgba(0,0,0,0.08)",
-                        transition: "all 0.2s ease",
-                        cursor: activeImg === product.images.length - 1 ? "default" : "pointer",
                         opacity: activeImg === product.images.length - 1 ? 0 : 1,
                         visibility: activeImg === product.images.length - 1 ? "hidden" : "visible",
+                        pointerEvents: activeImg === product.images.length - 1 ? "none" : "auto",
                       }}
                       aria-label="Next image"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2.5">
                         <path d="M9 18l6-6-6-6" />
                       </svg>
                     </button>
+
+                    {/* Mobile Image Counter Badge */}
+                    <div className="pdp-image-counter">
+                      {activeImg + 1} / {product.images.length}
+                    </div>
                   </>
                 )}
 
@@ -804,41 +774,24 @@ export default function ProductDetailPage({ params }) {
                   src={product.images[activeImg]?.src}
                   alt={product.title}
                   className="pdp-hero-image-media"
-                  style={{ width: "100%", height: "auto", maxHeight: "none", objectFit: "contain", display: "block", transition: "opacity 0.25s" }}
                 />
               </div>
 
               {/* Thumbnail Strip */}
               {product.images.length > 1 && (
-                <div className="pdp-thumbnail-strip" style={{ position: "relative" }}>
-
+                <div className="pdp-thumbnail-strip">
                   {/* Thumbnails */}
-                  <div ref={thumbnailsRef} className="pdp-thumbnails" style={{
-                    display: "flex", gap: 10, overflowX: "auto",
-                    scrollbarWidth: "none", msOverflowStyle: "none",
-                    padding: "6px 4px", margin: "0 -4px",
-                  }}>
+                  <div ref={thumbnailsRef} className="pdp-thumbnails">
                     {product.images.map((img, i) => (
                       <button
                         key={img.id || i}
                         onClick={() => setActiveImg(i)}
                         className={`pdp-thumbnail${activeImg === i ? " active" : ""}`}
-                        style={{
-                          position: "relative",
-                          flex: "0 0 80px",
-                          width: 80,
-                          aspectRatio: "3 / 4",
-                          padding: 0, border: "none", outline: "none",
-                          overflow: "hidden", background: "#f5f5f5",
-                          cursor: "pointer",
-                          opacity: 1,
-                        }}
                         aria-label={`View image ${i + 1}`}
                       >
                         <img
                           src={img.src}
                           alt={`${product.title} ${i + 1}`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                         />
                       </button>
                     ))}
@@ -859,18 +812,20 @@ export default function ProductDetailPage({ params }) {
               </div>
 
               {/* Price */}
-              <div style={{ display: "flex", alignItems: "baseline", gap: 12, margin: "4px 0 2px 0" }}>
+              {discount > 0 && (
+                <div className="pdp-discount-row">
+                  <span className="pdp-discount-badge" style={{ fontSize: "13px", fontWeight: 700, color: "#df5c35", background: "#fff0ea", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em" }}>
+                    {discount}% OFF
+                  </span>
+                </div>
+              )}
+              <div className="pdp-price-row" style={{ display: "flex", alignItems: "baseline", gap: 12, margin: "4px 0 2px 0" }}>
                 <span style={{ fontSize: "32px", fontWeight: 800, color: "#111", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   ₹ {fmt(price)}.00
                 </span>
                 {comparePrice > price && (
                   <span style={{ fontSize: "18px", color: "#888", textDecoration: "line-through", fontWeight: 500 }}>
                     ₹ {fmt(comparePrice)}.00
-                  </span>
-                )}
-                {discount > 0 && (
-                  <span style={{ fontSize: "13px", fontWeight: 700, color: "#df5c35", background: "#fff0ea", padding: "4px 10px", borderRadius: 6, letterSpacing: "0.02em" }}>
-                    {discount}% OFF
                   </span>
                 )}
               </div>
@@ -897,6 +852,7 @@ export default function ProductDetailPage({ params }) {
               >
                 {/* 1. Fabric */}
                 <div
+                  className="pdp-highlight-card"
                   style={{
                     background: "#fbfbfb",
                     border: "1px solid #ededed",
@@ -908,6 +864,7 @@ export default function ProductDetailPage({ params }) {
                   }}
                 >
                   <div
+                    className="pdp-highlight-icon"
                     style={{
                       width: 32,
                       height: 32,
@@ -923,11 +880,11 @@ export default function ProductDetailPage({ params }) {
                       <path d="M12 2a4.5 4.5 0 0 0-4.5 4.5c0 1.25.5 2.38 1.32 3.2A6.5 6.5 0 0 0 4 16a6.5 6.5 0 0 0 6.5 6.5c1.8 0 3.44-.73 4.63-1.92A6.5 6.5 0 0 0 20 15a6.5 6.5 0 0 0-4.82-6.3A4.5 4.5 0 0 0 12 2z" />
                     </svg>
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                  <div className="pdp-highlight-copy" style={{ minWidth: 0, flex: 1 }}>
+                    <div className="pdp-highlight-label" style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
                       Fabric
                     </div>
-                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div className="pdp-highlight-value" style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {product.fabric || "100% Super Combed Cotton"}
                     </div>
                   </div>
@@ -935,6 +892,7 @@ export default function ProductDetailPage({ params }) {
 
                 {/* 2. GSM */}
                 <div
+                  className="pdp-highlight-card"
                   style={{
                     background: "#fbfbfb",
                     border: "1px solid #ededed",
@@ -946,6 +904,7 @@ export default function ProductDetailPage({ params }) {
                   }}
                 >
                   <div
+                    className="pdp-highlight-icon"
                     style={{
                       width: 32,
                       height: 32,
@@ -962,11 +921,11 @@ export default function ProductDetailPage({ params }) {
                       <path d="M12 7v5l3 3" />
                     </svg>
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                  <div className="pdp-highlight-copy" style={{ minWidth: 0, flex: 1 }}>
+                    <div className="pdp-highlight-label" style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
                       GSM / Weight
                     </div>
-                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div className="pdp-highlight-value" style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {product.gsm || "240 GSM Heavyweight"}
                     </div>
                   </div>
@@ -974,6 +933,7 @@ export default function ProductDetailPage({ params }) {
 
                 {/* 3. Fit */}
                 <div
+                  className="pdp-highlight-card"
                   style={{
                     background: "#fbfbfb",
                     border: "1px solid #ededed",
@@ -985,6 +945,7 @@ export default function ProductDetailPage({ params }) {
                   }}
                 >
                   <div
+                    className="pdp-highlight-icon"
                     style={{
                       width: 32,
                       height: 32,
@@ -1000,11 +961,11 @@ export default function ProductDetailPage({ params }) {
                       <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
                     </svg>
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                  <div className="pdp-highlight-copy" style={{ minWidth: 0, flex: 1 }}>
+                    <div className="pdp-highlight-label" style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
                       Fit
                     </div>
-                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div className="pdp-highlight-value" style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {product.fit || "Oversized Drop-Shoulder"}
                     </div>
                   </div>
@@ -1012,6 +973,7 @@ export default function ProductDetailPage({ params }) {
 
                 {/* 4. Print & Craft */}
                 <div
+                  className="pdp-highlight-card"
                   style={{
                     background: "#fbfbfb",
                     border: "1px solid #ededed",
@@ -1023,6 +985,7 @@ export default function ProductDetailPage({ params }) {
                   }}
                 >
                   <div
+                    className="pdp-highlight-icon"
                     style={{
                       width: 32,
                       height: 32,
@@ -1038,11 +1001,11 @@ export default function ProductDetailPage({ params }) {
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
+                  <div className="pdp-highlight-copy" style={{ minWidth: 0, flex: 1 }}>
+                    <div className="pdp-highlight-label" style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#888" }}>
                       Print / Craft
                     </div>
-                    <div style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div className="pdp-highlight-value" style={{ fontSize: 11.5, fontWeight: 600, color: "#111", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {product.print_type || "High-Density HD Print"}
                     </div>
                   </div>
