@@ -224,7 +224,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
   return (
     <div className="barcode-modal-overlay">
       <div className="barcode-print-modal-content">
-        
+
         {/* Modal Header */}
         <div className="no-print barcode-modal-header">
           <div className="barcode-modal-header-left">
@@ -401,7 +401,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                     {productType && (
                       <div className="barcode-tag-category">{productType}</div>
                     )}
-                    
+
                     {/* ── Size & Price Row ── */}
                     <div className="barcode-tag-meta">
                       <div className="barcode-tag-size-pill">
@@ -427,7 +427,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                     <div className="barcode-tag-svg">
                       <BarcodeSVG value={variant.sku} height={36} barWidth={1.2} />
                     </div>
-                    
+
                     {/* ── SKU + Made in India ── */}
                     <div className="barcode-tag-footer">
                       <div className="barcode-sku-box">{variant.sku}</div>

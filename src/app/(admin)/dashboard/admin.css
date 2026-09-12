@@ -817,6 +817,63 @@
   border-color: #18181b;
 }
 
+.barcode-export-btn.highlight {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}
+
+.barcode-export-btn.highlight:hover {
+  background: #27272a;
+  border-color: #27272a;
+}
+
+.barcode-download-single-btn {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #52525b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.barcode-download-single-btn:hover {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}
+
+.barcode-tag-download-action {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  color: #27272a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.barcode-tag-download-action:hover {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}
+
 /* ── Premium Label Tag Design ──────────────────────────── */
 
 /* Product Title */
