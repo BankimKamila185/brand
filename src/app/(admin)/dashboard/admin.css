@@ -962,14 +962,20 @@
 
 /* Barcode */
 .barcode-tag-svg {
-  margin: 8px auto 6px;
+  margin: 6px auto 4px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  max-width: 175px;
-  height: 40px;
+  width: 45mm;
+  max-width: 100%;
+  height: 14mm;
   overflow: hidden;
+}
+
+.barcode-rendered-svg {
+  width: 45mm !important;
+  max-width: 100% !important;
+  height: 14mm !important;
 }
 
 /* Footer: SKU + Origin */
@@ -1028,6 +1034,7 @@
     background: #ffffff !important;
     width: 100% !important;
     height: auto !important;
+    overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -1037,23 +1044,22 @@
   }
 
   .barcode-modal-overlay {
-    position: static !important;
-    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #ffffff !important;
     overflow: visible !important;
-    inset: auto !important;
-    width: 100% !important;
-  }
-
-  .barcode-print-modal-content,
-  .barcode-print-modal-content * {
+    z-index: 999999 !important;
+    display: block !important;
     visibility: visible !important;
   }
 
   .barcode-print-modal-content {
-    position: static !important;
+    position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
@@ -1066,6 +1072,12 @@
     max-height: none !important;
     border-radius: 0 !important;
     overflow: visible !important;
+    visibility: visible !important;
+  }
+
+  .barcode-print-modal-content,
+  .barcode-print-modal-content * {
+    visibility: visible !important;
   }
 
   .barcode-preview-container {
@@ -1085,7 +1097,7 @@
   .barcode-sticker-grid {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 4.5mm 3.5mm !important;
+    gap: 4mm 3.5mm !important;
     padding: 0 !important;
     margin: 0 auto !important;
     background: #ffffff !important;
@@ -1108,7 +1120,7 @@
   .barcode-sticker-tag {
     border: 1.5px solid #000000 !important;
     border-radius: 10px !important;
-    padding: 8px 6px 6px !important;
+    padding: 7px 6px 6px !important;
     box-shadow: none !important;
     transform: none !important;
     break-inside: avoid !important;
@@ -1126,8 +1138,8 @@
   }
 
   .barcode-tag-header-strip {
-    margin: -8px -6px 0 !important;
-    padding: 4px 4px !important;
+    margin: -7px -6px 0 !important;
+    padding: 3.5px 4px !important;
     width: calc(100% + 12px) !important;
     background: #000000 !important;
     -webkit-print-color-adjust: exact !important;
@@ -1145,7 +1157,7 @@
   .barcode-tag-title {
     font-size: 10px !important;
     font-weight: 800 !important;
-    margin: 5px 0 1px !important;
+    margin: 4px 0 1px !important;
     max-width: 100% !important;
     line-height: 1.2 !important;
     overflow: hidden !important;
@@ -1156,7 +1168,7 @@
 
   .barcode-tag-category {
     font-size: 7px !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 3px !important;
     letter-spacing: 0.5px !important;
     color: #555555 !important;
   }
@@ -1166,7 +1178,7 @@
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    margin: 2px 0 4px !important;
+    margin: 2px 0 3px !important;
     gap: 3px !important;
     padding: 0 1px !important;
     box-sizing: border-box !important;
@@ -1225,7 +1237,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 5px !important;
-    padding: 1px 0 3px !important;
+    padding: 1px 0 2px !important;
   }
 
   .barcode-care-icon {
@@ -1235,10 +1247,10 @@
   }
 
   .barcode-tag-svg {
-    margin: 2px auto 1px !important;
-    height: 24px !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    margin: 2mm auto 1mm !important;
+    width: 45mm !important;
+    height: 14mm !important;
+    max-width: 45mm !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1247,8 +1259,9 @@
 
   .barcode-tag-svg svg,
   .barcode-rendered-svg {
-    max-width: 100% !important;
-    height: 22px !important;
+    width: 45mm !important;
+    max-width: 45mm !important;
+    height: 14mm !important;
     display: block !important;
   }
 
