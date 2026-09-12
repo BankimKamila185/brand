@@ -134,6 +134,8 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     return initial;
   });
 
+  const [printColumns, setPrintColumns] = useState(3);
+
   const updateQuantity = (idx, delta) => {
     setQuantities((prev) => ({
       ...prev,
@@ -314,6 +316,34 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               </button>
             </div>
 
+            <div className="barcode-preset-group">
+              <span className="barcode-preset-label">Layout:</span>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(3); }}
+                className={`barcode-preset-btn ${printColumns === 3 ? "active font-bold" : ""}`}
+                title="3 Columns - Compact A4 Sheet"
+              >
+                3 Cols (A4)
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(2); }}
+                className={`barcode-preset-btn ${printColumns === 2 ? "active font-bold" : ""}`}
+                title="2 Columns - Large Tags"
+              >
+                2 Cols (Large)
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(1); }}
+                className={`barcode-preset-btn ${printColumns === 1 ? "active font-bold" : ""}`}
+                title="1 Column - Thermal Roll / Single"
+              >
+                1 Col (Roll)
+              </button>
+            </div>
+
             <div className="barcode-count-tag">
               Total Labels: <span>{totalLabels}</span>
             </div>
@@ -352,7 +382,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
         {/* Live Barcode Printable Sheet Preview */}
         <div className="barcode-preview-container">
-          <div className="barcode-sticker-grid">
+          <div className={`barcode-sticker-grid grid-cols-${printColumns}`}>
             {variantsList.map((variant, vIdx) => {
               const count = quantities[vIdx] || 0;
               const tags = [];

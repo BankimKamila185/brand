@@ -634,6 +634,12 @@
   background: #f4f4f5;
 }
 
+.barcode-preset-btn.active {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}
+
 .barcode-preset-btn.highlight {
   background: #fff0ea;
   border-color: rgba(223, 92, 53, 0.3);
@@ -1010,19 +1016,46 @@
   font-size: 6px;
 }
 
+@page {
+  size: A4 portrait;
+  margin: 8mm 6mm;
+}
+
 @media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   body * {
     visibility: hidden !important;
   }
+
+  .barcode-modal-overlay {
+    position: static !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    inset: auto !important;
+  }
+
   .barcode-print-modal-content,
   .barcode-print-modal-content * {
     visibility: visible !important;
   }
+
   .barcode-print-modal-content {
-    position: absolute !important;
+    position: static !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -1030,21 +1063,157 @@
     border: none !important;
     max-height: none !important;
     border-radius: 0 !important;
+    overflow: visible !important;
   }
+
+  .barcode-preview-container {
+    padding: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
   .no-print {
     display: none !important;
   }
+
   .barcode-sticker-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 16px !important;
-    padding: 12px !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6mm 4mm !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
     background: #ffffff !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
+
+  .barcode-sticker-grid.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8mm 6mm !important;
+  }
+
+  .barcode-sticker-grid.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+  }
+
   .barcode-sticker-tag {
     border: 1.5px solid #000000 !important;
+    border-radius: 12px !important;
+    padding: 10px 8px 8px !important;
     box-shadow: none !important;
     transform: none !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+  }
+
+  .barcode-tag-header-strip {
+    margin: -10px -8px 0 !important;
+    padding: 5px 6px !important;
+    width: calc(100% + 16px) !important;
+    background: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .barcode-tag-brand-text {
+    font-size: 6.5px !important;
+    letter-spacing: 2px !important;
+    color: #ffffff !important;
+  }
+
+  .barcode-tag-title {
+    font-size: 11px !important;
+    margin: 6px 0 2px !important;
+    max-width: 100% !important;
+  }
+
+  .barcode-tag-category {
+    font-size: 7.5px !important;
+    margin-bottom: 5px !important;
+    letter-spacing: 1px !important;
+  }
+
+  .barcode-tag-meta {
+    margin: 3px 0 5px !important;
+    gap: 4px !important;
+    padding: 0 !important;
+  }
+
+  .barcode-tag-size-pill {
+    padding: 2px 6px !important;
+    gap: 4px !important;
+    border-radius: 6px !important;
+  }
+
+  .barcode-tag-size-label {
+    font-size: 7px !important;
+  }
+
+  .barcode-tag-size-value {
+    font-size: 13px !important;
+  }
+
+  .barcode-tag-mrp {
+    font-size: 7.5px !important;
+  }
+
+  .barcode-tag-price {
+    font-size: 14px !important;
+  }
+
+  .barcode-tag-details-row {
+    padding: 3px 0 2px !important;
+  }
+
+  .barcode-tag-composition {
+    font-size: 7px !important;
+    letter-spacing: 0.8px !important;
+  }
+
+  .barcode-tag-care-row {
+    gap: 6px !important;
+    padding: 2px 0 4px !important;
+  }
+
+  .barcode-care-icon {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .barcode-tag-svg {
+    margin: 3px auto !important;
+    height: 28px !important;
+    max-width: 100% !important;
+  }
+
+  .barcode-tag-svg svg {
+    max-width: 100% !important;
+    height: 26px !important;
+  }
+
+  .barcode-sku-box {
+    height: 22px !important;
+    font-size: 8.5px !important;
+    letter-spacing: 0.2px !important;
+    background: #f4f4f5 !important;
+    border-radius: 4px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .barcode-tag-origin {
+    font-size: 6.5px !important;
+    letter-spacing: 1.2px !important;
+    padding-bottom: 0 !important;
   }
 }
 
