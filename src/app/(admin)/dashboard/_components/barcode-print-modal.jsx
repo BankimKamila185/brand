@@ -51,7 +51,7 @@ export function generateCode128Bars(text) {
   return bitString;
 }
 
-export function BarcodeSVG({ value, height = 38, barWidth = 1.35 }) {
+export function BarcodeSVG({ value, height = 36, barWidth = 1.2 }) {
   if (!value) return null;
   const bars = generateCode128Bars(value);
   if (!bars) return null;
@@ -59,11 +59,16 @@ export function BarcodeSVG({ value, height = 38, barWidth = 1.35 }) {
 
   return (
     <svg
-      width={totalWidth}
-      height={height}
       viewBox={`0 0 ${totalWidth} ${height}`}
-      className="block mx-auto"
-      style={{ imageRendering: "pixelated" }}
+      preserveAspectRatio="xMidYMid meet"
+      className="barcode-rendered-svg block mx-auto"
+      style={{
+        width: "100%",
+        maxWidth: `${totalWidth}px`,
+        height: `${height}px`,
+        imageRendering: "pixelated",
+        display: "block",
+      }}
     >
       {bars.split("").map((bit, idx) => (
         <rect
