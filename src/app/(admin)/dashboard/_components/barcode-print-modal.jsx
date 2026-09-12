@@ -427,16 +427,6 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                     <div className="barcode-tag-details-row">
                       <span className="barcode-tag-composition">100% Cotton · {/oversize/i.test(productTitle + " " + productType) ? "240" : "220"} GSM</span>
                     </div>
-                    <div className="barcode-tag-care-row">
-                      {/* Machine Wash */}
-                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="15" rx="3"/><circle cx="12" cy="12" r="4"/></svg>
-                      {/* No Bleach */}
-                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l4 8H8l4-8z"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
-                      {/* Medium Iron */}
-                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 17h14l4-6H7"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-                      {/* No Tumble Dry */}
-                      <svg className="barcode-care-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="12" cy="12" r="5"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
-                    </div>
 
                     {/* ── Barcode ── */}
                     <div className="barcode-tag-svg">

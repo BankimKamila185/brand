@@ -944,22 +944,6 @@
   letter-spacing: 1.2px;
 }
 
-/* Care Icons Row */
-.barcode-tag-care-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0 6px;
-}
-
-.barcode-care-icon {
-  width: 16px;
-  height: 16px;
-  color: #a1a1aa;
-  flex-shrink: 0;
-}
-
 /* Barcode */
 .barcode-tag-svg {
   margin: 6px auto 4px;
@@ -1231,19 +1215,6 @@
     font-size: 6.5px !important;
     letter-spacing: 0.4px !important;
     color: #333333 !important;
-  }
-
-  .barcode-tag-care-row {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 5px !important;
-    padding: 1px 0 2px !important;
-  }
-
-  .barcode-care-icon {
-    width: 10px !important;
-    height: 10px !important;
-    stroke: #000000 !important;
   }
 
   .barcode-tag-svg {
