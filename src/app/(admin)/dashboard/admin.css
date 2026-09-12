@@ -745,33 +745,72 @@
 }
 
 .barcode-sticker-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.barcode-sticker-grid.grid-cols-3 .barcode-sticker-item-wrapper {
+  width: 250px;
+}
+
+.barcode-sticker-grid.grid-cols-2 .barcode-sticker-item-wrapper {
+  width: 280px;
+}
+
+.barcode-sticker-grid.grid-cols-1 .barcode-sticker-item-wrapper {
+  width: 320px;
+}
+
+.barcode-sticker-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.barcode-item-actions {
+  width: 100%;
 }
 
 .barcode-sticker-tag {
   background: #ffffff;
   border: 1.5px solid #18181b;
-  border-radius: 12px;
-  padding: 10px 12px 8px;
+  border-radius: 8px;
+  padding: 8px 10px 6px;
+  width: 100%;
+  aspect-ratio: 2.5 / 1.5;
+  height: auto;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.05);
-  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(24, 24, 27, 0.07);
   page-break-inside: avoid;
   break-inside: avoid;
   position: relative;
-  aspect-ratio: 2.5 / 1.5;
-  justify-content: space-between;
+  overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .barcode-sticker-tag:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(24, 24, 27, 0.09);
+  box-shadow: 0 8px 22px rgba(24, 24, 27, 0.12);
+}
+
+.barcode-tag-header-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2px;
 }
 
 /* Print Settings Specs Bar */
@@ -853,14 +892,13 @@
 }
 
 .barcode-tag-download-action {
-  margin-top: 6px;
   width: 100%;
   padding: 5px 8px;
   font-size: 10.5px;
   font-weight: 700;
-  border-radius: 5px;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #d4d4d8;
   color: #27272a;
   cursor: pointer;
   display: flex;
@@ -1135,10 +1173,14 @@
     gap: 5mm 5mm !important;
   }
 
-  .barcode-sticker-grid.grid-cols-1 {
-    grid-template-columns: 63.5mm !important;
-    max-width: 63.5mm !important;
-    margin: 0 auto !important;
+  .barcode-sticker-item-wrapper {
+    width: 63.5mm !important;
+    height: 38.1mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .barcode-sticker-tag {

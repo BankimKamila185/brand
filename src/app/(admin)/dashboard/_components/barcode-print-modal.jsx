@@ -726,65 +726,62 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               const tags = [];
               for (let i = 0; i < count; i++) {
                 tags.push(
-                  <div key={`${vIdx}-${i}`} className="barcode-sticker-tag">
-                    {/* ── Product Title ── */}
-                    <div className="barcode-tag-title">{productTitle}</div>
+                  <div key={`${vIdx}-${i}`} className="barcode-sticker-item-wrapper">
+                    <div className="barcode-sticker-tag">
+                        {/* ── Product Title & Category ── */}
+                        <div className="barcode-tag-header-area">
+                          <div className="barcode-tag-title">{productTitle}</div>
+                          <div className="barcode-tag-category">
+                            100% Cotton · {/oversize/i.test(productTitle + " " + productType) ? "240" : "220"} GSM
+                          </div>
+                        </div>
 
-                    {/* ── Category / Type ── */}
-                    {productType && (
-                      <div className="barcode-tag-category">{productType}</div>
-                    )}
+                        {/* ── Size & Price Row ── */}
+                        <div className="barcode-tag-meta">
+                          <div className="barcode-tag-size-pill">
+                            <span className="barcode-tag-size-label">SIZE</span>
+                            <span className="barcode-tag-size-value">{variant.size}</span>
+                          </div>
+                          <div className="barcode-tag-price-block">
+                            {Number(variant.comparePrice) > Number(variant.price) && (
+                              <span className="barcode-tag-mrp">
+                                MRP ₹{Number(variant.comparePrice).toLocaleString("en-IN")}
+                              </span>
+                            )}
+                            <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
+                          </div>
+                        </div>
 
-                    {/* ── Size & Price Row ── */}
-                    <div className="barcode-tag-meta">
-                      <div className="barcode-tag-size-pill">
-                        <span className="barcode-tag-size-label">SIZE</span>
-                        <span className="barcode-tag-size-value">{variant.size}</span>
+                        {/* ── Barcode ── */}
+                        <div className="barcode-tag-svg">
+                          <BarcodeSVG value={variant.sku} height={24} barWidth={1.05} />
+                        </div>
+
+                        {/* ── SKU + Made in India ── */}
+                        <div className="barcode-tag-footer">
+                          <div className="barcode-sku-box">{variant.sku}</div>
+                          <div className="barcode-tag-origin">
+                            <span className="barcode-origin-dot">●</span> Crafted in India
+                          </div>
+                        </div>
                       </div>
-                      <div className="barcode-tag-price-block">
-                        {Number(variant.comparePrice) > Number(variant.price) && (
-                          <span className="barcode-tag-mrp">
-                            MRP ₹{Number(variant.comparePrice).toLocaleString("en-IN")}
-                          </span>
-                        )}
-                        <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
+
+                      {/* ── Individual Tag Download Action (Outside Sticker Card) ── */}
+                      <div className="no-print barcode-item-actions">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownloadSingleLabel(variant); }}
+                          className="barcode-tag-download-action"
+                          title="Download 2.5 x 1.5 in (300 DPI) label"
+                        >
+                          <Download size={12} /> Download 2.5" × 1.5" PNG
+                        </button>
                       </div>
                     </div>
-
-                    {/* ── Composition & Care ── */}
-                    <div className="barcode-tag-details-row">
-                      <span className="barcode-tag-composition">100% Cotton · {/oversize/i.test(productTitle + " " + productType) ? "240" : "220"} GSM</span>
-                    </div>
-
-                    {/* ── Barcode ── */}
-                    <div className="barcode-tag-svg">
-                      <BarcodeSVG value={variant.sku} height={28} barWidth={1.1} />
-                    </div>
-
-                    {/* ── SKU + Made in India ── */}
-                    <div className="barcode-tag-footer">
-                      <div className="barcode-sku-box">{variant.sku}</div>
-                      <div className="barcode-tag-origin">
-                        <span className="barcode-origin-dot">●</span> Crafted in India
-                      </div>
-                    </div>
-
-                    {/* ── Individual Tag Download Action (Hidden on Print) ── */}
-                    <div className="no-print w-full mt-2">
-                      <button
-                        type="button"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownloadSingleLabel(variant); }}
-                        className="barcode-tag-download-action"
-                        title="Download this single label as high-res PNG"
-                      >
-                        <Download size={12} /> Download This Label
-                      </button>
-                    </div>
-                  </div>
-                );
-              }
-              return tags;
-            })}
+                  );
+                }
+                return tags;
+              })}
 
             {totalLabels === 0 && (
               <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", color: "#a1a1aa" }} className="no-print">
