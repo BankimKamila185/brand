@@ -1,7 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { Printer, X, Tag, Layers, Plus, Minus, RefreshCw, Download, CheckCircle2, ShieldCheck } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import {
+  Printer,
+  X,
+  Tag,
+  Layers,
+  Plus,
+  Minus,
+  RefreshCw,
+  Download,
+  ShieldCheck,
+  Package,
+  CheckCircle2,
+  Trash2,
+  Search,
+  ChevronDown
+} from "lucide-react";
 
 // Code 128 Encoding Table (ISO/IEC 15417 standard patterns 0 to 106)
 const CODE128_PATTERNS = [
@@ -51,7 +66,7 @@ export function generateCode128Bars(text) {
   return bitString;
 }
 
-export function BarcodeSVG({ value, height = 28, barWidth = 1.1 }) {
+export function BarcodeSVG({ value, height = 24, barWidth = 1.05 }) {
   if (!value) return null;
   const bars = generateCode128Bars(value);
   if (!bars) return null;
@@ -99,89 +114,196 @@ export function generateTOSSKUCode(title, sizeVal, uniqueId = null) {
   return `${prefix}-${codePart || "PRD"}-${cleanSize}-${idNum}`;
 }
 
-export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
-  if (!product) return null;
+// Helper to create batch entry object from product
+function createBatchItem(prod, defaultQty = 1) {
+  const title = prod.title || "Product";
+  const pType = prod.productType || prod.product_type || "";
+  const rawVariants = prod.variants && prod.variants.length > 0
+    ? prod.variants
+    : [{ size: "M", price: prod.price || 0, comparePrice: prod.comparePrice || 0, stock: 1, sku: "" }];
 
-  const productTitle = product.title || "Product";
-  const productType = product.productType || product.product_type || "";
-  const rawVariants = product.variants && product.variants.length > 0
-    ? product.variants
-    : [{ size: "M", price: product.price || 0, comparePrice: product.comparePrice || 0, stock: 1, sku: "" }];
+  const usedIds = new Set();
+  const variantsList = rawVariants.map((v, idx) => {
+    let randId = 3432 + idx;
+    while (usedIds.has(randId)) {
+      randId = Math.floor(1000 + Math.random() * 9000);
+    }
+    usedIds.add(randId);
 
-  // Initialize unique SKUs for variants
-  const [variantsList, setVariantsList] = useState(() => {
-    const usedIds = new Set();
-    return rawVariants.map((v, idx) => {
-      let randId = 3432 + idx;
-      while (usedIds.has(randId)) {
-        randId = Math.floor(1000 + Math.random() * 9000);
-      }
-      usedIds.add(randId);
+    const sizeStr = v.size || v.option1 || v.title || `Size ${idx + 1}`;
+    const defaultSKU = generateTOSSKUCode(title, sizeStr, randId);
 
-      const sizeStr = v.size || v.option1 || v.title || `Size ${idx + 1}`;
-      const defaultSKU = generateTOSSKUCode(productTitle, sizeStr, randId);
-
-      return {
-        size: sizeStr,
-        price: v.price || 0,
-        comparePrice: v.comparePrice || v.compare_at_price || v.compare_price || 0,
-        stock: v.stock || v.inventory?.quantity || 1,
-        sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : defaultSKU,
-      };
-    });
+    return {
+      size: sizeStr,
+      price: v.price || 0,
+      comparePrice: v.comparePrice || v.compare_at_price || v.compare_price || 0,
+      stock: v.stock || v.inventory?.quantity || 1,
+      sku: (v.sku && v.sku.startsWith("TOS-")) ? v.sku : defaultSKU,
+    };
   });
 
-  const [quantities, setQuantities] = useState(() => {
-    const initial = {};
-    rawVariants.forEach((_, idx) => {
-      initial[idx] = 1;
-    });
-    return initial;
+  const quantities = {};
+  variantsList.forEach((_, idx) => {
+    quantities[idx] = defaultQty;
   });
 
+  return {
+    id: prod.id || prod._id || prod.handle || String(Math.random()),
+    product: prod,
+    productTitle: title,
+    productType: pType,
+    variantsList,
+    quantities,
+  };
+}
+
+export function BarcodePrintModal({ product, allProducts = [], onClose, onUpdateVariants }) {
+  if (!product && (!allProducts || allProducts.length === 0)) return null;
+
+  const initialProd = product || allProducts[0];
+
+  // Batch Queue List of Multiple Products/Designs
+  const [batchList, setBatchList] = useState(() => [createBatchItem(initialProd, 1)]);
+  const [activeBatchIndex, setActiveBatchIndex] = useState(0);
   const [printColumns, setPrintColumns] = useState(3);
+  const [previewFilter, setPreviewFilter] = useState("all"); // "all" (Total Print) or "active" (Current Design)
+  const [isAddDropdownOpen, setIsAddDropdownOpen] = useState(false);
+  const [searchDesignQuery, setSearchDesignQuery] = useState("");
+  const dropdownRef = useRef(null);
 
-  const updateQuantity = (idx, delta) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [idx]: Math.max(0, (prev[idx] || 0) + delta),
-    }));
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsAddDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const activeItem = batchList[activeBatchIndex] || batchList[0];
+
+  // Update quantities for the current active design
+  const updateQuantity = (variantIdx, delta) => {
+    setBatchList((prev) => {
+      const next = [...prev];
+      const current = { ...next[activeBatchIndex] };
+      const currentQty = { ...current.quantities };
+      currentQty[variantIdx] = Math.max(0, (currentQty[variantIdx] || 0) + delta);
+      current.quantities = currentQty;
+      next[activeBatchIndex] = current;
+      return next;
+    });
   };
 
   const setAllQuantities = (qtyType) => {
-    const next = {};
-    variantsList.forEach((v, idx) => {
-      if (qtyType === "stock") {
-        next[idx] = Math.max(1, Number(v.stock) || 1);
-      } else {
-        next[idx] = 1;
-      }
+    setBatchList((prev) => {
+      const next = [...prev];
+      const current = { ...next[activeBatchIndex] };
+      const currentQty = {};
+      current.variantsList.forEach((v, idx) => {
+        if (qtyType === "stock") {
+          currentQty[idx] = Math.max(1, Number(v.stock) || 1);
+        } else if (qtyType === "zero") {
+          currentQty[idx] = 0;
+        } else {
+          currentQty[idx] = 1;
+        }
+      });
+      current.quantities = currentQty;
+      next[activeBatchIndex] = current;
+      return next;
     });
-    setQuantities(next);
   };
 
-  const regenerateSKUs = () => {
-    const usedIds = new Set();
-    const updated = variantsList.map((v, idx) => {
-      let randId = Math.floor(1000 + Math.random() * 9000);
-      while (usedIds.has(randId)) {
-        randId = Math.floor(1000 + Math.random() * 9000);
-      }
-      usedIds.add(randId);
+  // Add another product to the batch queue
+  const handleAddProductToBatch = (prod) => {
+    const alreadyIdx = batchList.findIndex(
+      (item) => item.id === (prod.id || prod._id || prod.handle)
+    );
+    if (alreadyIdx !== -1) {
+      setActiveBatchIndex(alreadyIdx);
+    } else {
+      const newItem = createBatchItem(prod, 1);
+      setBatchList((prev) => [...prev, newItem]);
+      setActiveBatchIndex(batchList.length);
+    }
+    setIsAddDropdownOpen(false);
+    setSearchDesignQuery("");
+  };
 
-      return {
-        ...v,
-        sku: generateTOSSKUCode(productTitle, v.size, randId),
-      };
-    });
-
-    setVariantsList(updated);
-    if (onUpdateVariants) {
-      onUpdateVariants(updated);
+  // Remove a product from the batch queue
+  const handleRemoveBatchItem = (indexToRemove, e) => {
+    e.stopPropagation();
+    if (batchList.length <= 1) return;
+    setBatchList((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+    if (activeBatchIndex >= indexToRemove) {
+      setActiveBatchIndex(Math.max(0, activeBatchIndex - 1));
     }
   };
 
-  const totalLabels = Object.values(quantities).reduce((a, b) => a + Number(b || 0), 0);
+  const regenerateActiveSKUs = () => {
+    setBatchList((prev) => {
+      const next = [...prev];
+      const current = { ...next[activeBatchIndex] };
+      const usedIds = new Set();
+      current.variantsList = current.variantsList.map((v) => {
+        let randId = Math.floor(1000 + Math.random() * 9000);
+        while (usedIds.has(randId)) {
+          randId = Math.floor(1000 + Math.random() * 9000);
+        }
+        usedIds.add(randId);
+        return {
+          ...v,
+          sku: generateTOSSKUCode(current.productTitle, v.size, randId),
+        };
+      });
+      next[activeBatchIndex] = current;
+      return next;
+    });
+  };
+
+  // Total labels across all batch items or current item
+  const allStickersList = useMemo(() => {
+    const list = [];
+    const itemsToProcess = previewFilter === "active" ? [activeItem] : batchList;
+
+    itemsToProcess.forEach((item) => {
+      if (!item) return;
+      item.variantsList.forEach((variant, vIdx) => {
+        const count = item.quantities[vIdx] || 0;
+        for (let i = 0; i < count; i++) {
+          list.push({
+            productTitle: item.productTitle,
+            productType: item.productType,
+            size: variant.size,
+            price: variant.price,
+            comparePrice: variant.comparePrice,
+            sku: variant.sku,
+          });
+        }
+      });
+    });
+    return list;
+  }, [batchList, activeItem, previewFilter]);
+
+  const totalBatchLabels = useMemo(() => {
+    return batchList.reduce((sum, item) => {
+      return sum + Object.values(item.quantities || {}).reduce((a, b) => a + Number(b || 0), 0);
+    }, 0);
+  }, [batchList]);
+
+  // Available products to add that are not already in batch
+  const availableToAdd = useMemo(() => {
+    if (!allProducts || allProducts.length === 0) return [];
+    return allProducts.filter((p) => {
+      const matchesSearch = !searchDesignQuery.trim() ||
+        (p.title || "").toLowerCase().includes(searchDesignQuery.toLowerCase().trim()) ||
+        (p.handle || "").toLowerCase().includes(searchDesignQuery.toLowerCase().trim());
+      return matchesSearch;
+    });
+  }, [allProducts, searchDesignQuery]);
 
   // Helper to draw rounded rectangle with canvas fallback
   const drawCanvasRoundedRect = (ctx, x, y, width, height, radius) => {
@@ -218,7 +340,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    let displayTitle = (tag.productTitle || productTitle || "PRODUCT").toUpperCase();
+    let displayTitle = (tag.productTitle || "PRODUCT").toUpperCase();
     if (ctx.measureText(displayTitle).width > innerW) {
       while (displayTitle.length > 4 && ctx.measureText(displayTitle + "...").width > innerW) {
         displayTitle = displayTitle.slice(0, -1);
@@ -229,7 +351,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
     // 3. Category & Fabric Type
     curY += height * 0.048;
-    const gsm = /oversize/i.test((tag.productTitle || productTitle) + " " + (tag.productType || productType)) ? "240" : "220";
+    const gsm = /oversize/i.test((tag.productTitle || "") + " " + (tag.productType || "")) ? "240" : "220";
     const catText = `100% COTTON · ${gsm} GSM`;
     ctx.fillStyle = "#71717a";
     ctx.font = `600 ${Math.round(width * 0.022)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
@@ -342,7 +464,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
   };
 
   // Download a single individual sticker label (2.5" × 1.5" @ 300 DPI: 750 × 450 px)
-  const handleDownloadSingleLabel = (variant) => {
+  const handleDownloadSingleLabel = (tag) => {
     const tagW = 750;
     const tagH = 450;
     const padding = 20;
@@ -355,53 +477,24 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawStickerTagOnCanvas(
-      ctx,
-      {
-        productTitle,
-        productType,
-        size: variant.size,
-        price: variant.price,
-        comparePrice: variant.comparePrice,
-        sku: variant.sku,
-      },
-      padding,
-      padding,
-      tagW,
-      tagH
-    );
+    drawStickerTagOnCanvas(ctx, tag, padding, padding, tagW, tagH);
 
     const dataUrl = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = `tos-barcode-2.5x1.5-${productTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")}-size-${String(variant.size).toLowerCase()}.png`;
+    link.download = `tos-barcode-2.5x1.5-${(tag.productTitle || "product").toLowerCase().replace(/[^a-z0-9]/g, "-")}-size-${String(tag.size).toLowerCase()}.png`;
     link.click();
   };
 
-  // Export full multi-label sheet as 300 DPI PNG (2.5" × 1.5" tags)
+  // Export full multi-label sheet as 300 DPI PNG (Total Print Sheet)
   const handleExportPNG = () => {
-    const tagsToPrint = [];
-    variantsList.forEach((variant, vIdx) => {
-      const qty = quantities[vIdx] || 0;
-      for (let i = 0; i < qty; i++) {
-        tagsToPrint.push({
-          productTitle,
-          productType,
-          size: variant.size,
-          price: variant.price,
-          comparePrice: variant.comparePrice,
-          sku: variant.sku,
-        });
-      }
-    });
-
-    if (tagsToPrint.length === 0) {
-      alert("Please select at least 1 label copy to export.");
+    if (allStickersList.length === 0) {
+      alert("Please select at least 1 label copy in your print batch.");
       return;
     }
 
     const cols = printColumns;
-    const rows = Math.ceil(tagsToPrint.length / cols);
+    const rows = Math.ceil(allStickersList.length / cols);
     const tagW = 750;
     const tagH = 450;
     const gapX = 30;
@@ -416,7 +509,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    tagsToPrint.forEach((tag, idx) => {
+    allStickersList.forEach((tag, idx) => {
       const colIdx = idx % cols;
       const rowIdx = Math.floor(idx / cols);
       const tagX = margin + colIdx * (tagW + gapX);
@@ -428,34 +521,19 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     const dataUrl = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = `tos-labels-2.5x1.5in-${productTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${tagsToPrint.length}-tags-sheet.png`;
+    link.download = `tos-total-print-sheet-${batchList.length}-designs-${allStickersList.length}-labels.png`;
     link.click();
   };
 
-  // Export full multi-label sheet as vector SVG (2.5" × 1.5" ratio)
+  // Export full multi-label sheet as vector SVG (Total Print Vector Sheet)
   const handleExportSVG = () => {
-    const tagsToPrint = [];
-    variantsList.forEach((variant, vIdx) => {
-      const qty = quantities[vIdx] || 0;
-      for (let i = 0; i < qty; i++) {
-        tagsToPrint.push({
-          productTitle,
-          productType,
-          size: variant.size,
-          price: variant.price,
-          comparePrice: variant.comparePrice,
-          sku: variant.sku,
-        });
-      }
-    });
-
-    if (tagsToPrint.length === 0) {
-      alert("Please select at least 1 label copy to export.");
+    if (allStickersList.length === 0) {
+      alert("Please select at least 1 label copy in your print batch.");
       return;
     }
 
     const cols = printColumns;
-    const rows = Math.ceil(tagsToPrint.length / cols);
+    const rows = Math.ceil(allStickersList.length / cols);
     const tagW = 240;
     const tagH = 144;
     const gap = 12;
@@ -479,7 +557,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
       </style>
       <rect width="100%" height="100%" fill="#ffffff"/>`;
 
-    tagsToPrint.forEach((tag, idx) => {
+    allStickersList.forEach((tag, idx) => {
       const colIdx = idx % cols;
       const rowIdx = Math.floor(idx / cols);
       const x = margin + colIdx * (tagW + gap);
@@ -499,12 +577,12 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
         }
       }
 
-      const gsm = /oversize/i.test((tag.productTitle || productTitle) + " " + (tag.productType || productType)) ? "240" : "220";
+      const gsm = /oversize/i.test((tag.productTitle || "") + " " + (tag.productType || "")) ? "240" : "220";
 
       svgContent += `
         <g id="tag-${idx}">
           <rect class="card" x="${x}" y="${y}" width="${tagW}" height="${tagH}"/>
-          <text class="title" x="${x + tagW / 2}" y="${y + 14}">${(tag.productTitle || productTitle).toUpperCase()}</text>
+          <text class="title" x="${x + tagW / 2}" y="${y + 14}">${(tag.productTitle || "PRODUCT").toUpperCase()}</text>
           <text class="cat" x="${x + tagW / 2}" y="${y + 24}">100% COTTON · ${gsm} GSM</text>
           
           <!-- Size Pill -->
@@ -536,7 +614,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tos-labels-2.5x1.5in-${productTitle.toLowerCase().replace(/[^a-z0-9]/g, "-")}-vector.svg`;
+    link.download = `tos-total-print-sheet-${batchList.length}-designs-${allStickersList.length}-labels.svg`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -556,8 +634,10 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               <Printer size={22} />
             </div>
             <div className="barcode-modal-title-area">
-              <span className="barcode-modal-badge">• THE OUTLIERS STUDIO •</span>
-              <h2>{productTitle}</h2>
+              <span className="barcode-modal-badge">• THE OUTLIERS STUDIO • BATCH PRINT STUDIO</span>
+              <h2>
+                Total Print Batch ({totalBatchLabels} {totalBatchLabels === 1 ? "Label" : "Labels"} · {batchList.length} {batchList.length === 1 ? "Design" : "Designs"})
+              </h2>
             </div>
           </div>
 
@@ -565,10 +645,11 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
             <button
               type="button"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handlePrint(); }}
-              disabled={totalLabels === 0}
+              disabled={allStickersList.length === 0}
               className="barcode-print-btn"
+              title="Print All Batched Labels"
             >
-              <Printer size={18} /> Print {totalLabels} {totalLabels === 1 ? "Label" : "Labels"}
+              <Printer size={18} /> Total Print ({allStickersList.length} {allStickersList.length === 1 ? "Label" : "Labels"})
             </button>
             <button
               type="button"
@@ -587,14 +668,11 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
             <span>Label Size:</span> <strong>2.5" × 1.5" (63.5 × 38.1 mm)</strong>
           </div>
           <div className="barcode-spec-pill">
-            <span>Type:</span> <strong>Code 128</strong>
-          </div>
-          <div className="barcode-spec-pill">
-            <span>Barcode Dimensions:</span> <strong>48 × 11 mm</strong>
+            <span>Type:</span> <strong>Code 128 Standard</strong>
           </div>
           <div className="barcode-spec-pill border-emerald-300 bg-emerald-50 text-emerald-800 flex items-center gap-1">
             <ShieldCheck size={14} className="text-emerald-600" />
-            <strong>GS1 / ISO Scanner Compliant</strong>
+            <strong>GS1 / ISO Compliant</strong>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
@@ -602,56 +680,165 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               type="button"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExportSVG(); }}
               className="barcode-export-btn"
-              title="Export Vector SVG"
+              title="Export Vector SVG for entire batch"
             >
-              <Download size={13} /> SVG
+              <Download size={13} /> SVG (Total Batch)
             </button>
             <button
               type="button"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExportPNG(); }}
               className="barcode-export-btn highlight"
-              title="Export 300 DPI PNG Sheet"
+              title="Export 300 DPI PNG Sheet for entire batch"
             >
-              <Download size={13} /> Download PNG Sheet (300 DPI)
+              <Download size={13} /> Download Total Sheet (300 DPI PNG)
             </button>
           </div>
         </div>
 
-        {/* Modal Toolbar & Size Selectors */}
+        {/* Multi-Design Batch Management & Size Counter Toolbar */}
         <div className="no-print barcode-modal-toolbar">
+
+          {/* 1. Multi-Design Batch Queue Bar */}
+          <div className="barcode-batch-queue-bar">
+            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-1">
+              <Package size={14} /> Added Designs:
+            </span>
+
+            {batchList.map((item, idx) => {
+              const itemTotal = Object.values(item.quantities || {}).reduce((a, b) => a + Number(b || 0), 0);
+              const isActive = idx === activeBatchIndex;
+              return (
+                <div
+                  key={item.id || idx}
+                  onClick={() => setActiveBatchIndex(idx)}
+                  className={`barcode-batch-chip ${isActive ? "active" : ""}`}
+                  title={`Configure ${item.productTitle}`}
+                >
+                  <span>{item.productTitle}</span>
+                  <span className="barcode-batch-chip-count">{itemTotal}</span>
+                  {batchList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleRemoveBatchItem(idx, e)}
+                      className="barcode-batch-chip-remove"
+                      title="Remove from batch"
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* + Add Another Design Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsAddDropdownOpen(!isAddDropdownOpen)}
+                className="barcode-add-design-btn"
+                title="Add another product design to this print batch"
+              >
+                <Plus size={14} /> Add Another Design <ChevronDown size={13} />
+              </button>
+
+              {isAddDropdownOpen && (
+                <div className="barcode-design-dropdown">
+                  <input
+                    type="text"
+                    placeholder="Search product to add..."
+                    value={searchDesignQuery}
+                    onChange={(e) => setSearchDesignQuery(e.target.value)}
+                    className="barcode-design-search-input"
+                    autoFocus
+                  />
+                  <div className="max-h-52 overflow-y-auto">
+                    {availableToAdd.length > 0 ? (
+                      availableToAdd.map((p) => (
+                        <div
+                          key={p.id || p._id || p.handle}
+                          onClick={() => handleAddProductToBatch(p)}
+                          className="barcode-design-option"
+                        >
+                          <span className="truncate">{p.title}</span>
+                          <span className="text-[11px] text-neutral-400 font-bold">
+                            {p.variants?.length || 1} sizes
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-3 text-center text-xs text-neutral-400">
+                        No other designs found
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 2. Active Design Configuration Toolbar */}
           <div className="barcode-toolbar-presets">
             <div className="barcode-preset-group">
-              <span className="barcode-preset-label">Presets:</span>
+              <span className="barcode-preset-label">
+                Configuring: <strong className="text-neutral-900">{activeItem.productTitle}</strong>
+              </span>
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAllQuantities("one"); }}
                 className="barcode-preset-btn"
               >
-                <Tag size={14} /> 1 Per Size
+                <Tag size={13} /> 1 Per Size
               </button>
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAllQuantities("stock"); }}
                 className="barcode-preset-btn"
               >
-                <Layers size={14} /> Match Stock
+                <Layers size={13} /> Match Stock
               </button>
               <button
                 type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); regenerateSKUs(); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAllQuantities("zero"); }}
+                className="barcode-preset-btn"
+                title="Set all sizes of this design to 0"
+              >
+                Clear Sizes
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); regenerateActiveSKUs(); }}
                 className="barcode-preset-btn highlight"
               >
-                <RefreshCw size={14} /> Re-generate TOS Barcodes
+                <RefreshCw size={13} /> Re-generate SKUs
               </button>
             </div>
 
+            {/* Layout & Preview Mode Selectors */}
             <div className="barcode-preset-group">
-              <span className="barcode-preset-label">Layout:</span>
+              <span className="barcode-preset-label">Preview:</span>
+              <button
+                type="button"
+                onClick={() => setPreviewFilter("all")}
+                className={`barcode-preset-btn ${previewFilter === "all" ? "active font-bold" : ""}`}
+                title="Preview total merged sheet from all designs"
+              >
+                Total Batch ({totalBatchLabels})
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewFilter("active")}
+                className={`barcode-preset-btn ${previewFilter === "active" ? "active font-bold" : ""}`}
+                title="Preview only the currently selected design"
+              >
+                Current Design Only
+              </button>
+
+              <span className="barcode-preset-label ml-2">Sheet Cols:</span>
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(3); }}
                 className={`barcode-preset-btn ${printColumns === 3 ? "active font-bold" : ""}`}
-                title="3 Columns - Compact A4 Sheet"
+                title="3 Columns - A4 Sheet"
               >
                 3 Cols (A4)
               </button>
@@ -659,28 +846,24 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                 type="button"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(2); }}
                 className={`barcode-preset-btn ${printColumns === 2 ? "active font-bold" : ""}`}
-                title="2 Columns - Large Tags"
+                title="2 Columns"
               >
-                2 Cols (Large)
+                2 Cols
               </button>
               <button
                 type="button"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrintColumns(1); }}
                 className={`barcode-preset-btn ${printColumns === 1 ? "active font-bold" : ""}`}
-                title="1 Column - Thermal Roll / Single"
+                title="1 Column - Roll"
               >
                 1 Col (Roll)
               </button>
             </div>
-
-            <div className="barcode-count-tag">
-              Total Labels: <span>{totalLabels}</span>
-            </div>
           </div>
 
-          {/* Size Quantity Counters with Single Download */}
+          {/* 3. Size Quantity Counters for Active Design */}
           <div className="barcode-size-counters">
-            {variantsList.map((v, idx) => (
+            {activeItem.variantsList.map((v, idx) => (
               <div key={idx} className="barcode-size-counter-card">
                 <div className="barcode-size-info">
                   <span className="barcode-size-name">Size {v.size}</span>
@@ -695,7 +878,7 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
                   >
                     <Minus size={14} />
                   </button>
-                  <span className="barcode-counter-num">{quantities[idx] || 0}</span>
+                  <span className="barcode-counter-num">{activeItem.quantities[idx] || 0}</span>
                   <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(idx, 1); }}
@@ -707,9 +890,20 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
 
                 <button
                   type="button"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownloadSingleLabel(v); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDownloadSingleLabel({
+                      productTitle: activeItem.productTitle,
+                      productType: activeItem.productType,
+                      size: v.size,
+                      price: v.price,
+                      comparePrice: v.comparePrice,
+                      sku: v.sku,
+                    });
+                  }}
                   className="barcode-download-single-btn"
-                  title={`Download single 300 DPI sticker for Size ${v.size}`}
+                  title={`Download single 2.5 x 1.5 in sticker for Size ${v.size}`}
                 >
                   <Download size={12} /> Label
                 </button>
@@ -721,73 +915,66 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
         {/* Live Barcode Printable Sheet Preview */}
         <div className="barcode-preview-container">
           <div className={`barcode-sticker-grid grid-cols-${printColumns}`}>
-            {variantsList.map((variant, vIdx) => {
-              const count = quantities[vIdx] || 0;
-              const tags = [];
-              for (let i = 0; i < count; i++) {
-                tags.push(
-                  <div key={`${vIdx}-${i}`} className="barcode-sticker-item-wrapper">
-                    <div className="barcode-sticker-tag">
-                        {/* ── Product Title & Category ── */}
-                        <div className="barcode-tag-header-area">
-                          <div className="barcode-tag-title">{productTitle}</div>
-                          <div className="barcode-tag-category">
-                            100% Cotton · {/oversize/i.test(productTitle + " " + productType) ? "240" : "220"} GSM
-                          </div>
-                        </div>
-
-                        {/* ── Size & Price Row ── */}
-                        <div className="barcode-tag-meta">
-                          <div className="barcode-tag-size-pill">
-                            <span className="barcode-tag-size-label">SIZE</span>
-                            <span className="barcode-tag-size-value">{variant.size}</span>
-                          </div>
-                          <div className="barcode-tag-price-block">
-                            {Number(variant.comparePrice) > Number(variant.price) && (
-                              <span className="barcode-tag-mrp">
-                                MRP ₹{Number(variant.comparePrice).toLocaleString("en-IN")}
-                              </span>
-                            )}
-                            <span className="barcode-tag-price">₹{Number(variant.price).toLocaleString("en-IN")}</span>
-                          </div>
-                        </div>
-
-                        {/* ── Barcode ── */}
-                        <div className="barcode-tag-svg">
-                          <BarcodeSVG value={variant.sku} height={24} barWidth={1.05} />
-                        </div>
-
-                        {/* ── SKU + Made in India ── */}
-                        <div className="barcode-tag-footer">
-                          <div className="barcode-sku-box">{variant.sku}</div>
-                          <div className="barcode-tag-origin">
-                            <span className="barcode-origin-dot">●</span> Crafted in India
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* ── Individual Tag Download Action (Outside Sticker Card) ── */}
-                      <div className="no-print barcode-item-actions">
-                        <button
-                          type="button"
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownloadSingleLabel(variant); }}
-                          className="barcode-tag-download-action"
-                          title="Download 2.5 x 1.5 in (300 DPI) label"
-                        >
-                          <Download size={12} /> Download 2.5" × 1.5" PNG
-                        </button>
-                      </div>
+            {allStickersList.map((tag, tagIdx) => (
+              <div key={tagIdx} className="barcode-sticker-item-wrapper">
+                <div className="barcode-sticker-tag">
+                  {/* ── Product Title & Category ── */}
+                  <div className="barcode-tag-header-area">
+                    <div className="barcode-tag-title">{tag.productTitle}</div>
+                    <div className="barcode-tag-category">
+                      100% Cotton · {/oversize/i.test(tag.productTitle + " " + tag.productType) ? "240" : "220"} GSM
                     </div>
-                  );
-                }
-                return tags;
-              })}
+                  </div>
 
-            {totalLabels === 0 && (
-              <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", color: "#a1a1aa" }} className="no-print">
-                <Tag size={40} style={{ marginBottom: "12px", strokeWidth: 1 }} />
-                <p style={{ fontSize: "15px", fontWeight: 700, color: "#52525b" }}>No label copies selected</p>
-                <p style={{ fontSize: "13px", marginTop: "4px" }}>Select size quantities above to generate printable barcode tags.</p>
+                  {/* ── Size & Price Row ── */}
+                  <div className="barcode-tag-meta">
+                    <div className="barcode-tag-size-pill">
+                      <span className="barcode-tag-size-label">SIZE</span>
+                      <span className="barcode-tag-size-value">{tag.size}</span>
+                    </div>
+                    <div className="barcode-tag-price-block">
+                      {Number(tag.comparePrice) > Number(tag.price) && (
+                        <span className="barcode-tag-mrp">
+                          MRP ₹{Number(tag.comparePrice).toLocaleString("en-IN")}
+                        </span>
+                      )}
+                      <span className="barcode-tag-price">₹{Number(tag.price).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+
+                  {/* ── Barcode ── */}
+                  <div className="barcode-tag-svg">
+                    <BarcodeSVG value={tag.sku} height={24} barWidth={1.05} />
+                  </div>
+
+                  {/* ── SKU + Made in India ── */}
+                  <div className="barcode-tag-footer">
+                    <div className="barcode-sku-box">{tag.sku}</div>
+                    <div className="barcode-tag-origin">
+                      <span className="barcode-origin-dot">●</span> Crafted in India
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Individual Tag Download Action (Outside Sticker Card) ── */}
+                <div className="no-print barcode-item-actions">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownloadSingleLabel(tag); }}
+                    className="barcode-tag-download-action"
+                    title="Download 2.5 x 1.5 in (300 DPI) label"
+                  >
+                    <Download size={12} /> Download 2.5" × 1.5" PNG
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {allStickersList.length === 0 && (
+              <div style={{ textAlign: "center", padding: "48px 0", color: "#a1a1aa", width: "100%" }} className="no-print">
+                <Tag size={40} style={{ margin: "0 auto 12px", strokeWidth: 1 }} />
+                <p style={{ fontSize: "15px", fontWeight: 700, color: "#52525b" }}>No label copies selected in batch</p>
+                <p style={{ fontSize: "13px", marginTop: "4px" }}>Select size quantities above or add another design to generate printable barcode tags.</p>
               </div>
             )}
           </div>

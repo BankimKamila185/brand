@@ -122,9 +122,19 @@ export function ProductCatalog() {
           <h1>Products</h1>
           <p>Manage your product catalog by category, imagery, size, and stock.</p>
         </div>
-        <button className="admin-primary-button" onClick={() => setAdding(true)}>
-          <Plus /> Add product
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="px-3.5 py-2.5 bg-neutral-900 hover:bg-black text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+            onClick={() => setPrintProduct(products[0] || null)}
+            title="Open Total Print Studio to print barcodes for multiple designs"
+          >
+            <Printer className="w-4 h-4 text-[#df5c35]" /> Total Print Studio
+          </button>
+          <button className="admin-primary-button" onClick={() => setAdding(true)}>
+            <Plus /> Add product
+          </button>
+        </div>
       </header>
 
       {/* Search & Filter Controls */}
@@ -312,6 +322,7 @@ export function ProductCatalog() {
       {printProduct && (
         <BarcodePrintModal
           product={printProduct}
+          allProducts={products}
           onClose={() => setPrintProduct(null)}
         />
       )}
