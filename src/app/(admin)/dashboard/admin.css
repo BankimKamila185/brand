@@ -819,31 +819,12 @@
 
 /* ── Premium Label Tag Design ──────────────────────────── */
 
-/* Brand Header Strip — black bar at top */
-.barcode-tag-header-strip {
-  background: #18181b;
-  margin: -18px -16px 0;
-  padding: 8px 16px;
-  border-radius: 14px 14px 0 0;
-  text-align: center;
-  width: calc(100% + 32px);
-}
-
-.barcode-tag-brand-text {
-  font-family: 'Inter', 'Manrope', system-ui, sans-serif;
-  font-size: 7.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 3.5px !important;
-  color: #ffffff !important;
-  text-transform: uppercase;
-}
-
 /* Product Title */
 .barcode-tag-title {
   font-size: 15px !important;
   font-weight: 800 !important;
   color: #18181b;
-  margin: 12px 0 2px;
+  margin: 2px 0 2px;
   line-height: 1.25;
   text-align: center;
   white-space: nowrap;
@@ -1119,23 +1100,6 @@
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
-  }
-
-  .barcode-tag-header-strip {
-    margin: -7px -6px 0 !important;
-    padding: 3.5px 4px !important;
-    width: calc(100% + 12px) !important;
-    background: #000000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    box-sizing: border-box !important;
-  }
-
-  .barcode-tag-brand-text {
-    font-size: 6px !important;
-    letter-spacing: 1.5px !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
   }
 
   .barcode-tag-title {

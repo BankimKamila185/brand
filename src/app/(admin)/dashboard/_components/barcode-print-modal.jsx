@@ -394,11 +394,6 @@ export function BarcodePrintModal({ product, onClose, onUpdateVariants }) {
               for (let i = 0; i < count; i++) {
                 tags.push(
                   <div key={`${vIdx}-${i}`} className="barcode-sticker-tag">
-                    {/* ── Brand Header Strip ── */}
-                    <div className="barcode-tag-header-strip">
-                      <span className="barcode-tag-brand-text">THE OUTLIERS STUDIO</span>
-                    </div>
-                    
                     {/* ── Product Title ── */}
                     <div className="barcode-tag-title">{productTitle}</div>
 
