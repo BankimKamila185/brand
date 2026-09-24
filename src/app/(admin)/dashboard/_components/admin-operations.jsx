@@ -713,8 +713,8 @@ function OrderDetailView({ orderId, onBack }) {
     setMessage("");
     setError("");
 
-    // Package the tracking field as Courier: TrackingID
-    const trackingNumber = trackingId.trim() ? `${courier.trim()}: ${trackingId.trim()}` : "";
+    // Package the tracking field as Courier: TrackingID or null if empty
+    const trackingNumber = trackingId.trim() ? `${courier.trim()}: ${trackingId.trim()}` : null;
 
     try {
       await adminApi.orders.update(orderId, {
@@ -725,7 +725,16 @@ function OrderDetailView({ orderId, onBack }) {
       // Reload order details
       void loadOrder();
     } catch (err) {
-      setError(err.message || "Failed to update order.");
+      const fieldErrors = err.errors
+        ? Object.entries(err.errors)
+            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+            .join("; ")
+        : "";
+      setError(
+        fieldErrors
+          ? `${err.message || "Failed to update order."} (${fieldErrors})`
+          : err.message || "Failed to update order."
+      );
     } finally {
       setSaving(false);
     }

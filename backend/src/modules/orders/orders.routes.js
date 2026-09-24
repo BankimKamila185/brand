@@ -31,9 +31,9 @@ const adminOrderQuerySchema = z.object({
 const updateAdminOrderSchema = z
   .object({
     status: z.enum(["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"]).optional(),
-    trackingNumber: z.string().min(1).max(255).nullable().optional(),
-    shippedAt: z.string().datetime().nullable().optional(),
-    deliveredAt: z.string().datetime().nullable().optional(),
+    trackingNumber: z.preprocess((v) => (v === "" || v === undefined ? null : v), z.string().max(255).nullable().optional()),
+    shippedAt: z.preprocess((v) => (v === "" || v === undefined ? null : v), z.string().datetime().nullable().optional()),
+    deliveredAt: z.preprocess((v) => (v === "" || v === undefined ? null : v), z.string().datetime().nullable().optional()),
   })
   .refine((value) => Object.keys(value).length > 0, "At least one update is required");
 
@@ -423,6 +423,19 @@ router.patch(
       ...(req.body.shippedAt !== undefined && { shippedAt: req.body.shippedAt ? new Date(req.body.shippedAt) : null }),
       ...(req.body.deliveredAt !== undefined && { deliveredAt: req.body.deliveredAt ? new Date(req.body.deliveredAt) : null }),
     };
+
+    if (data.status === "SHIPPED" && !data.shippedAt) {
+      const existing = await db.order.findUnique({ where: { id: req.params["id"] }, select: { shippedAt: true } });
+      if (!existing?.shippedAt) {
+        data.shippedAt = new Date();
+      }
+    } else if (data.status === "DELIVERED" && !data.deliveredAt) {
+      const existing = await db.order.findUnique({ where: { id: req.params["id"] }, select: { deliveredAt: true } });
+      if (!existing?.deliveredAt) {
+        data.deliveredAt = new Date();
+      }
+    }
+
     const order = await db.order.update({ where: { id: req.params["id"] }, data });
     sendSuccess(res, order, "Order updated");
   }),
