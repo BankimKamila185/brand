@@ -33,7 +33,7 @@
    ============================================================ */
 
 /* ── 00. Fonts + Tailwind ───────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300;400;500;600;700&family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Cause:wght@100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import "tailwindcss";
 @source "../../";
@@ -43,6 +43,7 @@
   /* --- Typography --- */
   --font-display: 'Space Grotesk', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
   --font-cause: 'Space Grotesk', sans-serif;
   --font-sour-gummy: 'Space Grotesk', sans-serif;
 
@@ -1203,8 +1204,8 @@ html {
 .home-main {
   display: flex;
   flex-direction: column;
-  gap: clamp(40px, 6vw, 88px);
-  padding-top: clamp(24px, 3.5vw, 44px);
+  gap: clamp(32px, 5vw, 72px);
+  padding-top: 0;
   padding-bottom: clamp(32px, 5vw, 64px);
 }
 
@@ -2920,12 +2921,58 @@ html, body {
 
 
 
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.luxe-hero-section {
+  width: 100%;
+  max-width: 1480px;
+  margin-inline: auto;
+  padding-top: clamp(16px, 3vw, 32px);
+  padding-bottom: clamp(18px, 3.5vw, 36px);
+  padding-left: clamp(16px, 4.5vw, 52px);
+  padding-right: clamp(16px, 4.5vw, 52px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .luxe-hero-section {
+    padding-top: 16px;
+    padding-bottom: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.luxe-hero-card {
+  position: relative;
+  background-color: #0a0a0a;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 768px) {
+  .luxe-hero-card {
+    border-radius: 36px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .luxe-hero-card {
+    border-radius: 44px;
+  }
+}
+
 /* The global link hover opacity must not dim full-bleed images. */
 .hero-slider a,
 .hero-slider a:hover,
 .hero-slider a:focus,
 .hero-slider picture,
 .hero-slider .hero-slide-img,
+.luxe-hero-card a,
+.luxe-hero-card a:hover,
 .product-card,
 .product-card:hover {
   opacity: 1 !important;

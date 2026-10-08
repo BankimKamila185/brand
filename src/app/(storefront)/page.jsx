@@ -280,7 +280,7 @@ export default function Home() {
         {/* ③ Full-width hero banner */}
         <HeroSlider />
 
-        {/* ⑤ Trending Now */}
+        {/* ④ Trending Now */}
         {loading ? (
           <SkTrendingSection />
         ) : (
